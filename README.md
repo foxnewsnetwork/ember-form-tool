@@ -1,6 +1,43 @@
 # Ember-form-tool
 
-This README outlines the details of collaborating on this Ember addon.
+Two components for building forms in your ember app
+
+Use like the following:
+
+```handlebars
+{{#form-for model=myModel mistakes=myErrors action="submittedForm"}}
+  <legend class="whatever">stuff</legend>
+  ...
+  {{#form-input type="email" name="email" label="email"}}
+    <span class="helper-text">put your primary email</span>
+  {{/form-input}}
+
+  {{form-input type="datetime" name="expectedAt"}}
+{{/form-for}}
+```
+Yes, every conceiveable type of input goes under the form-input component, you, as the user, only vary the type.
+
+### Known Types ###
+1. text
+2. textarea
+3. email (html5)
+4. password
+5. date, day, week, month, year (html5)
+6. time (html5)
+7. radio
+8. checkbox
+9. select
+10. multiselect
+11. color (html5)
+12. datetime-local (html5)
+13. search (html5)
+14. telephone (fancy emberjs junk)
+15. url (html5)
+16. range (html5)
+17. switch (material)
+18. files (fancy emberjs)
+19. audio stream (usermedia)
+20. video stream (usermedia)
 
 ## Installation
 
