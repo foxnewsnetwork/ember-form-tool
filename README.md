@@ -5,15 +5,15 @@ Two components for building forms in your ember app
 Use like the following:
 
 ```handlebars
-{{#form-for model=myModel mistakes=myErrors action="submittedForm"}}
+{{#em-form-for model=myModel mistakes=myErrors action="submittedForm"}}
   <legend class="whatever">stuff</legend>
   ...
-  {{#form-input type="email" name="email" label="email"}}
+  {{#em-form-input type="email" name="email" label="email"}}
     <span class="helper-text">put your primary email</span>
-  {{/form-input}}
+  {{/em-form-input}}
 
-  {{form-input type="datetime" name="expectedAt"}}
-{{/form-for}}
+  {{em-form-input type="datetime" name="expectedAt"}}
+{{/em-form-for}}
 ```
 Yes, every conceiveable type of input goes under the form-input component, you, as the user, only vary the type.
 
