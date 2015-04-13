@@ -1,31 +1,31 @@
-<label for={{name}} class="control-label">
+<label {{bind-attr for=name}} class="control-label">
   <span class="label-text">{{label}}</span>
-</label>
 
-<div class="input-group">
-  {{#if prefix}}
-    <span class="input-group-addon">{{prefix}}</span>
-  {{/if}}
-  {{#if isSelectType}}
-    {{view "select" 
-      class="form-control" 
-      name=name 
-      content=content 
-      optionValuePath=optionValuePath 
-      optionLabelPath=optionLabelPath 
-      value=value}}
-  {{else if isDatetimeType}}
-    {{input class="form-control" type="datetime-local" value=value name=name}}
-  {{else if isTextareaType}}
-    {{textarea value=value name=name class="form-control"}}
-  {{else}}
-    {{input type=type value=value name=name class="form-control"}}
-  {{/if}}
-  {{#if suffix}}
-    <span class="input-group-addon">{{suffix}}</span>
-  {{/if}}
-</div>
-{{#each errorMessages as |msg|}}
-  <div class="help-block error-text">{{msg}}</div>
-{{/each}}
-{{yield}}
+  <div {{bind-attr class="shouldInputGroup:input-group:"}}>
+    {{#if prefix}}
+      <span class="input-group-addon">{{prefix}}</span>
+    {{/if}}
+    {{#if isSelectType}}
+      {{view "select" 
+        class="form-control" 
+        name=name 
+        content=content 
+        optionValuePath=optionValuePath 
+        optionLabelPath=optionLabelPath 
+        value=value}}
+    {{else if isDatetimeType}}
+      {{input class="form-control" type="datetime-local" value=value name=name}}
+    {{else if isTextareaType}}
+      {{textarea value=value name=name class="form-control"}}
+    {{else}}
+      {{input type=type value=value name=name class="form-control"}}
+    {{/if}}
+    {{#if suffix}}
+      <span class="input-group-addon">{{suffix}}</span>
+    {{/if}}
+  </div>
+  {{#each errorMessages as |msg|}}
+    <div class="help-block error-text">{{msg}}</div>
+  {{/each}}
+  {{yield}}
+</label>
