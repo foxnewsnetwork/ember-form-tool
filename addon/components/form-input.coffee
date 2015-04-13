@@ -5,10 +5,12 @@ bootstrapClasses = ['form-input', 'input-section', 'form-group']
 FormInputComponent = Ember.Component.extend
   classNames: bootstrapClasses
   attributeBindings: ['attr-name']
+  classNameBindings: ["hasError"]
   "attr-name": Ember.computed.alias("name")
 
   model: Ember.computed.alias "parentView.model"
   mistakes: Ember.computed.alias "parentView.mistakes"
+  hasError: Ember.computed.notEmpty "mistakes"
   shouldInputGroup: Ember.computed.or "prefix", "suffix"
 
   init: ->
