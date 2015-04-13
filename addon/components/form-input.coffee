@@ -9,6 +9,7 @@ FormInputComponent = Ember.Component.extend
 
   model: Ember.computed.alias "parentView.model"
   mistakes: Ember.computed.alias "parentView.mistakes"
+  shouldInputGroup: Ember.computed.or "prefix", "suffix"
 
   init: ->
     if Ember.isBlank @get "parentView"
