@@ -5,10 +5,15 @@
 
 <div>
   {{model.email}}
+</div>
+<div>
   {{model.expectedAt}}
 </div>
 <div>
-  {{mistakes.email}}
-  {{mistakes.expectedAt}}
+  {{log model.mugshots}}
+  {{#each model.mugshots as |mugshot|}}
+    <img src={{mugshot.name}}>
+    <span>{{mugshot}}</span>
+  {{/each}}
 </div>
 {{outlet}}

@@ -18,6 +18,8 @@
     {{input class="form-control" type="datetime-local" value=value name=name}}
   {{else if isTextareaType}}
     {{textarea value=value name=name class="form-control"}}
+  {{else if isWebcamType}}
+    {{ember-webcam-input name=name picUrls=picUrls action="snapped"}}
   {{else}}
     {{input type=type value=value name=name class="form-control"}}
   {{/if}}

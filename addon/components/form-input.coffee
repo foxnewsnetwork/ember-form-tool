@@ -27,5 +27,11 @@ FormInputComponent = Ember.Component.extend
   isDatetimeType: Ember.computed.match("type", /datetime/)
   isSelectType: Ember.computed.equal("type", "select")
   isTextareaType: Ember.computed.equal("type", "textarea")
+  isWebcamType: Ember.computed.equal("type", "webcam")
+
+  actions:
+    snapped: ->
+      name = @get "name"
+      @set "model.#{name}", Ember.A @get("picUrls")
 
 `export default FormInputComponent`

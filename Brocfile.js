@@ -17,5 +17,9 @@ var app = new EmberAddon();
 // modules that you would like to import into your application
 // please specify an object with the list of modules as keys
 // along with the exports of each module as its value.
+app.import(app.bowerDirectory + "/webcamjs/webcam.min.js");
+app.import(app.bowerDirectory + "/webcamjs/webcam.swf", {
+  destDir: "assets"
+});
 
 module.exports = app.toTree();
