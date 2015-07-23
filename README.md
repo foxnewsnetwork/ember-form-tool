@@ -1,6 +1,6 @@
 # Ember-form-tool
 
-Two components for building forms in your ember app
+Three components for building forms in your ember app, for now, assumes you're using twitter bootstrap and tries to get really smart based on that assumption.
 
 Use like the following:
 
@@ -13,11 +13,20 @@ Use like the following:
   {{/em-form-input}}
 
   {{em-form-input type="datetime" name="expectedAt"}}
+
+  <button type="submit">go</button>
 {{/em-form-for}}
 ```
+### Assumptions
+
+This library exists because I personally want a super-clean syntax for constructing standard forms, and in order to achieve that, I make a ton of assumptions regarding what you will and will not do in the construction of your forms.
+
+- If you give a prefix or suffix like "fa-phone", you want to use a "i" element for font-awesome (or glyphicon)
+- If you put "fa-whatever" in your submitText, you want it as an icon
+
 Yes, every conceiveable type of input goes under the form-input component, you, as the user, only vary the type.
 
-### Known Types ###
+### Existing Types ###
 1. text
 2. textarea
 3. email (html5)
@@ -27,17 +36,24 @@ Yes, every conceiveable type of input goes under the form-input component, you, 
 7. radio
 8. checkbox
 9. select
-10. multiselect
-11. color (html5)
+10. Webcam
+11. multiselect
 12. datetime-local (html5)
-13. search (html5)
-14. telephone (fancy emberjs junk)
-15. url (html5)
-16. range (html5)
-17. switch (material)
-18. files (fancy emberjs)
-19. audio stream (usermedia)
-20. video stream (usermedia)
+13. telephone (fancy emberjs junk)
+14. files (fancy emberjs)
+
+### Types to implement in the future
+- autocomplete
+- dials
+- visual password
+- color (html5)
+- search (html5)
+- url (html5)
+- range (html5)
+- switch (material)
+- audio stream (usermedia)
+- video stream (usermedia)
+
 
 ## Installation
 

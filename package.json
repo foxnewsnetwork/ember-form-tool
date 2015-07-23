@@ -1,6 +1,6 @@
 {
   "name": "ember-form-tool",
-  "version": "0.0.4-alpha-2",
+  "version": "0.0.5",
   "description": "Yet another form component tool for ember",
   "directories": {
     "doc": "doc",
@@ -42,7 +42,7 @@
   "dependencies": {
     "ember-cli-babel": "^5.0.0",
     "ember-cli-coffeescript": "0.11.0",
-    "ember-webcam-input": "0.0.1-alpha-5"
+    "ember-webcam-input": "0.0.2"
   },
   "ember-addon": {
     "configPath": "tests/dummy/config"

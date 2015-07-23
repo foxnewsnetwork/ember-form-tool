@@ -10,9 +10,8 @@
   {{model.expectedAt}}
 </div>
 <div>
-  {{log model.mugshots}}
   {{#each model.mugshots as |mugshot|}}
-    <img src={{mugshot.name}}>
+    <img src={{mugshot}}>
     <span>{{mugshot}}</span>
   {{/each}}
 </div>

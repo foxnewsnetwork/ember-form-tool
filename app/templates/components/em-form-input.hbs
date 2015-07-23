@@ -1,30 +1,59 @@
-<label {{bind-attr for=name}} class="control-label">
+<label for="{{name}}" class="control-label">
   <span class="label-text">{{label}}</span>
 </label>
 
-<div {{bind-attr class="shouldInputGroup:input-group:"}}>
+<div class={{if shouldInputGroup 'input-group'}}>
   {{#if prefix}}
-    <span class="input-group-addon">{{prefix}}</span>
+    <span class="input-group-addon">
+      {{#if faPrefix}}
+        <i class="fa {{prefix}}"></i>
+      {{else if glyphPrefix}}
+        <span class="glyphicon {{prefix}}" aria-hidden=true></span>
+      {{else}}
+        {{prefix}}
+      {{/if}}
+    </span>
   {{/if}}
   {{#if isSelectType}}
-    {{view "select" 
-      class="form-control" 
-      name=name 
-      content=content 
-      optionValuePath=optionValuePath 
-      optionLabelPath=optionLabelPath 
-      value=value}}
+    <select class="form-control" {{action 'change' on='change'}} multiple={{multiple}}>
+      {{#if prompt}}
+        <option disabled selected={{is-not value}}>
+          {{prompt}}
+        </option>
+      {{/if}}
+      
+      {{#each content as |item|}}
+        <option value="{{read-path item optionValuePath}}"
+                selected={{is-equal item value}}>
+          {{read-path item optionLabelPath}}
+        </option>
+      {{/each}}
+    </select>
   {{else if isDatetimeType}}
     {{input class="form-control" type="datetime-local" value=value name=name}}
   {{else if isTextareaType}}
     {{textarea value=value name=name class="form-control"}}
   {{else if isWebcamType}}
     {{ember-webcam-input name=name picUrls=picUrls action="snapped"}}
+  {{else if isTelephone}}
+    {{input type="tel" value=value name=name class="form-control"}}
+  {{else if isFile}}
+    {{input type="file" value=value name=name class="form-control" accept=accept}}
+  {{else if areFiles}}
+    {{input type="file" value=value name=name class="form-control" multiple=true}}
   {{else}}
     {{input type=type value=value name=name class="form-control"}}
   {{/if}}
   {{#if suffix}}
-    <span class="input-group-addon">{{suffix}}</span>
+    <span class="input-group-addon">
+      {{#if faSuffix}}
+        <i class="fa {{suffix}}"></i>
+      {{else if glyphSuffix}}
+        <span class="glyphicon {{prefix}}" aria-hidden=true></span>
+      {{else}}
+        {{suffix}}
+      {{/if}}
+    </span>
   {{/if}}
 </div>
 {{#each errorMessages as |msg|}}

@@ -1,11 +1,19 @@
 <legend class="whatever">stuff</legend>
-{{#em-form-input id="charlie-401" type="email" name="email" label="email"}}
+{{#em-form-input id="charlie-401" type="email" name="email" label="email" prefix="fa-check"}}
   <span class="helper-text">put your primary email</span>
 {{/em-form-input}}
 
 {{em-form-input type="datetime-local" name="expectedAt"}}
-
+{{#em-form-input type="select" name="framework" label="worst framework ever" content=frameworks}}
+  <span class="helper-text">{{model.framework}}</span>
+{{/em-form-input}}
+{{#em-form-input type="select" name="frameworks" label="worst framework ever" content=frameworks multiple=true}}
+  <span class="helper-text">{{model.frameworks}}</span>
+{{/em-form-input}}
 {{em-form-input type="webcam" name="mugshots"}}
+{{em-form-input type="file" name="file" label="vanilla file"}}
+{{em-form-input type="file" name="file" label="capture" accept="image/*;capture=camera"}}
+{{em-form-input type="files" name="files" label="all files"}}
 <button type="submit">
   <span>submit</span>
 </button>
