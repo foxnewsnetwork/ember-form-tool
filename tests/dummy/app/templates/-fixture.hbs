@@ -7,8 +7,8 @@
 {{#em-form-input type="select" name="framework" label="worst framework ever" content=frameworks}}
   <span class="helper-text">{{model.framework}}</span>
 {{/em-form-input}}
-{{#em-form-input type="select" name="frameworks" label="worst framework ever" content=frameworks multiple=true}}
-  <span class="helper-text">{{model.frameworks}}</span>
+{{#em-form-input type="select" name="candy" label="worst framework ever" content=candies optionLabelPath="presentation" optionLabelValue="id"}}
+  <span class="helper-text">{{model.candy.id}}--{{model.candy.presentation}}</span>
 {{/em-form-input}}
 {{em-form-input type="webcam" name="mugshots"}}
 {{em-form-input type="file" name="file" label="vanilla file"}}

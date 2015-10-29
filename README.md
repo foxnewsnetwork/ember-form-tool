@@ -17,6 +17,14 @@ Use like the following:
   <button type="submit">go</button>
 {{/em-form-for}}
 ```
+
+If you're using ember-cli-materialize, you can specify flavor on the em-form-for (https://github.com/truenorth/ember-cli-materialize)
+```handlebars
+{{#em-form-for model=myModel mistakes=myErrors actions="submittedForm" flavor="materialize"}}
+  ... same as above
+{{/em-form-for}}
+```
+You'll need to install ember-cli-materialize yourself
 ### Assumptions
 
 This library exists because I personally want a super-clean syntax for constructing standard forms, and in order to achieve that, I make a ton of assumptions regarding what you will and will not do in the construction of your forms.
