@@ -1,0 +1,17 @@
+{{#em-form-for model action="submit" as |f|}}
+  {{#em-email-field f prefix="fa-check"}}
+    <span class="helper-text">put your primary email</span>
+  {{/em-email-field}}
+  {{#em-password-field f prefix="fa-times"}}
+    <span class="helper-text">password fields also work</span>
+  {{/em-password-field}}
+  {{#em-text-field f name="username" prefix="fa-user"}}
+    <span class="helper-text">text fields work as expected</span>
+  {{/em-text-field}}
+  {{#em-textarea-field f name="feelings" prefix="fa-heart"}}
+    <span class="helper-text">Very similar to regular text fields</span>
+  {{/em-textarea-field}}
+  <button class="btn btn-success" type="submit">
+    <span>Click Me</span>
+  </button>
+{{/em-form-for}}

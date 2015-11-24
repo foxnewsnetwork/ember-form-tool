@@ -1,0 +1,61 @@
+<label for="{{name}}" class="control-label">
+  <span class="label-text">{{label}}</span>
+</label>
+<div class={{if shouldInputGroup 'input-group'}}>
+  {{#if prefix}}
+    <span class="input-group-addon">
+      {{#if faPrefix}}
+        <i class="fa {{prefix}}"></i>
+      {{else if glyphPrefix}}
+        <span class="glyphicon {{prefix}}" aria-hidden=true></span>
+      {{else}}
+        {{prefix}}
+      {{/if}}
+    </span>
+  {{/if}}
+  {{input class="form-control"
+    value=(mut value) 
+    readonly=readonly
+    required=required
+    autofocus=autofocus
+    placeholder=placeholder
+    disabled=disabled
+    size=size
+    tabindex=tabindex
+    maxlength=maxlength
+    name=name
+    min=min
+    max=max
+    pattern=pattern
+    accept=accept
+    autocomplete=autocomplete
+    autosave=autosave
+    formaction=formaction
+    formenctype=formenctype
+    formmethod=formmethod
+    formnovalidate=formnovalidate
+    formtarget=formtarget
+    height=height
+    inputmode=inputmode
+    multiple=multiple
+    step=step
+    width=width
+    form=form
+    selectionDirection=selectionDirection
+    spellcheck=spellcheck}}
+  {{#if suffix}}
+    <span class="input-group-addon">
+      {{#if faSuffix}}
+        <i class="fa {{suffix}}"></i>
+      {{else if glyphSuffix}}
+        <span class="glyphicon {{prefix}}" aria-hidden=true></span>
+      {{else}}
+        {{suffix}}
+      {{/if}}
+    </span>
+  {{/if}}
+</div>
+{{#each errorMessages as |msg|}}
+  <div class="help-block error-text">{{msg}}</div>
+{{/each}}
+{{yield}}

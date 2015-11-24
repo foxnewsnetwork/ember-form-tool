@@ -1,17 +1,19 @@
 # Ember-form-tool
 
-Three components for building forms in your ember app, for now, assumes you're using twitter bootstrap and tries to get really smart based on that assumption.
+Opinionated form tool that assumes you're using one of the 4 popular css front-end frameworks (bootstrap, foundation, materialize, or material-lite), and then gets smart based on that assumption
 
+Specify framework flavor in your config file
 Use like the following:
 
 ```handlebars
-{{#em-form-for model=myModel mistakes=myErrors action="submittedForm"}}
+{{#em-form-for myModel action=(action "submit") as |f|}}
   <legend class="whatever">stuff</legend>
   ...
-  {{#em-form-input type="email" name="email" label="email"}}
+  {{#em-email-field f }}
     <span class="helper-text">put your primary email</span>
-  {{/em-form-input}}
+  {{/em-email-field}}
 
+  {{em-password-field f name="password" label="password"}}
   {{em-form-input type="datetime" name="expectedAt"}}
 
   <button type="submit">go</button>

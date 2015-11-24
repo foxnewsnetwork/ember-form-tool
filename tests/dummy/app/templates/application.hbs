@@ -1,18 +1,19 @@
-<h2 id="title">Welcome to Ember.js</h2>
-{{#em-form-for model=model mistakes=mistakes action="submit"}}
-  {{partial "fixture"}}
-{{/em-form-for}}
-
-<div>
-  {{model.email}}
+<div class="jumbotron">
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12">
+        <h2 id="title">Welcome to my 
+          {{#link-to "index"}}Ember Form Tools{{/link-to}}
+        </h2>
+        <p>An ember DSL for building forms across the major front-end frameworks</p>
+      </div>
+    </div>
+  </div>
 </div>
-<div>
-  {{model.expectedAt}}
+<div class="container">
+  <div class="row">
+    <div class="col-xs-12">
+      {{outlet}}
+    </div>
+  </div>
 </div>
-<div>
-  {{#each model.mugshots as |mugshot|}}
-    <img src={{mugshot}}>
-    <span>{{mugshot}}</span>
-  {{/each}}
-</div>
-{{outlet}}

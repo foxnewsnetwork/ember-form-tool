@@ -1,8 +1,0 @@
-{{#if isBootstrapFlavor}}
-  {{partial "./em-form-input/bootstrap-input"}}
-{{else if isMaterializeFlavor}}
-  {{partial "./em-form-input/materialize-input"}}
-{{else}}
-  <h4>Unknown flavor: {{flavor}}</h4>
-{{/if}}
-{{yield}}
