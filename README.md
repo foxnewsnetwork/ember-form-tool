@@ -1,6 +1,9 @@
 # Ember-form-tool
 
+>warning: currently alpha software!
 Opinionated form tool that assumes you're using one of the 4 popular css front-end frameworks (bootstrap, foundation, materialize, or material-lite), and then gets smart based on that assumption
+
+https://foxnewsnetwork.github.io/ember-form-tool
 
 Specify framework flavor in your config file
 Use like the following:
@@ -20,13 +23,13 @@ Use like the following:
 {{/em-form-for}}
 ```
 
-If you're using ember-cli-materialize, you can specify flavor on the em-form-for (https://github.com/truenorth/ember-cli-materialize)
-```handlebars
-{{#em-form-for model=myModel mistakes=myErrors actions="submittedForm" flavor="materialize"}}
-  ... same as above
-{{/em-form-for}}
-```
-You'll need to install ember-cli-materialize yourself
+### TODOs
+
+1. add support for files input
+2. add support for datetime input
+3. add support for phone input
+4. add support for select
+
 ### Assumptions
 
 This library exists because I personally want a super-clean syntax for constructing standard forms, and in order to achieve that, I make a ton of assumptions regarding what you will and will not do in the construction of your forms.
