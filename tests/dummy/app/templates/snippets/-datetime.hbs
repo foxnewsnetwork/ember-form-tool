@@ -1,0 +1,14 @@
+{{#em-form-for model action="submit" as |f|}}
+  {{#em-date-field f suffix="fa-calendar"}}
+    <span class="helper-text">select a date (note, prefix isn't available on date fields)</span>
+  {{/em-date-field}}
+  {{#em-time-field f suffix="glyphicon-time"}}
+    <span class="helper-text">select a time (note, prefix isn't available on date fields)</span>
+  {{/em-time-field}}
+  {{#em-datetime-field f suffix="fa-twitter"}}
+    <span class="helper-text">select a datetime</span>
+  {{/em-datetime-field}}
+  <button class="btn btn-success" type="submit">
+    <span>Click Me</span>
+  </button>
+{{/em-form-for}}

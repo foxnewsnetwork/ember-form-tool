@@ -1,0 +1,19 @@
+<label for="{{name}}" class="control-label">
+  <span class="label-text">{{label}}</span>
+</label>
+{{bs-datetimepicker name=name
+  date=value
+  format=format
+  updateDate=(action (mut value))
+  minDate=minDate
+  maxDate=maxDate
+  disabledDates=disabledDates
+  enabledDates=enabledDates
+  forceDateOutput=forceDateOutput
+  dateIcon=dateIcon}}
+
+{{#each errorMessages as |msg|}}
+  <div class="help-block error-text">{{msg}}</div>
+{{/each}}
+{{yield}}
+

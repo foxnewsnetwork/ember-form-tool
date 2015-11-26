@@ -7,11 +7,9 @@ var Router = Ember.Router.extend({
 
 export default Router.map(function() {
   this.route("basics");
-  this.route("errors");
-  this.route("icons");
+  this.route("datetime");
   this.route("files");
   this.route("usermedia");
-  this.route("datetime");
   this.route("material");
   this.route("creative");
 });
