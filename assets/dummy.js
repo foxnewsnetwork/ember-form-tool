@@ -29,6 +29,9 @@ define('dummy/components/app-version', ['exports', 'ember-cli-app-version/compon
     name: name
   });
 });
+define('dummy/components/bs-datetimepicker', ['exports', 'ember', 'ember-bootstrap-datetimepicker/components/bs-datetimepicker'], function (exports, _ember, _emberBootstrapDatetimepickerComponentsBsDatetimepicker) {
+  exports['default'] = _emberBootstrapDatetimepickerComponentsBsDatetimepicker['default'];
+});
 define("dummy/components/code-snippet", ["exports", "ember", "dummy/snippets"], function (exports, _ember, _dummySnippets) {
 
   /* global require */
@@ -83,6 +86,22 @@ define("dummy/components/code-snippet", ["exports", "ember", "dummy/snippets"], 
     })
   });
 });
+define('dummy/components/em-date-field', ['exports', 'ember-form-tool/components/em-date-field'], function (exports, _emberFormToolComponentsEmDateField) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberFormToolComponentsEmDateField['default'];
+    }
+  });
+});
+define('dummy/components/em-datetime-field', ['exports', 'ember-form-tool/components/em-datetime-field'], function (exports, _emberFormToolComponentsEmDatetimeField) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberFormToolComponentsEmDatetimeField['default'];
+    }
+  });
+});
 define('dummy/components/em-email-field', ['exports', 'ember-form-tool/components/em-email-field'], function (exports, _emberFormToolComponentsEmEmailField) {
   Object.defineProperty(exports, 'default', {
     enumerable: true,
@@ -120,6 +139,14 @@ define('dummy/components/em-textarea-field', ['exports', 'ember-form-tool/compon
     }
   });
 });
+define('dummy/components/em-time-field', ['exports', 'ember-form-tool/components/em-time-field'], function (exports, _emberFormToolComponentsEmTimeField) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberFormToolComponentsEmTimeField['default'];
+    }
+  });
+});
 define('dummy/components/ember-webcam-input', ['exports', 'ember-webcam-input/components/ember-webcam-input'], function (exports, _emberWebcamInputComponentsEmberWebcamInput) {
   Object.defineProperty(exports, 'default', {
     enumerable: true,
@@ -138,8 +165,8 @@ define('dummy/controllers/application', ['exports', 'ember'], function (exports,
 define('dummy/controllers/array', ['exports', 'ember'], function (exports, _ember) {
   exports['default'] = _ember['default'].Controller;
 });
-define("dummy/controllers/basics", ["exports", "ember"], function (exports, _ember) {
-  var A, BasicsController, Controller, ErrorMessages, Object, chocolate, poprock, taffy, xxx;
+define('dummy/controllers/basics', ['exports', 'ember', 'dummy/utils/error-messages'], function (exports, _ember, _dummyUtilsErrorMessages) {
+  var A, BasicsController, Controller, Object, chocolate, genErr, get, poprock, set, taffy;
 
   chocolate = {
     id: "chocolate",
@@ -156,35 +183,39 @@ define("dummy/controllers/basics", ["exports", "ember"], function (exports, _emb
     presentation: "Sticks to your tooth!"
   };
 
-  A = _ember["default"].A, Object = _ember["default"].Object, Controller = _ember["default"].Controller;
+  A = _ember['default'].A, set = _ember['default'].set, Object = _ember['default'].Object, Controller = _ember['default'].Controller, get = _ember['default'].get;
 
-  ErrorMessages = A(["cannot be written with malicious intent", "must include more chocolate sprinkles", "requires proper planetary alignment", "cannot be too phony", "must be more sincere", "missing a certain je ne sais quois", "should be more well-rounded", "more feelings must be put into it", "user is of the wrong ethnic group"]);
-
-  xxx = function () {
-    var k;
-    k = Math.floor(Math.random() * ErrorMessages.get("length"));
-    return ErrorMessages.objectsAt([k]);
+  genErr = function (model) {
+    return function (obj, field) {
+      set(obj, field, (0, _dummyUtilsErrorMessages['default'])(get(model, field)));
+      return obj;
+    };
   };
 
   BasicsController = Controller.extend({
+    fields: ["email", "password", "username", "feelings", "expectedAt"],
     frameworks: ["ember", "angular", "react"],
     candies: [chocolate, poprock, taffy],
+    makeMistakes: function makeMistakes(model) {
+      return A(this.get("fields")).reduce(genErr(model), Object.create());
+    },
     actions: {
       submit: function submit(model) {
-        var mistakes;
-        mistakes = Object.create({
-          email: xxx(),
-          password: xxx(),
-          username: xxx(),
-          feelings: xxx(),
-          expectedAt: xxx()
-        });
-        return this.set("model.errors", mistakes);
+        return this.set("model.errors", this.makeMistakes(model));
       }
     }
   });
 
-  exports["default"] = BasicsController;
+  exports['default'] = BasicsController;
+});
+define('dummy/controllers/datetime', ['exports', 'ember', 'dummy/controllers/basics'], function (exports, _ember, _dummyControllersBasics) {
+  var DatetimeController;
+
+  DatetimeController = _dummyControllersBasics['default'].extend({
+    fields: ["date", "datetime", "timezone", "time"]
+  });
+
+  exports['default'] = DatetimeController;
 });
 define('dummy/controllers/index', ['exports', 'ember'], function (exports, _ember) {
   var IndexController;
@@ -195,6 +226,49 @@ define('dummy/controllers/index', ['exports', 'ember'], function (exports, _embe
 });
 define('dummy/controllers/object', ['exports', 'ember'], function (exports, _ember) {
   exports['default'] = _ember['default'].Controller;
+});
+define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-date-field', ['exports', 'ember', 'dummy/ember-form-tool/tests/modules/ember-form-tool/templates/components/em-date-field', 'dummy/ember-form-tool/tests/modules/ember-form-tool/mixins/form-field-core'], function (exports, _ember, _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmDateField, _dummyEmberFormToolTestsModulesEmberFormToolMixinsFormFieldCore) {
+  var Component, EmDateFieldComponent, computed;
+
+  Component = _ember['default'].Component, computed = _ember['default'].computed;
+
+  EmDateFieldComponent = Component.extend(_dummyEmberFormToolTestsModulesEmberFormToolMixinsFormFieldCore['default'], {
+    layout: _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmDateField['default'],
+    classNames: ['input-field', 'form-input', 'input-section', 'form-group'],
+    type: "date",
+    format: 'YYYY-MM-DD',
+    dateIcon: computed("suffix", {
+      get: function get() {
+        var suffix;
+        suffix = this.get("suffix");
+        switch (false) {
+          case !this.get("faSuffix"):
+            return "fa " + suffix;
+          case !this.get("glyphSuffix"):
+            return "glyph " + suffix;
+          default:
+            return suffix;
+        }
+      }
+    })
+  });
+
+  EmDateFieldComponent.reopenClass({
+    positionalParams: ["formHeart"]
+  });
+
+  exports['default'] = EmDateFieldComponent;
+});
+define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-datetime-field', ['exports', 'ember', 'dummy/ember-form-tool/tests/modules/ember-form-tool/templates/components/em-date-field', 'dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-date-field'], function (exports, _ember, _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmDateField, _dummyEmberFormToolTestsModulesEmberFormToolComponentsEmDateField) {
+  var EmDatetimeFieldComponent;
+
+  EmDatetimeFieldComponent = _dummyEmberFormToolTestsModulesEmberFormToolComponentsEmDateField['default'].extend({
+    layout: _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmDateField['default'],
+    format: "",
+    type: "datetime"
+  });
+
+  exports['default'] = EmDatetimeFieldComponent;
 });
 define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-email-field', ['exports', 'ember', 'dummy/ember-form-tool/tests/modules/ember-form-tool/templates/components/em-text-field', 'dummy/ember-form-tool/tests/modules/ember-form-tool/mixins/form-field-core'], function (exports, _ember, _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmTextField, _dummyEmberFormToolTestsModulesEmberFormToolMixinsFormFieldCore) {
   var Component, EmEmailFieldComponent;
@@ -292,6 +366,17 @@ define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-textar
   });
 
   exports['default'] = EmTextareaFieldComponent;
+});
+define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-time-field', ['exports', 'ember', 'dummy/ember-form-tool/tests/modules/ember-form-tool/templates/components/em-date-field', 'dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-date-field'], function (exports, _ember, _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmDateField, _dummyEmberFormToolTestsModulesEmberFormToolComponentsEmDateField) {
+  var EmTimeFieldComponent;
+
+  EmTimeFieldComponent = _dummyEmberFormToolTestsModulesEmberFormToolComponentsEmDateField['default'].extend({
+    layout: _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmDateField['default'],
+    format: 'LT',
+    type: "time"
+  });
+
+  exports['default'] = EmTimeFieldComponent;
 });
 define("dummy/ember-form-tool/tests/modules/ember-form-tool/mixins/form-field-core", ["exports", "ember"], function (exports, _ember) {
   var A, FormFieldCoreMixin, Mixin, alias, computed, equal, ifAny, isBlank, match, notEmpty, oneWay;
@@ -596,11 +681,9 @@ define('dummy/router', ['exports', 'ember', 'dummy/config/environment'], functio
 
   exports['default'] = Router.map(function () {
     this.route("basics");
-    this.route("errors");
-    this.route("icons");
+    this.route("datetime");
     this.route("files");
     this.route("usermedia");
-    this.route("datetime");
     this.route("material");
     this.route("creative");
   });
@@ -630,6 +713,21 @@ define("dummy/routes/basics", ["exports", "ember"], function (exports, _ember) {
 
   exports["default"] = BasicsRoute;
 });
+define('dummy/routes/datetime', ['exports', 'ember'], function (exports, _ember) {
+  var BasicsRoute, Object, Route;
+
+  Object = _ember['default'].Object, Route = _ember['default'].Route;
+
+  BasicsRoute = Route.extend({
+    model: function model() {
+      return Object.create({
+        date: new Date()
+      });
+    }
+  });
+
+  exports['default'] = BasicsRoute;
+});
 define("dummy/routes/index", ["exports", "ember"], function (exports, _ember) {
   var IndexRoute;
 
@@ -646,7 +744,8 @@ define("dummy/routes/index", ["exports", "ember"], function (exports, _ember) {
 });
 define("dummy/snippets", ["exports"], function (exports) {
   exports["default"] = {
-    "-basics.hbs": "{{#em-form-for model action=\"submit\" as |f|}}\n  {{#em-email-field f prefix=\"fa-check\"}}\n    <span class=\"helper-text\">put your primary email</span>\n  {{/em-email-field}}\n  {{#em-password-field f prefix=\"fa-times\"}}\n    <span class=\"helper-text\">password fields also work</span>\n  {{/em-password-field}}\n  {{#em-text-field f name=\"username\" prefix=\"fa-user\"}}\n    <span class=\"helper-text\">text fields work as expected</span>\n  {{/em-text-field}}\n  {{#em-textarea-field f name=\"feelings\" prefix=\"fa-heart\"}}\n    <span class=\"helper-text\">Very similar to regular text fields</span>\n  {{/em-textarea-field}}\n  <button class=\"btn btn-success\" type=\"submit\">\n    <span>Click Me</span>\n  </button>\n{{/em-form-for}}"
+    "-basics.hbs": "{{#em-form-for model action=\"submit\" as |f|}}\n  {{#em-email-field f prefix=\"fa-check\"}}\n    <span class=\"helper-text\">put your primary email</span>\n  {{/em-email-field}}\n  {{#em-password-field f prefix=\"fa-times\"}}\n    <span class=\"helper-text\">password fields also work</span>\n  {{/em-password-field}}\n  {{#em-text-field f name=\"username\" prefix=\"fa-user\"}}\n    <span class=\"helper-text\">text fields work as expected</span>\n  {{/em-text-field}}\n  {{#em-textarea-field f name=\"feelings\" prefix=\"fa-heart\"}}\n    <span class=\"helper-text\">Very similar to regular text fields</span>\n  {{/em-textarea-field}}\n  <button class=\"btn btn-success\" type=\"submit\">\n    <span>Click Me</span>\n  </button>\n{{/em-form-for}}",
+    "-datetime.hbs": "{{#em-form-for model action=\"submit\" as |f|}}\n  {{#em-date-field f suffix=\"fa-calendar\"}}\n    <span class=\"helper-text\">select a date (note, prefix isn't available on date fields)</span>\n  {{/em-date-field}}\n  {{#em-time-field f suffix=\"glyphicon-time\"}}\n    <span class=\"helper-text\">select a time (note, prefix isn't available on date fields)</span>\n  {{/em-time-field}}\n  {{#em-datetime-field f suffix=\"fa-twitter\"}}\n    <span class=\"helper-text\">select a datetime</span>\n  {{/em-datetime-field}}\n  <button class=\"btn btn-success\" type=\"submit\">\n    <span>Click Me</span>\n  </button>\n{{/em-form-for}}"
   };
 });
 define("dummy/templates/-fixture", ["exports"], function (exports) {
@@ -894,11 +993,11 @@ define("dummy/templates/application", ["exports"], function (exports) {
           "loc": {
             "source": null,
             "start": {
-              "line": 6,
+              "line": 8,
               "column": 10
             },
             "end": {
-              "line": 6,
+              "line": 8,
               "column": 46
             }
           },
@@ -936,7 +1035,7 @@ define("dummy/templates/application", ["exports"], function (exports) {
             "column": 0
           },
           "end": {
-            "line": 20,
+            "line": 23,
             "column": 0
           }
         },
@@ -948,6 +1047,17 @@ define("dummy/templates/application", ["exports"], function (exports) {
       hasRendered: false,
       buildFragment: function buildFragment(dom) {
         var el0 = dom.createDocumentFragment();
+        var el1 = dom.createElement("a");
+        dom.setAttribute(el1, "href", "https://github.com/foxnewsnetwork/ember-form-tool");
+        var el2 = dom.createElement("img");
+        dom.setAttribute(el2, "style", "position: absolute; top: 0; right: 0; border: 0;");
+        dom.setAttribute(el2, "src", "https://camo.githubusercontent.com/365986a132ccd6a44c23a9169022c0b5c890c387/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f7265645f6161303030302e706e67");
+        dom.setAttribute(el2, "alt", "Fork me on GitHub");
+        dom.setAttribute(el2, "data-canonical-src", "https://s3.amazonaws.com/github/ribbons/forkme_right_red_aa0000.png");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n\n");
+        dom.appendChild(el0, el1);
         var el1 = dom.createElement("div");
         dom.setAttribute(el1, "class", "jumbotron");
         var el2 = dom.createTextNode("\n  ");
@@ -966,11 +1076,11 @@ define("dummy/templates/application", ["exports"], function (exports) {
         dom.appendChild(el4, el5);
         var el5 = dom.createElement("h2");
         dom.setAttribute(el5, "id", "title");
-        var el6 = dom.createTextNode("Welcome to my \n          ");
+        var el6 = dom.createTextNode("Welcome to\n          ");
         dom.appendChild(el5, el6);
         var el6 = dom.createComment("");
         dom.appendChild(el5, el6);
-        var el6 = dom.createTextNode("\n        ");
+        var el6 = dom.createTextNode("\n          (wip)\n        ");
         dom.appendChild(el5, el6);
         dom.appendChild(el4, el5);
         var el5 = dom.createTextNode("\n        ");
@@ -1022,11 +1132,11 @@ define("dummy/templates/application", ["exports"], function (exports) {
       },
       buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
         var morphs = new Array(2);
-        morphs[0] = dom.createMorphAt(dom.childAt(fragment, [0, 1, 1, 1, 1]), 1, 1);
-        morphs[1] = dom.createMorphAt(dom.childAt(fragment, [2, 1, 1]), 1, 1);
+        morphs[0] = dom.createMorphAt(dom.childAt(fragment, [2, 1, 1, 1, 1]), 1, 1);
+        morphs[1] = dom.createMorphAt(dom.childAt(fragment, [4, 1, 1]), 1, 1);
         return morphs;
       },
-      statements: [["block", "link-to", ["index"], [], 0, null, ["loc", [null, [6, 10], [6, 58]]]], ["content", "outlet", ["loc", [null, [16, 6], [16, 16]]]]],
+      statements: [["block", "link-to", ["index"], [], 0, null, ["loc", [null, [8, 10], [8, 58]]]], ["content", "outlet", ["loc", [null, [19, 6], [19, 16]]]]],
       locals: [],
       templates: [child0]
     };
@@ -1086,6 +1196,189 @@ define("dummy/templates/basics", ["exports"], function (exports) {
       statements: [["inline", "partial", ["snippets/basics"], [], ["loc", [null, [1, 0], [1, 29]]]], ["inline", "code-snippet", [], ["name", "-basics.hbs"], ["loc", [null, [4, 2], [4, 37]]]]],
       locals: [],
       templates: []
+    };
+  })());
+});
+define("dummy/templates/components/bs-datetimepicker", ["exports"], function (exports) {
+  exports["default"] = Ember.HTMLBars.template((function () {
+    var child0 = (function () {
+      return {
+        meta: {
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type"]
+          },
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 1,
+              "column": 0
+            },
+            "end": {
+              "line": 3,
+              "column": 0
+            }
+          },
+          "moduleName": "dummy/templates/components/bs-datetimepicker.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+          return morphs;
+        },
+        statements: [["content", "yield", ["loc", [null, [2, 2], [2, 11]]]]],
+        locals: [],
+        templates: []
+      };
+    })();
+    var child1 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 3,
+              "column": 0
+            },
+            "end": {
+              "line": 5,
+              "column": 0
+            }
+          },
+          "moduleName": "dummy/templates/components/bs-datetimepicker.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+          return morphs;
+        },
+        statements: [["inline", "input", [], ["type", "text", "class", "form-control", "disabled", ["subexpr", "@mut", [["get", "disabled", ["loc", [null, [4, 52], [4, 60]]]]], [], []], "name", ["subexpr", "@mut", [["get", "textFieldName", ["loc", [null, [4, 66], [4, 79]]]]], [], []]], ["loc", [null, [4, 2], [4, 81]]]]],
+        locals: [],
+        templates: []
+      };
+    })();
+    var child2 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 6,
+              "column": 0
+            },
+            "end": {
+              "line": 10,
+              "column": 0
+            }
+          },
+          "moduleName": "dummy/templates/components/bs-datetimepicker.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createElement("span");
+          dom.setAttribute(el1, "class", "input-group-addon");
+          var el2 = dom.createTextNode("\n  ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("span");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var element0 = dom.childAt(fragment, [0, 1]);
+          var morphs = new Array(1);
+          morphs[0] = dom.createAttrMorph(element0, 'class');
+          return morphs;
+        },
+        statements: [["attribute", "class", ["concat", [["get", "dateIcon", ["loc", [null, [8, 17], [8, 25]]]]]]]],
+        locals: [],
+        templates: []
+      };
+    })();
+    return {
+      meta: {
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.2.0",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 11,
+            "column": 0
+          }
+        },
+        "moduleName": "dummy/templates/components/bs-datetimepicker.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+        var morphs = new Array(2);
+        morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+        morphs[1] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+        dom.insertBoundary(fragment, 0);
+        dom.insertBoundary(fragment, null);
+        return morphs;
+      },
+      statements: [["block", "if", [["get", "hasBlock", ["loc", [null, [1, 6], [1, 14]]]]], [], 0, 1, ["loc", [null, [1, 0], [5, 7]]]], ["block", "unless", [["get", "noIcon", ["loc", [null, [6, 10], [6, 16]]]]], [], 2, null, ["loc", [null, [6, 0], [10, 11]]]]],
+      locals: [],
+      templates: [child0, child1, child2]
     };
   })());
 });
@@ -1181,6 +1474,76 @@ define("dummy/templates/components/ember-webcam-input", ["exports"], function (e
     };
   })());
 });
+define("dummy/templates/datetime", ["exports"], function (exports) {
+  exports["default"] = Ember.HTMLBars.template((function () {
+    return {
+      meta: {
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.2.0",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 13,
+            "column": 0
+          }
+        },
+        "moduleName": "dummy/templates/datetime.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1, "class", "alert alert-warning");
+        var el2 = dom.createTextNode("\n  You need to install \n  ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("a");
+        dom.setAttribute(el2, "href", "https://github.com/plusacht/ember-bootstrap-datetimepicker");
+        var el3 = dom.createTextNode("\n    ember-bootstrap-datetimepicker\n  ");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode(" yourself if you wish to use the bootstrap flavor of the datetime selection\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("div");
+        var el2 = dom.createTextNode("\n  ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+        var morphs = new Array(2);
+        morphs[0] = dom.createMorphAt(fragment, 2, 2, contextualElement);
+        morphs[1] = dom.createMorphAt(dom.childAt(fragment, [4]), 1, 1);
+        return morphs;
+      },
+      statements: [["inline", "partial", ["snippets/datetime"], [], ["loc", [null, [8, 0], [8, 31]]]], ["inline", "code-snippet", [], ["name", "-datetime.hbs"], ["loc", [null, [11, 2], [11, 39]]]]],
+      locals: [],
+      templates: []
+    };
+  })());
+});
 define("dummy/templates/index", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template((function () {
     var child0 = (function () {
@@ -1195,7 +1558,7 @@ define("dummy/templates/index", ["exports"], function (exports) {
               "column": 2
             },
             "end": {
-              "line": 4,
+              "line": 5,
               "column": 2
             }
           },
@@ -1207,7 +1570,19 @@ define("dummy/templates/index", ["exports"], function (exports) {
         hasRendered: false,
         buildFragment: function buildFragment(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("    basic form\n");
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("h4");
+          var el2 = dom.createTextNode("basic form");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          var el2 = dom.createTextNode("email, password, text, textarea fields");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
           dom.appendChild(el0, el1);
           return el0;
         },
@@ -1227,11 +1602,11 @@ define("dummy/templates/index", ["exports"], function (exports) {
           "loc": {
             "source": null,
             "start": {
-              "line": 5,
+              "line": 6,
               "column": 2
             },
             "end": {
-              "line": 7,
+              "line": 9,
               "column": 2
             }
           },
@@ -1243,7 +1618,211 @@ define("dummy/templates/index", ["exports"], function (exports) {
         hasRendered: false,
         buildFragment: function buildFragment(dom) {
           var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("    form errors\n");
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("h4");
+          var el2 = dom.createTextNode("date time");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          var el2 = dom.createTextNode("date, time, datetime fields");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes() {
+          return [];
+        },
+        statements: [],
+        locals: [],
+        templates: []
+      };
+    })();
+    var child2 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 10,
+              "column": 2
+            },
+            "end": {
+              "line": 13,
+              "column": 2
+            }
+          },
+          "moduleName": "dummy/templates/index.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("h4");
+          var el2 = dom.createTextNode("files");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          var el2 = dom.createTextNode("WIP");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes() {
+          return [];
+        },
+        statements: [],
+        locals: [],
+        templates: []
+      };
+    })();
+    var child3 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 14,
+              "column": 2
+            },
+            "end": {
+              "line": 17,
+              "column": 2
+            }
+          },
+          "moduleName": "dummy/templates/index.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("h4");
+          var el2 = dom.createTextNode("usermedia");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          var el2 = dom.createTextNode("WIP");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes() {
+          return [];
+        },
+        statements: [],
+        locals: [],
+        templates: []
+      };
+    })();
+    var child4 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 18,
+              "column": 2
+            },
+            "end": {
+              "line": 21,
+              "column": 2
+            }
+          },
+          "moduleName": "dummy/templates/index.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("h4");
+          var el2 = dom.createTextNode("material");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          var el2 = dom.createTextNode("WIP");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes() {
+          return [];
+        },
+        statements: [],
+        locals: [],
+        templates: []
+      };
+    })();
+    var child5 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 22,
+              "column": 2
+            },
+            "end": {
+              "line": 25,
+              "column": 2
+            }
+          },
+          "moduleName": "dummy/templates/index.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("h4");
+          var el2 = dom.createTextNode("creative");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          var el2 = dom.createTextNode("WIP");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
           dom.appendChild(el0, el1);
           return el0;
         },
@@ -1268,7 +1847,7 @@ define("dummy/templates/index", ["exports"], function (exports) {
             "column": 0
           },
           "end": {
-            "line": 8,
+            "line": 26,
             "column": 6
           }
         },
@@ -1288,19 +1867,31 @@ define("dummy/templates/index", ["exports"], function (exports) {
         dom.appendChild(el1, el2);
         var el2 = dom.createComment("");
         dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
         dom.appendChild(el0, el1);
         return el0;
       },
       buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
         var element0 = dom.childAt(fragment, [0]);
-        var morphs = new Array(2);
+        var morphs = new Array(6);
         morphs[0] = dom.createMorphAt(element0, 1, 1);
         morphs[1] = dom.createMorphAt(element0, 2, 2);
+        morphs[2] = dom.createMorphAt(element0, 3, 3);
+        morphs[3] = dom.createMorphAt(element0, 4, 4);
+        morphs[4] = dom.createMorphAt(element0, 5, 5);
+        morphs[5] = dom.createMorphAt(element0, 6, 6);
         return morphs;
       },
-      statements: [["block", "link-to", ["basics"], ["class", "list-group-item"], 0, null, ["loc", [null, [2, 2], [4, 14]]]], ["block", "link-to", ["errors"], ["class", "list-group-item"], 1, null, ["loc", [null, [5, 2], [7, 14]]]]],
+      statements: [["block", "link-to", ["basics"], ["class", "list-group-item"], 0, null, ["loc", [null, [2, 2], [5, 14]]]], ["block", "link-to", ["datetime"], ["class", "list-group-item"], 1, null, ["loc", [null, [6, 2], [9, 14]]]], ["block", "link-to", ["files"], ["class", "list-group-item", "disabled", true], 2, null, ["loc", [null, [10, 2], [13, 14]]]], ["block", "link-to", ["usermedia"], ["class", "list-group-item", "disabled", true], 3, null, ["loc", [null, [14, 2], [17, 14]]]], ["block", "link-to", ["material"], ["class", "list-group-item", "disabled", true], 4, null, ["loc", [null, [18, 2], [21, 14]]]], ["block", "link-to", ["creative"], ["class", "list-group-item", "disabled", true], 5, null, ["loc", [null, [22, 2], [25, 14]]]]],
       locals: [],
-      templates: [child0, child1]
+      templates: [child0, child1, child2, child3, child4, child5]
     };
   })());
 });
@@ -1588,6 +2179,260 @@ define("dummy/templates/snippets/-basics", ["exports"], function (exports) {
     };
   })());
 });
+define("dummy/templates/snippets/-datetime", ["exports"], function (exports) {
+  exports["default"] = Ember.HTMLBars.template((function () {
+    var child0 = (function () {
+      var child0 = (function () {
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 2,
+                "column": 2
+              },
+              "end": {
+                "line": 4,
+                "column": 2
+              }
+            },
+            "moduleName": "dummy/templates/snippets/-datetime.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("    ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("span");
+            dom.setAttribute(el1, "class", "helper-text");
+            var el2 = dom.createTextNode("select a date (note, prefix isn't available on date fields)");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes() {
+            return [];
+          },
+          statements: [],
+          locals: [],
+          templates: []
+        };
+      })();
+      var child1 = (function () {
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 5,
+                "column": 2
+              },
+              "end": {
+                "line": 7,
+                "column": 2
+              }
+            },
+            "moduleName": "dummy/templates/snippets/-datetime.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("    ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("span");
+            dom.setAttribute(el1, "class", "helper-text");
+            var el2 = dom.createTextNode("select a time (note, prefix isn't available on date fields)");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes() {
+            return [];
+          },
+          statements: [],
+          locals: [],
+          templates: []
+        };
+      })();
+      var child2 = (function () {
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 8,
+                "column": 2
+              },
+              "end": {
+                "line": 10,
+                "column": 2
+              }
+            },
+            "moduleName": "dummy/templates/snippets/-datetime.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("    ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("span");
+            dom.setAttribute(el1, "class", "helper-text");
+            var el2 = dom.createTextNode("select a datetime");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes() {
+            return [];
+          },
+          statements: [],
+          locals: [],
+          templates: []
+        };
+      })();
+      return {
+        meta: {
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 1,
+              "column": 0
+            },
+            "end": {
+              "line": 14,
+              "column": 0
+            }
+          },
+          "moduleName": "dummy/templates/snippets/-datetime.hbs"
+        },
+        isEmpty: false,
+        arity: 1,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("button");
+          dom.setAttribute(el1, "class", "btn btn-success");
+          dom.setAttribute(el1, "type", "submit");
+          var el2 = dom.createTextNode("\n    ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("span");
+          var el3 = dom.createTextNode("Click Me");
+          dom.appendChild(el2, el3);
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n  ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(3);
+          morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+          morphs[1] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+          morphs[2] = dom.createMorphAt(fragment, 2, 2, contextualElement);
+          dom.insertBoundary(fragment, 0);
+          return morphs;
+        },
+        statements: [["block", "em-date-field", [["get", "f", ["loc", [null, [2, 19], [2, 20]]]]], ["suffix", "fa-calendar"], 0, null, ["loc", [null, [2, 2], [4, 20]]]], ["block", "em-time-field", [["get", "f", ["loc", [null, [5, 19], [5, 20]]]]], ["suffix", "glyphicon-time"], 1, null, ["loc", [null, [5, 2], [7, 20]]]], ["block", "em-datetime-field", [["get", "f", ["loc", [null, [8, 23], [8, 24]]]]], ["suffix", "fa-twitter"], 2, null, ["loc", [null, [8, 2], [10, 24]]]]],
+        locals: ["f"],
+        templates: [child0, child1, child2]
+      };
+    })();
+    return {
+      meta: {
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.2.0",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 14,
+            "column": 16
+          }
+        },
+        "moduleName": "dummy/templates/snippets/-datetime.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+        var morphs = new Array(1);
+        morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+        dom.insertBoundary(fragment, 0);
+        dom.insertBoundary(fragment, null);
+        return morphs;
+      },
+      statements: [["block", "em-form-for", [["get", "model", ["loc", [null, [1, 15], [1, 20]]]]], ["action", "submit"], 0, null, ["loc", [null, [1, 0], [14, 16]]]]],
+      locals: [],
+      templates: [child0]
+    };
+  })());
+});
+define("dummy/utils/error-messages", ["exports", "ember"], function (exports, _ember) {
+  var ErrorMessages, xxx;
+
+  ErrorMessages = _ember["default"].A(["cannot be written with malicious intent", "must include more chocolate sprinkles", "requires proper planetary alignment", "cannot be too phony", "must be more sincere", "missing a certain je ne sais quois", "should be more well-rounded", "more feelings must be put into it", "user is of the wrong ethnic group"]);
+
+  xxx = function (value) {
+    var k, msgs;
+    k = Math.floor(Math.random() * ErrorMessages.get("length"));
+    msgs = ErrorMessages.objectsAt([k]);
+    return msgs.map(function (msg) {
+      return msg + " - " + value;
+    });
+  };
+
+  exports["default"] = xxx;
+});
 /* jshint ignore:start */
 
 /* jshint ignore:end */
@@ -1614,7 +2459,7 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("dummy/app")["default"].create({"name":"ember-form-tool","version":"0.2.0+1834908c"});
+  require("dummy/app")["default"].create({"name":"ember-form-tool","version":"v0.2.3"});
 }
 
 /* jshint ignore:end */
