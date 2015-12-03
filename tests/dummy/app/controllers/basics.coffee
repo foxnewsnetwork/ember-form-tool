@@ -13,16 +13,16 @@ taffy =
 {A, set, Object, Controller, get} = Ember
 
 genErr = (model) ->
-  (obj, field) ->
-    set obj, field, xxx(get model, field)
-    obj
+  (field) ->
+    attribute: field
+    message: xxx(get model, field)
 
 BasicsController = Controller.extend
   fields: ["email", "password", "username", "feelings", "expectedAt"]
   frameworks: ["ember", "angular", "react"]
   candies: [chocolate, poprock, taffy]
   makeMistakes: (model) ->
-    A(@get "fields").reduce genErr(model), Object.create()
+    A(@get "fields").map genErr(model)
   actions:
     submit: (model) ->
       @set "model.errors", @makeMistakes(model)

@@ -1,7 +1,7 @@
 `import Ember from 'ember'`
 
-{computed, A, isBlank, Mixin} = Ember
-{alias, equal, oneWay, notEmpty, match, or: ifAny} = computed
+{computed, isBlank, Mixin, get} = Ember
+{mapBy, filter, alias, oneWay, notEmpty, match, or: ifAny} = computed
 
 FormFieldCoreMixin = Mixin.create
   "attr-name": alias("name")
@@ -15,14 +15,14 @@ FormFieldCoreMixin = Mixin.create
   hasError: notEmpty "errorMessages"
   model: alias "formHeart.model"
   flavor: alias "formHeart.flavor"
-  errors: alias "formHeart.errors"
+  errors: filter "formHeart.errors", (error) ->
+    @get("name")? and get(error, "attribute") is @get("name")
   name: oneWay "type"
   label: oneWay "name"
-
+  errorMessages: mapBy "errors", "message"
   didInitAttrs: ->
     if isBlank( name = @get "name" )
       throw new Error("You need to specify a name attribute")
     @set "value", alias "model.#{name}"
-    @set "errorMessages", alias "errors.#{name}"
 
 `export default FormFieldCoreMixin`

@@ -17,7 +17,7 @@ Use like the following:
   {{/em-email-field}}
 
   {{em-password-field f name="password" label="password"}}
-  {{em-form-input type="datetime" name="expectedAt"}}
+  {{em-datetime-field f name="expectedAt"}}
 
   <button type="submit">go</button>
 {{/em-form-for}}
