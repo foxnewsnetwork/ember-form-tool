@@ -1,0 +1,15 @@
+{{#em-form-for model action="submit" as |f|}}
+  {{#em-select-field f name="framework" options=frameworks prefix="fa-cubes"}}
+    <span class="helper-text">select a framework (if you care to customize, the yield'd block will be the usual helper text)</span>
+  {{/em-select-field}}
+  {{#em-select-field f name="candy" options=candies prefix="fa-cubes" as |candy|}}
+    <img src="{{candy.pic}}" class="icon-flag"> <strong>{{candy.id}}</strong>
+    <small>{{candy.presentation}}</small>
+  {{/em-select-field}}
+  <div class="helper-text">
+    If you do customize your options, the helper text goes away
+  </div>
+  <button class="btn btn-success" type="submit">
+    <span>Click Me</span>
+  </button>
+{{/em-form-for}}

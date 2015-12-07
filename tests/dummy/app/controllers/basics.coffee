@@ -3,12 +3,15 @@
 
 chocolate =
   id: "chocolate"
+  pic: "http://www.ember-power-select.com/flags/pt.svg"
   presentation: "98% Dark Chocolate"
 poprock =
   id: "poprock"
+  pic: "http://www.ember-power-select.com/flags/us.svg"
   presentation: "Rocks that Pop!"
 taffy =
-  id:"taffy"
+  id: "taffy"
+  pic: "http://www.ember-power-select.com/flags/es.svg"
   presentation: "Sticks to your tooth!"
 {A, set, Object, Controller, get} = Ember
 

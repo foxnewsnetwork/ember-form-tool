@@ -4,7 +4,10 @@ var EmberApp = require('ember-cli/lib/broccoli/ember-addon');
 
 module.exports = function(defaults) {
   var app = new EmberApp(defaults, {
-    snippetPaths: ['tests/dummy/app/templates/snippets']
+    snippetPaths: ['tests/dummy/app/templates/snippets'],
+    'ember-power-select': {
+      theme: 'bootstrap'
+    }
   });
 
   /*

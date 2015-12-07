@@ -1,0 +1,48 @@
+<label for="{{name}}" class="control-label">
+  <span class="label-text">{{label}}</span>
+</label>
+<div class={{if shouldInputGroup 'input-group'}}>
+  {{#if prefix}}
+    <span class="input-group-addon">
+      {{#if faPrefix}}
+        <i class="fa {{prefix}}"></i>
+      {{else if glyphPrefix}}
+        <span class="glyphicon {{prefix}}" aria-hidden=true></span>
+      {{else}}
+        {{prefix}}
+      {{/if}}
+    </span>
+  {{/if}}
+
+  {{#power-select 
+    allowClear=allowClear
+    placeholder=placeholder
+    disabled=disabled
+    options=options 
+    selected=value 
+    onchange=(action (mut value)) as |choice|}}
+    {{#if hasBlockParams}}
+      {{yield choice}}
+    {{else}}
+      {{choice}}
+    {{/if}}
+  {{/power-select}}
+
+  {{#if suffix}}
+    <span class="input-group-addon">
+      {{#if faSuffix}}
+        <i class="fa {{suffix}}"></i>
+      {{else if glyphSuffix}}
+        <span class="glyphicon {{prefix}}" aria-hidden=true></span>
+      {{else}}
+        {{suffix}}
+      {{/if}}
+    </span>
+  {{/if}}
+</div>
+{{#each errorMessages as |msg|}}
+  <div class="help-block error-text">{{msg}}</div>
+{{/each}}
+{{#unless hasBlockParams}}
+  {{yield}}
+{{/unless}}

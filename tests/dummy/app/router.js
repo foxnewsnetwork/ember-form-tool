@@ -7,6 +7,7 @@ var Router = Ember.Router.extend({
 
 export default Router.map(function() {
   this.route("basics");
+  this.route("selection");
   this.route("datetime");
   this.route("files");
   this.route("usermedia");

@@ -39,6 +39,7 @@
     "ember-disable-proxy-controllers": "^1.0.1",
     "ember-export-application-global": "^1.0.4",
     "ember-moment": "4.1.0",
+    "ember-power-select": "0.6.4",
     "ember-truth-helpers": "1.2.0",
     "ember-try": "0.0.8",
     "ember-webcam-input": "0.0.2"
