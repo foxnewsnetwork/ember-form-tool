@@ -96908,7 +96908,427 @@ module.exports = function(hljs) {
 
 ;// WebcamJS v1.0.5 - http://github.com/jhuckaby/webcamjs - MIT Licensed
 (function(e){var Webcam={version:"1.0.5",protocol:location.protocol.match(/https/i)?"https":"http",swfURL:"",loaded:false,live:false,userMedia:true,params:{width:0,height:0,dest_width:0,dest_height:0,image_format:"jpeg",jpeg_quality:90,force_flash:false,flip_horiz:false,fps:30,upload_name:"webcam",constraints:null},hooks:{},init:function(){var t=this;navigator.mediaDevices=navigator.mediaDevices||(navigator.mozGetUserMedia||navigator.webkitGetUserMedia?{getUserMedia:function(e){return new Promise(function(t,a){(navigator.mozGetUserMedia||navigator.webkitGetUserMedia).call(navigator,e,t,a)})}}:null);e.URL=e.URL||e.webkitURL||e.mozURL||e.msURL;this.userMedia=this.userMedia&&!!navigator.mediaDevices&&!!e.URL;if(navigator.userAgent.match(/Firefox\D+(\d+)/)){if(parseInt(RegExp.$1,10)<21)this.userMedia=null}if(this.userMedia){e.addEventListener("beforeunload",function(e){t.reset()})}},attach:function(t){if(typeof t=="string"){t=document.getElementById(t)||document.querySelector(t)}if(!t){return this.dispatch("error","Could not locate DOM element to attach to.")}this.container=t;t.innerHTML="";var a=document.createElement("div");t.appendChild(a);this.peg=a;if(!this.params.width)this.params.width=t.offsetWidth;if(!this.params.height)this.params.height=t.offsetHeight;if(!this.params.dest_width)this.params.dest_width=this.params.width;if(!this.params.dest_height)this.params.dest_height=this.params.height;if(this.params.force_flash)this.userMedia=null;if(typeof this.params.fps!=="number")this.params.fps=30;var i=this.params.width/this.params.dest_width;var s=this.params.height/this.params.dest_height;if(this.userMedia){var r=document.createElement("video");r.setAttribute("autoplay","autoplay");r.style.width=""+this.params.dest_width+"px";r.style.height=""+this.params.dest_height+"px";if(i!=1||s!=1){t.style.overflow="hidden";r.style.webkitTransformOrigin="0px 0px";r.style.mozTransformOrigin="0px 0px";r.style.msTransformOrigin="0px 0px";r.style.oTransformOrigin="0px 0px";r.style.transformOrigin="0px 0px";r.style.webkitTransform="scaleX("+i+") scaleY("+s+")";r.style.mozTransform="scaleX("+i+") scaleY("+s+")";r.style.msTransform="scaleX("+i+") scaleY("+s+")";r.style.oTransform="scaleX("+i+") scaleY("+s+")";r.style.transform="scaleX("+i+") scaleY("+s+")"}t.appendChild(r);this.video=r;var o=this;navigator.mediaDevices.getUserMedia({audio:false,video:this.params.constraints||{mandatory:{minWidth:this.params.dest_width,minHeight:this.params.dest_height}}}).then(function(t){r.src=e.URL.createObjectURL(t)||t;o.stream=t;o.loaded=true;o.live=true;o.dispatch("load");o.dispatch("live");o.flip()}).catch(function(e){return o.dispatch("error","Could not access webcam: "+e.name+": "+e.message,e)})}else{e.Webcam=Webcam;var h=document.createElement("div");h.innerHTML=this.getSWFHTML();t.appendChild(h)}if(this.params.crop_width&&this.params.crop_height){var n=Math.floor(this.params.crop_width*i);var l=Math.floor(this.params.crop_height*s);t.style.width=""+n+"px";t.style.height=""+l+"px";t.style.overflow="hidden";t.scrollLeft=Math.floor(this.params.width/2-n/2);t.scrollTop=Math.floor(this.params.height/2-l/2)}else{t.style.width=""+this.params.width+"px";t.style.height=""+this.params.height+"px"}},reset:function(){if(this.preview_active)this.unfreeze();this.unflip();if(this.userMedia){if(this.stream){if(this.stream.getVideoTracks){var e=this.stream.getVideoTracks();if(e&&e[0]&&e[0].stop)e[0].stop()}else if(this.stream.stop){this.stream.stop()}}delete this.stream;delete this.video}if(this.container){this.container.innerHTML="";delete this.container}this.loaded=false;this.live=false},set:function(){if(arguments.length==1){for(var e in arguments[0]){this.params[e]=arguments[0][e]}}else{this.params[arguments[0]]=arguments[1]}},on:function(e,t){e=e.replace(/^on/i,"").toLowerCase();if(!this.hooks[e])this.hooks[e]=[];this.hooks[e].push(t)},off:function(e,t){e=e.replace(/^on/i,"").toLowerCase();if(this.hooks[e]){if(t){var a=this.hooks[e].indexOf(t);if(a>-1)this.hooks[e].splice(a,1)}else{this.hooks[e]=[]}}},dispatch:function(){var t=arguments[0].replace(/^on/i,"").toLowerCase();var a=Array.prototype.slice.call(arguments,1);if(this.hooks[t]&&this.hooks[t].length){for(var i=0,s=this.hooks[t].length;i<s;i++){var r=this.hooks[t][i];if(typeof r=="function"){r.apply(this,a)}else if(typeof r=="object"&&r.length==2){r[0][r[1]].apply(r[0],a)}else if(e[r]){e[r].apply(e,a)}}return true}else if(t=="error"){alert("Webcam.js Error: "+a[0])}return false},setSWFLocation:function(e){this.swfURL=e},detectFlash:function(){var t="Shockwave Flash",a="ShockwaveFlash.ShockwaveFlash",i="application/x-shockwave-flash",s=e,r=navigator,o=false;if(typeof r.plugins!=="undefined"&&typeof r.plugins[t]==="object"){var h=r.plugins[t].description;if(h&&(typeof r.mimeTypes!=="undefined"&&r.mimeTypes[i]&&r.mimeTypes[i].enabledPlugin)){o=true}}else if(typeof s.ActiveXObject!=="undefined"){try{var n=new ActiveXObject(a);if(n){var l=n.GetVariable("$version");if(l)o=true}}catch(c){}}return o},getSWFHTML:function(){var t="";if(location.protocol.match(/file/)){this.dispatch("error","Flash does not work from local disk.  Please run from a web server.");return'<h3 style="color:red">ERROR: the Webcam.js Flash fallback does not work from local disk.  Please run it from a web server.</h3>'}if(!this.detectFlash()){this.dispatch("error","Adobe Flash Player not found.  Please install from get.adobe.com/flashplayer and try again.");return'<h3 style="color:red">ERROR: No Adobe Flash Player detected.  Webcam.js relies on Flash for browsers that do not support getUserMedia (like yours).</h3>'}if(!this.swfURL){var a="";var i=document.getElementsByTagName("script");for(var s=0,r=i.length;s<r;s++){var o=i[s].getAttribute("src");if(o&&o.match(/\/webcam(\.min)?\.js/)){a=o.replace(/\/webcam(\.min)?\.js.*$/,"");s=r}}if(a)this.swfURL=a+"/webcam.swf";else this.swfURL="webcam.swf"}if(e.localStorage&&!localStorage.getItem("visited")){this.params.new_user=1;localStorage.setItem("visited",1)}var h="";for(var n in this.params){if(h)h+="&";h+=n+"="+escape(this.params[n])}t+='<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" type="application/x-shockwave-flash" codebase="'+this.protocol+'://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="'+this.params.width+'" height="'+this.params.height+'" id="webcam_movie_obj" align="middle"><param name="wmode" value="opaque" /><param name="allowScriptAccess" value="always" /><param name="allowFullScreen" value="false" /><param name="movie" value="'+this.swfURL+'" /><param name="loop" value="false" /><param name="menu" value="false" /><param name="quality" value="best" /><param name="bgcolor" value="#ffffff" /><param name="flashvars" value="'+h+'"/><embed id="webcam_movie_embed" src="'+this.swfURL+'" wmode="opaque" loop="false" menu="false" quality="best" bgcolor="#ffffff" width="'+this.params.width+'" height="'+this.params.height+'" name="webcam_movie_embed" align="middle" allowScriptAccess="always" allowFullScreen="false" type="application/x-shockwave-flash" pluginspage="http://www.macromedia.com/go/getflashplayer" flashvars="'+h+'"></embed></object>';return t},getMovie:function(){if(!this.loaded)return this.dispatch("error","Flash Movie is not loaded yet");var e=document.getElementById("webcam_movie_obj");if(!e||!e._snap)e=document.getElementById("webcam_movie_embed");if(!e)this.dispatch("error","Cannot locate Flash movie in DOM");return e},freeze:function(){var e=this;var t=this.params;if(this.preview_active)this.unfreeze();var a=this.params.width/this.params.dest_width;var i=this.params.height/this.params.dest_height;this.unflip();var s=t.crop_width||t.dest_width;var r=t.crop_height||t.dest_height;var o=document.createElement("canvas");o.width=s;o.height=r;var h=o.getContext("2d");this.preview_canvas=o;this.preview_context=h;if(a!=1||i!=1){o.style.webkitTransformOrigin="0px 0px";o.style.mozTransformOrigin="0px 0px";o.style.msTransformOrigin="0px 0px";o.style.oTransformOrigin="0px 0px";o.style.transformOrigin="0px 0px";o.style.webkitTransform="scaleX("+a+") scaleY("+i+")";o.style.mozTransform="scaleX("+a+") scaleY("+i+")";o.style.msTransform="scaleX("+a+") scaleY("+i+")";o.style.oTransform="scaleX("+a+") scaleY("+i+")";o.style.transform="scaleX("+a+") scaleY("+i+")"}this.snap(function(){o.style.position="relative";o.style.left=""+e.container.scrollLeft+"px";o.style.top=""+e.container.scrollTop+"px";e.container.insertBefore(o,e.peg);e.container.style.overflow="hidden";e.preview_active=true},o)},unfreeze:function(){if(this.preview_active){this.container.removeChild(this.preview_canvas);delete this.preview_context;delete this.preview_canvas;this.preview_active=false;this.flip()}},flip:function(){if(this.params.flip_horiz){var e=this.container.style;e.webkitTransform="scaleX(-1)";e.mozTransform="scaleX(-1)";e.msTransform="scaleX(-1)";e.oTransform="scaleX(-1)";e.transform="scaleX(-1)";e.filter="FlipH";e.msFilter="FlipH"}},unflip:function(){if(this.params.flip_horiz){var e=this.container.style;e.webkitTransform="scaleX(1)";e.mozTransform="scaleX(1)";e.msTransform="scaleX(1)";e.oTransform="scaleX(1)";e.transform="scaleX(1)";e.filter="";e.msFilter=""}},savePreview:function(e,t){var a=this.params;var i=this.preview_canvas;var s=this.preview_context;if(t){var r=t.getContext("2d");r.drawImage(i,0,0)}e(t?null:i.toDataURL("image/"+a.image_format,a.jpeg_quality/100),i,s);this.unfreeze()},snap:function(e,t){var a=this;var i=this.params;if(!this.loaded)return this.dispatch("error","Webcam is not loaded yet");if(!e)return this.dispatch("error","Please provide a callback function or canvas to snap()");if(this.preview_active){this.savePreview(e,t);return null}var s=document.createElement("canvas");s.width=this.params.dest_width;s.height=this.params.dest_height;var r=s.getContext("2d");if(this.params.flip_horiz){r.translate(i.dest_width,0);r.scale(-1,1)}var o=function(){if(this.src&&this.width&&this.height){r.drawImage(this,0,0,i.dest_width,i.dest_height)}if(i.crop_width&&i.crop_height){var a=document.createElement("canvas");a.width=i.crop_width;a.height=i.crop_height;var o=a.getContext("2d");o.drawImage(s,Math.floor(i.dest_width/2-i.crop_width/2),Math.floor(i.dest_height/2-i.crop_height/2),i.crop_width,i.crop_height,0,0,i.crop_width,i.crop_height);r=o;s=a}if(t){var h=t.getContext("2d");h.drawImage(s,0,0)}e(t?null:s.toDataURL("image/"+i.image_format,i.jpeg_quality/100),s,r)};if(this.userMedia){r.drawImage(this.video,0,0,this.params.dest_width,this.params.dest_height);o()}else{var h=this.getMovie()._snap();var n=new Image;n.onload=o;n.src="data:image/"+this.params.image_format+";base64,"+h}return null},configure:function(e){if(!e)e="camera";this.getMovie()._configure(e)},flashNotify:function(e,t){switch(e){case"flashLoadComplete":this.loaded=true;this.dispatch("load");break;case"cameraLive":this.live=true;this.dispatch("live");this.flip();break;case"error":this.dispatch("error",t);break;default:break}},b64ToUint6:function(e){return e>64&&e<91?e-65:e>96&&e<123?e-71:e>47&&e<58?e+4:e===43?62:e===47?63:0},base64DecToArr:function(e,t){var a=e.replace(/[^A-Za-z0-9\+\/]/g,""),i=a.length,s=t?Math.ceil((i*3+1>>2)/t)*t:i*3+1>>2,r=new Uint8Array(s);for(var o,h,n=0,l=0,c=0;c<i;c++){h=c&3;n|=this.b64ToUint6(a.charCodeAt(c))<<18-6*h;if(h===3||i-c===1){for(o=0;o<3&&l<s;o++,l++){r[l]=n>>>(16>>>o&24)&255}n=0}}return r},upload:function(e,t,a){var i=this.params.upload_name||"webcam";var s="";if(e.match(/^data\:image\/(\w+)/))s=RegExp.$1;else throw"Cannot locate image format in Data URI";var r=e.replace(/^data\:image\/\w+\;base64\,/,"");var o=new XMLHttpRequest;o.open("POST",t,true);if(o.upload&&o.upload.addEventListener){o.upload.addEventListener("progress",function(e){if(e.lengthComputable){var t=e.loaded/e.total;Webcam.dispatch("uploadProgress",t,e)}},false)}var h=this;o.onload=function(){if(a)a.apply(h,[o.status,o.responseText,o.statusText]);Webcam.dispatch("uploadComplete",o.status,o.responseText,o.statusText)};var n=new Blob([this.base64DecToArr(r)],{type:"image/"+s});var l=new FormData;l.append(i,n,i+"."+s.replace(/e/,""));o.send(l)}};Webcam.init();if(typeof define==="function"&&define.amd){define(function(){return Webcam})}else if(typeof module==="object"&&module.exports){module.exports=Webcam}else{e.Webcam=Webcam}})(window);
-;define('ember-bootstrap-datetimepicker/components/bs-datetimepicker', ['exports', 'ember'], function (exports, _ember) {
+;define('ember-basic-dropdown/components/basic-dropdown', ['exports', 'ember', 'ember-basic-dropdown/templates/components/basic-dropdown', 'ember-getowner-polyfill'], function (exports, _ember, _emberBasicDropdownTemplatesComponentsBasicDropdown, _emberGetownerPolyfill) {
+  'use strict';
+
+  var Component = _ember['default'].Component;
+  var run = _ember['default'].run;
+  var computed = _ember['default'].computed;
+
+  var MutObserver = window.MutationObserver || window.WebKitMutationObserver;
+
+  exports['default'] = Component.extend({
+    layout: _emberBasicDropdownTemplatesComponentsBasicDropdown['default'],
+    disabled: false,
+    renderInPlace: false,
+    dropdownPosition: 'auto', // auto | above | below
+    classNames: ['ember-basic-dropdown'],
+    attributeBindings: ['dir'],
+    classNameBindings: ['publicAPI.isOpen:ember-basic-dropdown--opened', 'disabled:ember-basic-dropdown--disabled', 'renderInPlace:ember-basic-dropdown--in-place', '_dropdownPositionClass'],
+    _wormholeDestination: _ember['default'].testing ? 'ember-testing' : 'ember-basic-dropdown-wormhole',
+
+    // Lifecycle hooks
+    init: function init() {
+      this._super.apply(this, arguments);
+      var rootSelector = _ember['default'].testing ? '#ember-testing' : (0, _emberGetownerPolyfill['default'])(this).lookup('application:main').rootElement;
+      this.appRoot = document.querySelector(rootSelector);
+      this.handleRootClick = this.handleRootClick.bind(this);
+      this.handleRepositioningEvent = this.handleRepositioningEvent.bind(this);
+      this.repositionDropdown = this.repositionDropdown.bind(this);
+    },
+
+    didInitAttrs: function didInitAttrs() {
+      this._super.apply(this, arguments);
+      var registerActionsInParent = this.get('registerActionsInParent');
+      if (registerActionsInParent) {
+        registerActionsInParent(this.get('publicAPI'));
+      }
+    },
+
+    willDestroy: function willDestroy() {
+      this._super.apply(this, arguments);
+      this.removeGlobalEvents();
+    },
+
+    // CPs
+    tabIndex: computed('disabled', function () {
+      return !this.get('disabled') ? this.get('tabindex') || '0' : "-1";
+    }),
+
+    publicAPI: computed(function () {
+      return {
+        isOpen: false,
+        actions: {
+          open: this.open.bind(this),
+          close: this.close.bind(this),
+          toggle: this.toggle.bind(this)
+        }
+      };
+    }),
+
+    opened: computed('publicAPI.isOpen', {
+      get: function get() {
+        return this.get('publicAPI.isOpen');
+      },
+      set: function set(_, newOpened) {
+        var oldOpened = this.get('publicAPI.isOpen');
+        if (!oldOpened && newOpened) {
+          this.open();
+        } else if (oldOpened && !newOpened) {
+          this.close();
+        }
+        return this.get('publicAPI.isOpen');
+      }
+    }),
+
+    // Actions
+    actions: {
+      toggle: function toggle(e) {
+        this.toggle(e);
+      },
+
+      keydown: function keydown(e) {
+        this.handleKeydown(e);
+      },
+
+      focusTrigger: function focusTrigger(e) {
+        var onFocus = this.get('onFocus');
+        if (onFocus) {
+          onFocus(e);
+        }
+      }
+    },
+
+    // Methods
+    toggle: function toggle(e) {
+      if (this.get('publicAPI.isOpen')) {
+        this.close(e);
+      } else {
+        this.open(e);
+      }
+    },
+
+    open: function open(e) {
+      if (this.get('disabled')) {
+        return;
+      }
+      this.set('publicAPI.isOpen', true);
+      run.scheduleOnce('afterRender', this, this.addGlobalEvents);
+      run.scheduleOnce('afterRender', this, this.repositionDropdown);
+      var onOpen = this.get('onOpen');
+      if (onOpen) {
+        onOpen(e);
+      }
+    },
+
+    close: function close(e, skipFocus) {
+      this.set('publicAPI.isOpen', false);
+      this.set('_dropdownPositionClass', null);
+      this.removeGlobalEvents();
+      var onClose = this.get('onClose');
+      if (onClose) {
+        onClose(e);
+      }
+      if (skipFocus) {
+        return;
+      }
+      var trigger = this.element.querySelector('.ember-basic-dropdown-trigger');
+      if (trigger.tabIndex > -1) {
+        trigger.focus();
+      }
+    },
+
+    handleKeydown: function handleKeydown(e) {
+      if (this.get('disabled')) {
+        return;
+      }
+      var onKeydown = this.get('onKeydown');
+      if (onKeydown) {
+        onKeydown(this.get('publicAPI'), e);
+      }
+      if (e.defaultPrevented) {
+        return;
+      }
+      if (e.keyCode === 13) {
+        // Enter
+        this.toggle(e);
+      } else if (e.keyCode === 27) {
+        this.close(e);
+      }
+    },
+
+    repositionDropdown: function repositionDropdown() {
+      run(this, this._runloopAwareRepositionDropdown);
+    },
+
+    handleRootClick: function handleRootClick(e) {
+      if (!this.element.contains(e.target) && !this.appRoot.querySelector('.ember-basic-dropdown-content').contains(e.target)) {
+        this.close(e, true);
+      }
+    },
+
+    handleRepositioningEvent: function handleRepositioningEvent() /* e */{
+      run.throttle(this, 'repositionDropdown', 60, true);
+    },
+
+    addGlobalEvents: function addGlobalEvents() {
+      var _this = this;
+
+      this.appRoot.addEventListener('click', this.handleRootClick, true);
+      window.addEventListener('scroll', this.handleRepositioningEvent);
+      window.addEventListener('resize', this.handleRepositioningEvent);
+      window.addEventListener('orientationchange', this.handleRepositioningEvent);
+      if (MutObserver) {
+        this.mutationObserver = new MutObserver(function (mutations) {
+          if (mutations[0].addedNodes.length || mutations[0].removedNodes.length) {
+            _this.repositionDropdown();
+          }
+        });
+        run.schedule('afterRender', this, function () {
+          var dropdown = this.appRoot.querySelector('.ember-basic-dropdown-content');
+          this.mutationObserver.observe(dropdown, { childList: true, subtree: true });
+        });
+      } else {
+        run.schedule('afterRender', this, function () {
+          var dropdown = this.appRoot.querySelector('.ember-basic-dropdown-content');
+          dropdown.addEventListener('DOMNodeInserted', this.repositionDropdown, false);
+          dropdown.addEventListener('DOMNodeRemoved', this.repositionDropdown, false);
+        });
+      }
+    },
+
+    removeGlobalEvents: function removeGlobalEvents() {
+      this.appRoot.removeEventListener('click', this.handleRootClick, true);
+      window.removeEventListener('scroll', this.handleRepositioningEvent);
+      window.removeEventListener('resize', this.handleRepositioningEvent);
+      window.removeEventListener('orientationchange', this.handleRepositioningEvent);
+      if (MutObserver) {
+        if (this.mutationObserver) {
+          this.mutationObserver.disconnect();
+          this.mutationObserver = null;
+        }
+      } else {
+        var dropdown = this.appRoot.querySelector('.ember-basic-dropdown-content');
+        dropdown.removeEventListener('DOMNodeInserted', this.repositionDropdown);
+        dropdown.removeEventListener('DOMNodeRemoved', this.repositionDropdown);
+      }
+    },
+
+    _runloopAwareRepositionDropdown: function _runloopAwareRepositionDropdown() {
+      if (this.get('renderInPlace') || !this.get('publicAPI.isOpen')) {
+        return;
+      }
+      var dropdownPositionStrategy = this.get('dropdownPosition');
+      var dropdown = this.appRoot.querySelector('.ember-basic-dropdown-content');
+      var trigger = this.element.querySelector('.ember-basic-dropdown-trigger');
+
+      var _trigger$getBoundingClientRect = trigger.getBoundingClientRect();
+
+      var left = _trigger$getBoundingClientRect.left;
+      var topWithoutScroll = _trigger$getBoundingClientRect.top;
+      var width = _trigger$getBoundingClientRect.width;
+      var height = _trigger$getBoundingClientRect.height;
+
+      var viewportTop = _ember['default'].$(window).scrollTop();
+      var top = topWithoutScroll + viewportTop;
+      if (this.get('matchTriggerWidth')) {
+        dropdown.style.width = width + 'px';
+      }
+      if (dropdownPositionStrategy === 'above') {
+        top = top - dropdown.getBoundingClientRect().height;
+        this.set('_dropdownPositionClass', 'ember-basic-dropdown--above');
+      } else if (dropdownPositionStrategy === 'below') {
+        top = top + height;
+        this.set('_dropdownPositionClass', 'ember-basic-dropdown--below');
+      } else {
+        // auto
+        var viewportBottom = window.scrollY + window.innerHeight;
+        var dropdownHeight = dropdown.getBoundingClientRect().height;
+        var enoughRoomBelow = top + height + dropdownHeight < viewportBottom;
+        var enoughRoomAbove = topWithoutScroll > dropdownHeight;
+        var positionClass = this.get('_dropdownPositionClass');
+        if (positionClass === 'ember-basic-dropdown--below' && !enoughRoomBelow && enoughRoomAbove) {
+          this.set('_dropdownPositionClass', 'ember-basic-dropdown--above');
+        } else if (positionClass === 'ember-basic-dropdown--above' && !enoughRoomAbove && enoughRoomBelow) {
+          this.set('_dropdownPositionClass', 'ember-basic-dropdown--below');
+        } else if (!positionClass) {
+          this.set('_dropdownPositionClass', enoughRoomBelow ? 'ember-basic-dropdown--below' : 'ember-basic-dropdown--above');
+        }
+        positionClass = this.get('_dropdownPositionClass'); // It might have changed
+        top = top + (positionClass === 'ember-basic-dropdown--below' ? height : -dropdownHeight);
+      }
+      dropdown.style.top = top + 'px';
+      dropdown.style.left = left + 'px';
+    }
+  });
+});
+define("ember-basic-dropdown/templates/components/basic-dropdown", ["exports"], function (exports) {
+  "use strict";
+
+  exports["default"] = Ember.HTMLBars.template((function () {
+    var child0 = (function () {
+      var child0 = (function () {
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 5,
+                "column": 2
+              },
+              "end": {
+                "line": 9,
+                "column": 2
+              }
+            },
+            "moduleName": "modules/ember-basic-dropdown/templates/components/basic-dropdown.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("    ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("div");
+            var el2 = dom.createTextNode("\n      ");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createComment("");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createTextNode("\n    ");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var element0 = dom.childAt(fragment, [1]);
+            var morphs = new Array(3);
+            morphs[0] = dom.createAttrMorph(element0, 'class');
+            morphs[1] = dom.createAttrMorph(element0, 'dir');
+            morphs[2] = dom.createMorphAt(element0, 1, 1);
+            return morphs;
+          },
+          statements: [["attribute", "class", ["concat", ["ember-basic-dropdown-content ", ["get", "dropdownClass", ["loc", [null, [6, 47], [6, 60]]]], " ", ["get", "_dropdownPositionClass", ["loc", [null, [6, 65], [6, 87]]]]]]], ["attribute", "dir", ["get", "dir", ["loc", [null, [6, 97], [6, 100]]]]], ["inline", "yield", [["get", "publicAPI", ["loc", [null, [7, 14], [7, 23]]]]], [], ["loc", [null, [7, 6], [7, 25]]]]],
+          locals: [],
+          templates: []
+        };
+      })();
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 4,
+              "column": 0
+            },
+            "end": {
+              "line": 10,
+              "column": 0
+            }
+          },
+          "moduleName": "modules/ember-basic-dropdown/templates/components/basic-dropdown.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+          dom.insertBoundary(fragment, 0);
+          dom.insertBoundary(fragment, null);
+          return morphs;
+        },
+        statements: [["block", "ember-wormhole", [], ["to", ["subexpr", "@mut", [["get", "_wormholeDestination", ["loc", [null, [5, 23], [5, 43]]]]], [], []], "renderInPlace", ["subexpr", "@mut", [["get", "renderInPlace", ["loc", [null, [5, 58], [5, 71]]]]], [], []]], 0, null, ["loc", [null, [5, 2], [9, 21]]]]],
+        locals: [],
+        templates: [child0]
+      };
+    })();
+    return {
+      meta: {
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.2.0",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 10,
+            "column": 7
+          }
+        },
+        "moduleName": "modules/ember-basic-dropdown/templates/components/basic-dropdown.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createElement("div");
+        var el2 = dom.createTextNode("\n  ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+        var element1 = dom.childAt(fragment, [0]);
+        var morphs = new Array(7);
+        morphs[0] = dom.createAttrMorph(element1, 'class');
+        morphs[1] = dom.createAttrMorph(element1, 'tabindex');
+        morphs[2] = dom.createAttrMorph(element1, 'onkeydown');
+        morphs[3] = dom.createAttrMorph(element1, 'onclick');
+        morphs[4] = dom.createAttrMorph(element1, 'onfocus');
+        morphs[5] = dom.createMorphAt(element1, 1, 1);
+        morphs[6] = dom.createMorphAt(fragment, 2, 2, contextualElement);
+        dom.insertBoundary(fragment, null);
+        return morphs;
+      },
+      statements: [["attribute", "class", ["concat", ["ember-basic-dropdown-trigger ", ["get", "triggerClass", ["loc", [null, [1, 43], [1, 55]]]]]]], ["attribute", "tabindex", ["get", "tabIndex", ["loc", [null, [1, 70], [1, 78]]]]], ["attribute", "onkeydown", ["subexpr", "action", ["keydown"], [], ["loc", [null, [1, 91], [1, 111]]]]], ["attribute", "onclick", ["subexpr", "action", ["toggle"], [], ["loc", [null, [1, 120], [1, 139]]]]], ["attribute", "onfocus", ["subexpr", "action", ["focusTrigger"], [], ["loc", [null, [1, 148], [1, 173]]]]], ["inline", "yield", [], ["to", "inverse"], ["loc", [null, [2, 2], [2, 24]]]], ["block", "if", [["get", "opened", ["loc", [null, [4, 6], [4, 12]]]]], [], 0, null, ["loc", [null, [4, 0], [10, 7]]]]],
+      locals: [],
+      templates: [child0]
+    };
+  })());
+});
+define('ember-basic-dropdown', ['ember-basic-dropdown/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
+  'use strict';
+  var keys = Object.keys || __Ember__['default'].keys;
+  var forEach = Array.prototype.forEach && function(array, cb) {
+    array.forEach(cb);
+  } || __Ember__['default'].EnumerableUtils.forEach;
+
+  forEach(keys(__index__), (function(key) {
+    __exports__[key] = __index__[key];
+  }));
+});
+
+define('ember-bootstrap-datetimepicker/components/bs-datetimepicker', ['exports', 'ember'], function (exports, _ember) {
   'use strict';
 
   var on = _ember['default'].on;
@@ -97269,6 +97689,22 @@ define('ember-form-tool/components/em-password-field', ['exports', 'ember', 'emb
 
   exports['default'] = EmPasswordFieldComponent;
 });
+define('ember-form-tool/components/em-select-field', ['exports', 'ember', 'ember-form-tool/templates/components/em-select-field', 'ember-form-tool/mixins/form-field-core'], function (exports, _ember, _emberFormToolTemplatesComponentsEmSelectField, _emberFormToolMixinsFormFieldCore) {
+  'use strict';
+
+  var EmSelectFieldComponent;
+
+  EmSelectFieldComponent = _ember['default'].Component.extend(_emberFormToolMixinsFormFieldCore['default'], {
+    layout: _emberFormToolTemplatesComponentsEmSelectField['default'],
+    classNames: ['input-field', 'form-input', 'input-section', 'form-group']
+  });
+
+  EmSelectFieldComponent.reopenClass({
+    positionalParams: ["formHeart"]
+  });
+
+  exports['default'] = EmSelectFieldComponent;
+});
 define('ember-form-tool/components/em-text-field', ['exports', 'ember', 'ember-form-tool/templates/components/em-text-field', 'ember-form-tool/mixins/form-field-core'], function (exports, _ember, _emberFormToolTemplatesComponentsEmTextField, _emberFormToolMixinsFormFieldCore) {
   'use strict';
 
@@ -97319,11 +97755,11 @@ define('ember-form-tool/components/em-time-field', ['exports', 'ember', 'ember-f
 define("ember-form-tool/mixins/form-field-core", ["exports", "ember"], function (exports, _ember) {
   "use strict";
 
-  var A, FormFieldCoreMixin, Mixin, alias, computed, equal, ifAny, isBlank, match, notEmpty, oneWay;
+  var FormFieldCoreMixin, Mixin, alias, computed, filter, get, ifAny, isBlank, mapBy, match, notEmpty, oneWay;
 
-  computed = _ember["default"].computed, A = _ember["default"].A, isBlank = _ember["default"].isBlank, Mixin = _ember["default"].Mixin;
+  computed = _ember["default"].computed, isBlank = _ember["default"].isBlank, Mixin = _ember["default"].Mixin, get = _ember["default"].get;
 
-  alias = computed.alias, equal = computed.equal, oneWay = computed.oneWay, notEmpty = computed.notEmpty, match = computed.match, ifAny = computed.or;
+  mapBy = computed.mapBy, filter = computed.filter, alias = computed.alias, oneWay = computed.oneWay, notEmpty = computed.notEmpty, match = computed.match, ifAny = computed.or;
 
   FormFieldCoreMixin = Mixin.create({
     "attr-name": alias("name"),
@@ -97337,83 +97773,22 @@ define("ember-form-tool/mixins/form-field-core", ["exports", "ember"], function 
     hasError: notEmpty("errorMessages"),
     model: alias("formHeart.model"),
     flavor: alias("formHeart.flavor"),
-    errors: alias("formHeart.errors"),
+    errors: filter("formHeart.errors", function (error) {
+      return this.get("name") != null && get(error, "attribute") === this.get("name");
+    }),
     name: oneWay("type"),
     label: oneWay("name"),
+    errorMessages: mapBy("errors", "message"),
     didInitAttrs: function didInitAttrs() {
       var name;
       if (isBlank(name = this.get("name"))) {
         throw new Error("You need to specify a name attribute");
       }
-      this.set("value", alias("model." + name));
-      return this.set("errorMessages", alias("errors." + name));
+      return this.set("value", alias("model." + name));
     }
   });
 
   exports["default"] = FormFieldCoreMixin;
-});
-define("ember-form-tool/mixins/form-input-core", ["exports", "ember"], function (exports, _ember) {
-  "use strict";
-
-  var A, FormInputCoreMixin, alias, computed, equal, ifAny, isBlank, match, notEmpty;
-
-  computed = _ember["default"].computed, A = _ember["default"].A, isBlank = _ember["default"].isBlank;
-
-  alias = computed.alias, equal = computed.equal, notEmpty = computed.notEmpty, match = computed.match, ifAny = computed.or;
-
-  FormInputCoreMixin = _ember["default"].Mixin.create({
-    "attr-name": alias("name"),
-    attributeBindings: ['attr-name'],
-    classNameBindings: ["hasError"],
-    faPrefix: match("prefix", /^fa-[\w\-]{2,}$/),
-    faSuffix: match("suffix", /^fa-[\w\-]{2,}$/),
-    glyphPrefix: match("prefix", /^glyphicon-[\w\-]{2,}$/),
-    glyphSuffix: match("suffix", /^glyphicon-[\w\-]{2,}$/),
-    isDatetimeType: match("type", /datetime/),
-    isSelectType: equal("type", "select"),
-    isTextareaType: equal("type", "textarea"),
-    isWebcamType: equal("type", "webcam"),
-    isTelephone: match("type", /tel(ephone)?/),
-    isFile: equal("type", "file"),
-    areFiles: equal("type", "files"),
-    model: alias("parentView.model"),
-    mistakes: alias("parentView.mistakes"),
-    hasError: notEmpty("errorMessages"),
-    shouldInputGroup: ifAny("prefix", "suffix"),
-    picUrls: A(),
-    willInsertElement: function willInsertElement() {
-      var name;
-      if (isBlank(this.get("parentView"))) {
-        throw new Error("You need to nest this form-input inside a form-for");
-      }
-      if (isBlank(name = this.get("name"))) {
-        throw new Error("You need to specify a name attribute");
-      }
-      this.set("value", alias("model." + name));
-      return this.set("errorMessages", alias("mistakes." + name));
-    },
-    actions: {
-      change: function change() {
-        var content, i, name, value;
-        name = this.get("name");
-        i = this.$("select")[0].selectedIndex;
-        content = _ember["default"].A(this.get("content"));
-        if (this.get("prompt") != null) {
-          value = content.objectAt(i - 1);
-        } else {
-          value = content.objectAt(i);
-        }
-        return this.set("model." + name, value);
-      },
-      snapped: function snapped() {
-        var name;
-        name = this.get("name");
-        return this.set("model." + name, this.get("picUrls"));
-      }
-    }
-  });
-
-  exports["default"] = FormInputCoreMixin;
 });
 define("ember-form-tool/templates/components/em-date-field", ["exports"], function (exports) {
   "use strict";
@@ -97576,6 +97951,740 @@ define("ember-form-tool/templates/components/em-form-for", ["exports"], function
       statements: [["inline", "yield", [["get", "formHeart", ["loc", [null, [1, 8], [1, 17]]]]], [], ["loc", [null, [1, 0], [1, 19]]]]],
       locals: [],
       templates: []
+    };
+  })());
+});
+define("ember-form-tool/templates/components/em-select-field", ["exports"], function (exports) {
+  "use strict";
+
+  exports["default"] = Ember.HTMLBars.template((function () {
+    var child0 = (function () {
+      var child0 = (function () {
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 7,
+                "column": 6
+              },
+              "end": {
+                "line": 9,
+                "column": 6
+              }
+            },
+            "moduleName": "modules/ember-form-tool/templates/components/em-select-field.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("i");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var element3 = dom.childAt(fragment, [1]);
+            var morphs = new Array(1);
+            morphs[0] = dom.createAttrMorph(element3, 'class');
+            return morphs;
+          },
+          statements: [["attribute", "class", ["concat", ["fa ", ["get", "prefix", ["loc", [null, [8, 23], [8, 29]]]]]]]],
+          locals: [],
+          templates: []
+        };
+      })();
+      var child1 = (function () {
+        var child0 = (function () {
+          return {
+            meta: {
+              "fragmentReason": false,
+              "revision": "Ember@2.2.0",
+              "loc": {
+                "source": null,
+                "start": {
+                  "line": 9,
+                  "column": 6
+                },
+                "end": {
+                  "line": 11,
+                  "column": 6
+                }
+              },
+              "moduleName": "modules/ember-form-tool/templates/components/em-select-field.hbs"
+            },
+            isEmpty: false,
+            arity: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            buildFragment: function buildFragment(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("        ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createElement("span");
+              dom.setAttribute(el1, "aria-hidden", "true");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+              var element2 = dom.childAt(fragment, [1]);
+              var morphs = new Array(1);
+              morphs[0] = dom.createAttrMorph(element2, 'class');
+              return morphs;
+            },
+            statements: [["attribute", "class", ["concat", ["glyphicon ", ["get", "prefix", ["loc", [null, [10, 33], [10, 39]]]]]]]],
+            locals: [],
+            templates: []
+          };
+        })();
+        var child1 = (function () {
+          return {
+            meta: {
+              "fragmentReason": false,
+              "revision": "Ember@2.2.0",
+              "loc": {
+                "source": null,
+                "start": {
+                  "line": 11,
+                  "column": 6
+                },
+                "end": {
+                  "line": 13,
+                  "column": 6
+                }
+              },
+              "moduleName": "modules/ember-form-tool/templates/components/em-select-field.hbs"
+            },
+            isEmpty: false,
+            arity: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            buildFragment: function buildFragment(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("        ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n      ");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+              var morphs = new Array(1);
+              morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+              return morphs;
+            },
+            statements: [["content", "prefix", ["loc", [null, [12, 8], [12, 18]]]]],
+            locals: [],
+            templates: []
+          };
+        })();
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 9,
+                "column": 6
+              },
+              "end": {
+                "line": 13,
+                "column": 6
+              }
+            },
+            "moduleName": "modules/ember-form-tool/templates/components/em-select-field.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var morphs = new Array(1);
+            morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+            dom.insertBoundary(fragment, 0);
+            dom.insertBoundary(fragment, null);
+            return morphs;
+          },
+          statements: [["block", "if", [["get", "glyphPrefix", ["loc", [null, [9, 16], [9, 27]]]]], [], 0, 1, ["loc", [null, [9, 6], [13, 6]]]]],
+          locals: [],
+          templates: [child0, child1]
+        };
+      })();
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 5,
+              "column": 2
+            },
+            "end": {
+              "line": 15,
+              "column": 2
+            }
+          },
+          "moduleName": "modules/ember-form-tool/templates/components/em-select-field.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("span");
+          dom.setAttribute(el1, "class", "input-group-addon");
+          var el2 = dom.createTextNode("\n");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("    ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 1, 1);
+          return morphs;
+        },
+        statements: [["block", "if", [["get", "faPrefix", ["loc", [null, [7, 12], [7, 20]]]]], [], 0, 1, ["loc", [null, [7, 6], [13, 13]]]]],
+        locals: [],
+        templates: [child0, child1]
+      };
+    })();
+    var child1 = (function () {
+      var child0 = (function () {
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 24,
+                "column": 4
+              },
+              "end": {
+                "line": 26,
+                "column": 4
+              }
+            },
+            "moduleName": "modules/ember-form-tool/templates/components/em-select-field.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("      ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var morphs = new Array(1);
+            morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+            return morphs;
+          },
+          statements: [["inline", "yield", [["get", "choice", ["loc", [null, [25, 14], [25, 20]]]]], [], ["loc", [null, [25, 6], [25, 22]]]]],
+          locals: [],
+          templates: []
+        };
+      })();
+      var child1 = (function () {
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 26,
+                "column": 4
+              },
+              "end": {
+                "line": 28,
+                "column": 4
+              }
+            },
+            "moduleName": "modules/ember-form-tool/templates/components/em-select-field.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("      ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var morphs = new Array(1);
+            morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+            return morphs;
+          },
+          statements: [["content", "choice", ["loc", [null, [27, 6], [27, 16]]]]],
+          locals: [],
+          templates: []
+        };
+      })();
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 17,
+              "column": 2
+            },
+            "end": {
+              "line": 29,
+              "column": 2
+            }
+          },
+          "moduleName": "modules/ember-form-tool/templates/components/em-select-field.hbs"
+        },
+        isEmpty: false,
+        arity: 1,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+          dom.insertBoundary(fragment, 0);
+          dom.insertBoundary(fragment, null);
+          return morphs;
+        },
+        statements: [["block", "if", [["get", "hasBlockParams", ["loc", [null, [24, 10], [24, 24]]]]], [], 0, 1, ["loc", [null, [24, 4], [28, 11]]]]],
+        locals: ["choice"],
+        templates: [child0, child1]
+      };
+    })();
+    var child2 = (function () {
+      var child0 = (function () {
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 33,
+                "column": 6
+              },
+              "end": {
+                "line": 35,
+                "column": 6
+              }
+            },
+            "moduleName": "modules/ember-form-tool/templates/components/em-select-field.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("        ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("i");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var element1 = dom.childAt(fragment, [1]);
+            var morphs = new Array(1);
+            morphs[0] = dom.createAttrMorph(element1, 'class');
+            return morphs;
+          },
+          statements: [["attribute", "class", ["concat", ["fa ", ["get", "suffix", ["loc", [null, [34, 23], [34, 29]]]]]]]],
+          locals: [],
+          templates: []
+        };
+      })();
+      var child1 = (function () {
+        var child0 = (function () {
+          return {
+            meta: {
+              "fragmentReason": false,
+              "revision": "Ember@2.2.0",
+              "loc": {
+                "source": null,
+                "start": {
+                  "line": 35,
+                  "column": 6
+                },
+                "end": {
+                  "line": 37,
+                  "column": 6
+                }
+              },
+              "moduleName": "modules/ember-form-tool/templates/components/em-select-field.hbs"
+            },
+            isEmpty: false,
+            arity: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            buildFragment: function buildFragment(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("        ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createElement("span");
+              dom.setAttribute(el1, "aria-hidden", "true");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+              var element0 = dom.childAt(fragment, [1]);
+              var morphs = new Array(1);
+              morphs[0] = dom.createAttrMorph(element0, 'class');
+              return morphs;
+            },
+            statements: [["attribute", "class", ["concat", ["glyphicon ", ["get", "prefix", ["loc", [null, [36, 33], [36, 39]]]]]]]],
+            locals: [],
+            templates: []
+          };
+        })();
+        var child1 = (function () {
+          return {
+            meta: {
+              "fragmentReason": false,
+              "revision": "Ember@2.2.0",
+              "loc": {
+                "source": null,
+                "start": {
+                  "line": 37,
+                  "column": 6
+                },
+                "end": {
+                  "line": 39,
+                  "column": 6
+                }
+              },
+              "moduleName": "modules/ember-form-tool/templates/components/em-select-field.hbs"
+            },
+            isEmpty: false,
+            arity: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            buildFragment: function buildFragment(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("        ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n      ");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+              var morphs = new Array(1);
+              morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+              return morphs;
+            },
+            statements: [["content", "suffix", ["loc", [null, [38, 8], [38, 18]]]]],
+            locals: [],
+            templates: []
+          };
+        })();
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 35,
+                "column": 6
+              },
+              "end": {
+                "line": 39,
+                "column": 6
+              }
+            },
+            "moduleName": "modules/ember-form-tool/templates/components/em-select-field.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var morphs = new Array(1);
+            morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+            dom.insertBoundary(fragment, 0);
+            dom.insertBoundary(fragment, null);
+            return morphs;
+          },
+          statements: [["block", "if", [["get", "glyphSuffix", ["loc", [null, [35, 16], [35, 27]]]]], [], 0, 1, ["loc", [null, [35, 6], [39, 6]]]]],
+          locals: [],
+          templates: [child0, child1]
+        };
+      })();
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 31,
+              "column": 2
+            },
+            "end": {
+              "line": 41,
+              "column": 2
+            }
+          },
+          "moduleName": "modules/ember-form-tool/templates/components/em-select-field.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("span");
+          dom.setAttribute(el1, "class", "input-group-addon");
+          var el2 = dom.createTextNode("\n");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("    ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 1, 1);
+          return morphs;
+        },
+        statements: [["block", "if", [["get", "faSuffix", ["loc", [null, [33, 12], [33, 20]]]]], [], 0, 1, ["loc", [null, [33, 6], [39, 13]]]]],
+        locals: [],
+        templates: [child0, child1]
+      };
+    })();
+    var child3 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 43,
+              "column": 0
+            },
+            "end": {
+              "line": 45,
+              "column": 0
+            }
+          },
+          "moduleName": "modules/ember-form-tool/templates/components/em-select-field.hbs"
+        },
+        isEmpty: false,
+        arity: 1,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("div");
+          dom.setAttribute(el1, "class", "help-block error-text");
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 0, 0);
+          return morphs;
+        },
+        statements: [["content", "msg", ["loc", [null, [44, 37], [44, 44]]]]],
+        locals: ["msg"],
+        templates: []
+      };
+    })();
+    var child4 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 46,
+              "column": 0
+            },
+            "end": {
+              "line": 48,
+              "column": 0
+            }
+          },
+          "moduleName": "modules/ember-form-tool/templates/components/em-select-field.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+          return morphs;
+        },
+        statements: [["content", "yield", ["loc", [null, [47, 2], [47, 11]]]]],
+        locals: [],
+        templates: []
+      };
+    })();
+    return {
+      meta: {
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.2.0",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 48,
+            "column": 11
+          }
+        },
+        "moduleName": "modules/ember-form-tool/templates/components/em-select-field.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createElement("label");
+        dom.setAttribute(el1, "class", "control-label");
+        var el2 = dom.createTextNode("\n  ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("span");
+        dom.setAttribute(el2, "class", "label-text");
+        var el3 = dom.createComment("");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("div");
+        var el2 = dom.createTextNode("\n");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+        var element4 = dom.childAt(fragment, [0]);
+        var element5 = dom.childAt(fragment, [2]);
+        var morphs = new Array(8);
+        morphs[0] = dom.createAttrMorph(element4, 'for');
+        morphs[1] = dom.createMorphAt(dom.childAt(element4, [1]), 0, 0);
+        morphs[2] = dom.createAttrMorph(element5, 'class');
+        morphs[3] = dom.createMorphAt(element5, 1, 1);
+        morphs[4] = dom.createMorphAt(element5, 3, 3);
+        morphs[5] = dom.createMorphAt(element5, 5, 5);
+        morphs[6] = dom.createMorphAt(fragment, 4, 4, contextualElement);
+        morphs[7] = dom.createMorphAt(fragment, 5, 5, contextualElement);
+        dom.insertBoundary(fragment, null);
+        return morphs;
+      },
+      statements: [["attribute", "for", ["concat", [["get", "name", ["loc", [null, [1, 14], [1, 18]]]]]]], ["content", "label", ["loc", [null, [2, 27], [2, 36]]]], ["attribute", "class", ["subexpr", "if", [["get", "shouldInputGroup", ["loc", [null, [4, 16], [4, 32]]]], "input-group"], [], ["loc", [null, [4, 11], [4, 48]]]]], ["block", "if", [["get", "prefix", ["loc", [null, [5, 8], [5, 14]]]]], [], 0, null, ["loc", [null, [5, 2], [15, 9]]]], ["block", "power-select", [], ["allowClear", ["subexpr", "@mut", [["get", "allowClear", ["loc", [null, [18, 15], [18, 25]]]]], [], []], "placeholder", ["subexpr", "@mut", [["get", "placeholder", ["loc", [null, [19, 16], [19, 27]]]]], [], []], "disabled", ["subexpr", "@mut", [["get", "disabled", ["loc", [null, [20, 13], [20, 21]]]]], [], []], "options", ["subexpr", "@mut", [["get", "options", ["loc", [null, [21, 12], [21, 19]]]]], [], []], "selected", ["subexpr", "@mut", [["get", "value", ["loc", [null, [22, 13], [22, 18]]]]], [], []], "onchange", ["subexpr", "action", [["subexpr", "mut", [["get", "value", ["loc", [null, [23, 26], [23, 31]]]]], [], ["loc", [null, [23, 21], [23, 32]]]]], [], ["loc", [null, [23, 13], [23, 33]]]]], 1, null, ["loc", [null, [17, 2], [29, 19]]]], ["block", "if", [["get", "suffix", ["loc", [null, [31, 8], [31, 14]]]]], [], 2, null, ["loc", [null, [31, 2], [41, 9]]]], ["block", "each", [["get", "errorMessages", ["loc", [null, [43, 8], [43, 21]]]]], [], 3, null, ["loc", [null, [43, 0], [45, 9]]]], ["block", "unless", [["get", "hasBlockParams", ["loc", [null, [46, 10], [46, 24]]]]], [], 4, null, ["loc", [null, [46, 0], [48, 11]]]]],
+      locals: [],
+      templates: [child0, child1, child2, child3, child4]
     };
   })());
 });
@@ -98729,6 +99838,4437 @@ define('ember-form-tool', ['ember-form-tool/index', 'ember', 'exports'], functio
   }));
 });
 
+define('ember-getowner-polyfill/fake-owner', ['exports', 'ember'], function (exports, _ember) {
+  'use strict';
+
+  var _createClass = (function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];descriptor.enumerable = descriptor.enumerable || false;descriptor.configurable = true;if ('value' in descriptor) descriptor.writable = true;Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);if (staticProps) defineProperties(Constructor, staticProps);return Constructor;
+    };
+  })();
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError('Cannot call a class as a function');
+    }
+  }
+
+  var CONTAINER = '__' + new Date() + '_container';
+  var REGISTRY = '__' + new Date() + '_registry';
+
+  var FakeOwner = (function () {
+    function FakeOwner(object) {
+      _classCallCheck(this, FakeOwner);
+
+      this[CONTAINER] = object.container;
+
+      if (_ember['default'].Registry) {
+        // object.container._registry is used by 1.11
+        this[REGISTRY] = object.container.registry || object.container._registry;
+      } else {
+        // Ember < 1.12
+        this[REGISTRY] = object.container;
+      }
+    }
+
+    // ContainerProxyMixin methods
+    //
+    // => http://emberjs.com/api/classes/ContainerProxyMixin.html
+    //
+
+    _createClass(FakeOwner, [{
+      key: 'lookup',
+      value: function lookup() {
+        var _CONTAINER;
+
+        return (_CONTAINER = this[CONTAINER]).lookup.apply(_CONTAINER, arguments);
+      }
+    }, {
+      key: '_lookupFactory',
+      value: function _lookupFactory() {
+        var _CONTAINER2;
+
+        return (_CONTAINER2 = this[CONTAINER]).lookupFactory.apply(_CONTAINER2, arguments);
+      }
+
+      // RegistryProxyMixin methods
+      //
+      // => http://emberjs.com/api/classes/RegistryProxyMixin.html
+      //
+    }, {
+      key: 'hasRegistration',
+      value: function hasRegistration() {
+        var _REGISTRY;
+
+        return (_REGISTRY = this[REGISTRY]).has.apply(_REGISTRY, arguments);
+      }
+    }, {
+      key: 'inject',
+      value: function inject() {
+        var _REGISTRY2;
+
+        return (_REGISTRY2 = this[REGISTRY]).injection.apply(_REGISTRY2, arguments);
+      }
+    }, {
+      key: 'register',
+      value: function register() {
+        var _REGISTRY3;
+
+        return (_REGISTRY3 = this[REGISTRY]).register.apply(_REGISTRY3, arguments);
+      }
+    }, {
+      key: 'registerOption',
+      value: function registerOption() {
+        var _REGISTRY4;
+
+        return (_REGISTRY4 = this[REGISTRY]).option.apply(_REGISTRY4, arguments);
+      }
+    }, {
+      key: 'registerOptions',
+      value: function registerOptions() {
+        var _REGISTRY5;
+
+        return (_REGISTRY5 = this[REGISTRY]).options.apply(_REGISTRY5, arguments);
+      }
+    }, {
+      key: 'registerOptionsForType',
+      value: function registerOptionsForType() {
+        var _REGISTRY6;
+
+        return (_REGISTRY6 = this[REGISTRY]).optionsForType.apply(_REGISTRY6, arguments);
+      }
+    }, {
+      key: 'registeredOption',
+      value: function registeredOption() {
+        var _REGISTRY7;
+
+        return (_REGISTRY7 = this[REGISTRY]).getOption.apply(_REGISTRY7, arguments);
+      }
+    }, {
+      key: 'registeredOptions',
+      value: function registeredOptions() {
+        var _REGISTRY8;
+
+        return (_REGISTRY8 = this[REGISTRY]).getOptions.apply(_REGISTRY8, arguments);
+      }
+    }, {
+      key: 'registeredOptionsForType',
+      value: function registeredOptionsForType(type) {
+        if (this[REGISTRY].getOptionsForType) {
+          var _REGISTRY9;
+
+          return (_REGISTRY9 = this[REGISTRY]).getOptionsForType.apply(_REGISTRY9, arguments);
+        } else {
+          // used for Ember 1.10
+          return this[REGISTRY]._typeOptions[type];
+        }
+      }
+    }, {
+      key: 'resolveRegistration',
+      value: function resolveRegistration() {
+        var _REGISTRY10;
+
+        return (_REGISTRY10 = this[REGISTRY]).resolve.apply(_REGISTRY10, arguments);
+      }
+    }, {
+      key: 'unregister',
+      value: function unregister() {
+        var _REGISTRY11;
+
+        return (_REGISTRY11 = this[REGISTRY]).unregister.apply(_REGISTRY11, arguments);
+      }
+    }]);
+
+    return FakeOwner;
+  })();
+
+  exports['default'] = FakeOwner;
+});
+define('ember-getowner-polyfill/index', ['exports', 'ember', 'ember-getowner-polyfill/fake-owner'], function (exports, _ember, _emberGetownerPolyfillFakeOwner) {
+  'use strict';
+
+  var hasGetOwner = !!_ember['default'].getOwner;
+
+  exports['default'] = function (object) {
+    var owner = undefined;
+
+    if (hasGetOwner) {
+      owner = _ember['default'].getOwner(object);
+    }
+
+    if (!owner && object.container) {
+      owner = new _emberGetownerPolyfillFakeOwner['default'](object);
+    }
+
+    return owner;
+  };
+});
+define('ember-getowner-polyfill', ['ember-getowner-polyfill/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
+  'use strict';
+  var keys = Object.keys || __Ember__['default'].keys;
+  var forEach = Array.prototype.forEach && function(array, cb) {
+    array.forEach(cb);
+  } || __Ember__['default'].EnumerableUtils.forEach;
+
+  forEach(keys(__index__), (function(key) {
+    __exports__[key] = __index__[key];
+  }));
+});
+
+define('ember-hash-helper-polyfill/helpers/hash', ['exports', 'ember'], function (exports, _ember) {
+  'use strict';
+
+  exports.hash = hash;
+
+  function hash(_, obj) {
+    return obj;
+  }
+
+  exports['default'] = _ember['default'].Helper.helper(hash);
+});
+define('ember-hash-helper-polyfill', ['ember-hash-helper-polyfill/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
+  'use strict';
+  var keys = Object.keys || __Ember__['default'].keys;
+  var forEach = Array.prototype.forEach && function(array, cb) {
+    array.forEach(cb);
+  } || __Ember__['default'].EnumerableUtils.forEach;
+
+  forEach(keys(__index__), (function(key) {
+    __exports__[key] = __index__[key];
+  }));
+});
+
+define('ember-moment/computeds/duration', ['exports', 'ember', 'ember-new-computed', 'moment', 'ember-moment/utils/is-descriptor'], function (exports, _ember, _emberNewComputed, _moment, _emberMomentUtilsIsDescriptor) {
+  'use strict';
+
+  var _get = _ember['default'].get;
+
+  function computedDuration(val, maybeUnits) {
+    var numArgs = arguments.length;
+    var args = [val];
+
+    var computed = (0, _emberNewComputed['default'])(val, {
+      get: function get() {
+        var momentArgs = [_get(this, val)];
+
+        if (numArgs > 1) {
+          var desc = _emberMomentUtilsIsDescriptor['default'].call(this, maybeUnits);
+          var input = desc ? _get(this, maybeUnits) : maybeUnits;
+
+          if (desc && computed._dependentKeys.indexOf(maybeUnits) === -1) {
+            computed.property(maybeUnits);
+          }
+
+          momentArgs.push(input);
+        }
+
+        return _moment['default'].duration.apply(this, momentArgs).humanize();
+      }
+    });
+
+    return computed.property.apply(computed, args);
+  }
+
+  exports['default'] = computedDuration;
+});
+define('ember-moment/computeds/format', ['exports', 'ember', 'moment', 'ember-new-computed', 'ember-moment/utils/is-descriptor'], function (exports, _ember, _moment, _emberNewComputed, _emberMomentUtilsIsDescriptor) {
+  'use strict';
+
+  var _get = _ember['default'].get;
+  var assert = _ember['default'].assert;
+
+  var a_slice = Array.prototype.slice;
+
+  function computedFormat(date, maybeOutputFormat, maybeInputFormat) {
+    assert('At least one datetime argument required for moment computed', arguments.length);
+
+    var args = a_slice.call(arguments);
+    var result = undefined;
+    args.shift();
+
+    return result = (0, _emberNewComputed['default'])(date, {
+      get: function get() {
+        var _this = this;
+
+        var momentArgs = [_get(this, date)];
+
+        var propertyValues = args.map(function (arg) {
+          var desc = _emberMomentUtilsIsDescriptor['default'].call(_this, arg);
+          if (desc && result._dependentKeys.indexOf(arg) === -1) {
+            result.property(arg);
+          }
+
+          return desc ? _get(_this, arg) : arg;
+        });
+
+        if (propertyValues.length) {
+          maybeOutputFormat = propertyValues[0];
+
+          if (propertyValues.length > 1) {
+            maybeInputFormat = propertyValues[1];
+            momentArgs.push(maybeInputFormat);
+          }
+        } else if (this.container) {
+          var config = this.container.lookupFactory('config:environment');
+          maybeOutputFormat = _get(config, 'moment.ouputFormat');
+        }
+
+        return _moment['default'].apply(this, momentArgs).format(maybeOutputFormat);
+      }
+    });
+  }
+
+  exports['default'] = computedFormat;
+});
+define('ember-moment/computeds/from-now', ['exports', 'ember', 'ember-new-computed', 'moment', 'ember-moment/utils/is-descriptor'], function (exports, _ember, _emberNewComputed, _moment, _emberMomentUtilsIsDescriptor) {
+  'use strict';
+
+  var _get = _ember['default'].get;
+
+  function computedFromNow(date, maybeInputFormat, maybeHideSuffix) {
+    var args = [date];
+
+    var computed = (0, _emberNewComputed['default'])(date, {
+      get: function get() {
+        var momentArgs = [_get(this, date)];
+
+        if (arguments.length > 1) {
+          var desc = _emberMomentUtilsIsDescriptor['default'].call(this, maybeInputFormat);
+          var input = desc ? _get(this, maybeInputFormat) : maybeInputFormat;
+
+          if (desc && computed._dependentKeys.indexOf(maybeInputFormat) === -1) {
+            computed.property(maybeInputFormat);
+          }
+
+          momentArgs.push(input);
+        }
+
+        return _moment['default'].apply(this, momentArgs).fromNow(maybeHideSuffix);
+      }
+    });
+
+    return computed.property.apply(computed, args);
+  }
+
+  exports['default'] = computedFromNow;
+});
+define('ember-moment/computeds/to-now', ['exports', 'ember', 'ember-new-computed', 'moment', 'ember-moment/utils/is-descriptor'], function (exports, _ember, _emberNewComputed, _moment, _emberMomentUtilsIsDescriptor) {
+  'use strict';
+
+  exports['default'] = computedAgo;
+
+  var _get = _ember['default'].get;
+
+  function computedAgo(date, maybeInputFormat, maybeHidePrefix) {
+    var args = [date];
+
+    var computed = (0, _emberNewComputed['default'])(date, {
+      get: function get() {
+        var momentArgs = [_get(this, date)];
+
+        if (arguments.length > 1) {
+          var desc = _emberMomentUtilsIsDescriptor['default'].call(this, maybeInputFormat);
+          var input = desc ? _get(this, maybeInputFormat) : maybeInputFormat;
+
+          if (desc && computed._dependentKeys.indexOf(maybeInputFormat) === -1) {
+            computed.property(maybeInputFormat);
+          }
+
+          momentArgs.push(input);
+        }
+
+        return _moment['default'].apply(this, momentArgs).toNow(maybeHidePrefix);
+      }
+    });
+
+    return computed.property.apply(computed, args).readOnly();
+  }
+});
+define('ember-moment/helpers/-base', ['exports', 'ember'], function (exports, _ember) {
+  'use strict';
+
+  exports['default'] = _ember['default'].Helper.extend({
+    moment: _ember['default'].inject.service(),
+
+    localeDidChange: _ember['default'].observer('moment.locale', function () {
+      this.recompute();
+    }),
+
+    timeZoneDidChange: _ember['default'].observer('moment.timeZone', function () {
+      this.recompute();
+    }),
+
+    morphMoment: function morphMoment(time, _ref) {
+      var locale = _ref.locale;
+      var timeZone = _ref.timeZone;
+
+      locale = locale || this.get('moment.locale');
+
+      if (locale) {
+        time = time.locale(locale);
+      }
+
+      timeZone = timeZone || this.get('moment.timeZone');
+
+      if (timeZone && time.tz) {
+        time = time.tz(timeZone);
+      }
+
+      return time;
+    }
+  });
+});
+define('ember-moment/helpers/moment-duration', ['exports', 'moment', 'ember-moment/helpers/-base'], function (exports, _moment, _emberMomentHelpersBase) {
+  'use strict';
+
+  function _toConsumableArray(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  }
+
+  exports['default'] = _emberMomentHelpersBase['default'].extend({
+    compute: function compute(params, _ref) {
+      var locale = _ref.locale;
+      var timeZone = _ref.timeZone;
+
+      if (!params || params && params.length > 2) {
+        throw new TypeError('ember-moment: Invalid Number of arguments, at most 2');
+      }
+
+      var time = this.morphMoment(_moment['default'].duration.apply(_moment['default'], _toConsumableArray(params)), { locale: locale, timeZone: timeZone });
+
+      return time.humanize();
+    }
+  });
+});
+define('ember-moment/helpers/moment-format', ['exports', 'moment', 'ember-moment/utils/compute-fn', 'ember-moment/helpers/-base'], function (exports, _moment, _emberMomentUtilsComputeFn, _emberMomentHelpersBase) {
+  'use strict';
+
+  exports['default'] = _emberMomentHelpersBase['default'].extend({
+    globalOutputFormat: 'LLLL',
+    globalAllowEmpty: false,
+
+    compute: (0, _emberMomentUtilsComputeFn['default'])(function (params, _ref) {
+      var locale = _ref.locale;
+      var timeZone = _ref.timeZone;
+
+      var length = params.length;
+
+      if (length > 3) {
+        throw new TypeError('ember-moment: Invalid Number of arguments, expected at most 3');
+      }
+
+      var format = undefined;
+      var args = [];
+
+      args.push(params[0]);
+
+      if (length === 1) {
+        format = this.globalOutputFormat;
+      } else if (length === 2) {
+        format = params[1];
+      } else if (length > 2) {
+        args.push(params[2]);
+        format = params[1];
+      }
+
+      var time = this.morphMoment(_moment['default'].apply(undefined, args), { locale: locale, timeZone: timeZone });
+
+      return time.format(format);
+    })
+  });
+});
+define('ember-moment/helpers/moment-from-now', ['exports', 'ember', 'moment', 'ember-moment/utils/compute-fn', 'ember-moment/helpers/-base'], function (exports, _ember, _moment, _emberMomentUtilsComputeFn, _emberMomentHelpersBase) {
+  'use strict';
+
+  function _toConsumableArray(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  }
+
+  var runBind = _ember['default'].run.bind;
+
+  exports['default'] = _emberMomentHelpersBase['default'].extend({
+    globalAllowEmpty: false,
+
+    compute: (0, _emberMomentUtilsComputeFn['default'])(function (params, _ref) {
+      var hideSuffix = _ref.hideSuffix;
+      var interval = _ref.interval;
+      var locale = _ref.locale;
+      var timeZone = _ref.timeZone;
+
+      this.clearTimer();
+
+      if (interval) {
+        this.timer = setTimeout(runBind(this, this.recompute), parseInt(interval, 10));
+      }
+
+      var time = this.morphMoment(_moment['default'].apply(undefined, _toConsumableArray(params)), { locale: locale, timeZone: timeZone });
+
+      return time.fromNow(hideSuffix);
+    }),
+
+    clearTimer: function clearTimer() {
+      clearTimeout(this.timer);
+    },
+
+    destroy: function destroy() {
+      this.clearTimer();
+      this._super.apply(this, arguments);
+    }
+  });
+});
+define('ember-moment/helpers/moment-to-now', ['exports', 'ember', 'moment', 'ember-moment/utils/compute-fn', 'ember-moment/helpers/-base'], function (exports, _ember, _moment, _emberMomentUtilsComputeFn, _emberMomentHelpersBase) {
+  'use strict';
+
+  function _toConsumableArray(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i];return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  }
+
+  var runBind = _ember['default'].run.bind;
+
+  exports['default'] = _emberMomentHelpersBase['default'].extend({
+    globalAllowEmpty: false,
+
+    compute: (0, _emberMomentUtilsComputeFn['default'])(function (params, _ref) {
+      var hidePrefix = _ref.hidePrefix;
+      var interval = _ref.interval;
+      var locale = _ref.locale;
+      var timeZone = _ref.timeZone;
+
+      this.clearTimer();
+
+      if (interval) {
+        this.timer = setTimeout(runBind(this, this.recompute), parseInt(interval, 10));
+      }
+
+      var time = this.morphMoment(_moment['default'].apply(undefined, _toConsumableArray(params)), { locale: locale, timeZone: timeZone });
+
+      return time.toNow(hidePrefix);
+    }),
+
+    clearTimer: function clearTimer() {
+      clearTimeout(this.timer);
+    },
+
+    destroy: function destroy() {
+      this.clearTimer();
+      this._super.apply(this, arguments);
+    }
+  });
+});
+define('ember-moment/utils/compute-fn', ['exports', 'ember'], function (exports, _ember) {
+  'use strict';
+
+  exports['default'] = function (cb) {
+    return function (params, hash) {
+      if (!params || params && params.length === 0) {
+        throw new TypeError('ember-moment: Invalid Number of arguments, expected at least 1');
+      }
+
+      var datetime = params[0];
+
+      var allowEmpty = hash.allowEmpty || hash['allow-empty'];
+
+      if (allowEmpty === undefined || allowEmpty === null) {
+        allowEmpty = !!this.get('globalAllowEmpty');
+      }
+
+      if (allowEmpty && [null, '', undefined].indexOf(datetime) > -1) {
+        _ember['default'].Logger.warn('ember-moment: an empty value (null, undefined, or "") was passed to moment-format');
+        return;
+      }
+
+      return cb.apply(this, arguments);
+    };
+  };
+});
+define('ember-moment/utils/is-descriptor', ['exports', 'ember'], function (exports, _ember) {
+  'use strict';
+
+  var typeOf = _ember['default'].typeOf;
+
+  // credit: https://github.com/cibernox/ember-cpm/blob/master/addon/utils.js#L17-L20
+  function isDescriptor(propertyName) {
+    var meta = _ember['default'].meta(this);
+
+    if (meta && meta.descs && meta.descs[propertyName]) {
+      return true;
+    }
+
+    var prop = this[propertyName];
+    return typeOf(prop) === 'object' && prop.isDescriptor;
+  }
+
+  exports['default'] = isDescriptor;
+});
+define('ember-moment', ['ember-moment/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
+  'use strict';
+  var keys = Object.keys || __Ember__['default'].keys;
+  var forEach = Array.prototype.forEach && function(array, cb) {
+    array.forEach(cb);
+  } || __Ember__['default'].EnumerableUtils.forEach;
+
+  forEach(keys(__index__), (function(key) {
+    __exports__[key] = __index__[key];
+  }));
+});
+
+define('ember-new-computed/index', ['exports', 'ember', 'ember-new-computed/utils/can-use-new-syntax'], function (exports, _ember, _emberNewComputedUtilsCanUseNewSyntax) {
+  'use strict';
+
+  exports['default'] = newComputed;
+
+  var computed = _ember['default'].computed;
+
+  function newComputed() {
+    var polyfillArguments = [];
+    var config = arguments[arguments.length - 1];
+
+    if (typeof config === 'function' || _emberNewComputedUtilsCanUseNewSyntax['default']) {
+      return computed.apply(undefined, arguments);
+    }
+
+    for (var i = 0, l = arguments.length - 1; i < l; i++) {
+      polyfillArguments.push(arguments[i]);
+    }
+
+    var func;
+    if (config.set) {
+      func = function (key, value) {
+        if (arguments.length > 1) {
+          return config.set.call(this, key, value);
+        } else {
+          return config.get.call(this, key);
+        }
+      };
+    } else {
+      func = function (key) {
+        return config.get.call(this, key);
+      };
+    }
+
+    polyfillArguments.push(func);
+
+    return computed.apply(undefined, polyfillArguments);
+  }
+
+  var getKeys = Object.keys || _ember['default'].keys;
+  var computedKeys = getKeys(computed);
+
+  for (var i = 0, l = computedKeys.length; i < l; i++) {
+    newComputed[computedKeys[i]] = computed[computedKeys[i]];
+  }
+});
+define('ember-new-computed/utils/can-use-new-syntax', ['exports', 'ember'], function (exports, _ember) {
+  'use strict';
+
+  var supportsSetterGetter;
+
+  try {
+    _ember['default'].computed({
+      set: function set() {},
+      get: function get() {}
+    });
+    supportsSetterGetter = true;
+  } catch (e) {
+    supportsSetterGetter = false;
+  }
+
+  exports['default'] = supportsSetterGetter;
+});
+define('ember-new-computed', ['ember-new-computed/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
+  'use strict';
+  var keys = Object.keys || __Ember__['default'].keys;
+  var forEach = Array.prototype.forEach && function(array, cb) {
+    array.forEach(cb);
+  } || __Ember__['default'].EnumerableUtils.forEach;
+
+  forEach(keys(__index__), (function(key) {
+    __exports__[key] = __index__[key];
+  }));
+});
+
+define('ember-power-select/components/power-select/base', ['exports', 'ember', 'ember-power-select/utils/group-utils'], function (exports, _ember, _emberPowerSelectUtilsGroupUtils) {
+  'use strict';
+
+  var RSVP = _ember['default'].RSVP;
+  var computed = _ember['default'].computed;
+  var run = _ember['default'].run;
+  var get = _ember['default'].get;
+  var isBlank = _ember['default'].isBlank;
+
+  var Promise = RSVP.Promise;
+  var PromiseArray = _ember['default'].ArrayProxy.extend(_ember['default'].PromiseProxyMixin);
+
+  exports['default'] = _ember['default'].Component.extend({
+    tagName: '',
+    searchText: '',
+    searchReturnedUndefined: false,
+    activeSearch: null,
+    attributeBindings: ['dir'],
+
+    // CPs
+    showLoadingMessage: computed.and('loadingMessage', 'results.isPending'),
+
+    concatenatedDropdownClasses: computed('class', function () {
+      var classes = _ember['default'].A(['ember-power-select-dropdown']);
+      if (this.get('dropdownClass')) {
+        classes.push(this.get('dropdownClass'));
+      }
+      if (this.get('class')) {
+        classes.push(this.get('class') + '-dropdown');
+      }
+      return classes.join(' ');
+    }),
+
+    mustShowSearchMessage: computed('searchText', 'search', 'searchMessage', function () {
+      return this.get('searchText.length') === 0 && !!this.get('search') && !!this.get('searchMessage');
+    }),
+
+    results: computed('options.[]', 'searchText', function () {
+      var _this = this;
+
+      var _getProperties = this.getProperties('options', 'searchText', 'previousResults');
+
+      var options = _getProperties.options;
+      var searchText = _getProperties.searchText;
+      var _getProperties$previousResults = _getProperties.previousResults;
+      var previousResults = _getProperties$previousResults === undefined ? _ember['default'].A() : _getProperties$previousResults;
+      // jshint ignore:line
+      var promise = undefined;
+      if (isBlank(searchText) || this.searchReturnedUndefined) {
+        promise = Promise.resolve(options).then(function (opts) {
+          return _ember['default'].A(opts);
+        });
+      } else if (this.get('search')) {
+        var result = this.get('search')(searchText);
+        if (!result) {
+          promise = Promise.resolve(previousResults);
+          this.searchReturnedUndefined = true;
+        } else {
+          (function () {
+            _this.searchReturnedUndefined = false;
+            var search = _this.activeSearch = Promise.resolve(result);
+            promise = search.then(function (opts) {
+              return search !== _this.activeSearch ? previousResults : _ember['default'].A(opts);
+            });
+          })();
+        }
+      } else {
+        promise = Promise.resolve(options).then(function (opts) {
+          return _this.filter(_ember['default'].A(opts), _this.get('searchText'));
+        });
+      }
+      promise.then(function (opts) {
+        return _this.set('previousResults', opts);
+      });
+      return PromiseArray.create({ promise: promise, content: previousResults });
+    }),
+
+    highlighted: computed('results.[]', 'selected', {
+      get: function get() {
+        return this.defaultHighlighted();
+      },
+      set: function set(_, v) {
+        return v;
+      }
+    }),
+
+    resultsLength: computed('results.[]', function () {
+      return (0, _emberPowerSelectUtilsGroupUtils.countOptions)(this.get('results'));
+    }),
+
+    // Actions
+    actions: {
+      open: function open(dropdown, e) {
+        dropdown.actions.open(e);
+      },
+
+      close: function close(dropdown, e) {
+        dropdown.actions.close(e);
+      },
+
+      highlight: function highlight(dropdown, option) {
+        if (option && get(option, 'disabled')) {
+          return;
+        }
+        this.set('highlighted', option);
+      },
+
+      search: function search(dropdown, term /*, e */) {
+        this.set('searchText', term);
+      },
+
+      handleKeydown: function handleKeydown(dropdown, e) {
+        if (e.defaultPrevented) {
+          return;
+        }
+        if (e.keyCode === 38 || e.keyCode === 40) {
+          // Up & Down
+          if (dropdown.isOpen) {
+            this.handleVerticalArrowKey(e);
+          } else {
+            dropdown.actions.open(e);
+          }
+        } else if (e.keyCode === 9) {
+          // Tab
+          dropdown.actions.close(e);
+        } else if (e.keyCode === 27) {
+          // ESC
+          dropdown.actions.close(e);
+        }
+      },
+
+      // It is not evident what is going on here, so I'll explain why.
+      //
+      // As of this writting, Ember doesn allow to yield data to the "inverse" block.
+      // Because of that, elements of this component rendered in the trigger can't receive the
+      // yielded object contaning the public API of the ember-basic-dropdown, with actions for open,
+      // close and toggle.
+      //
+      // The only possible workaround for this is to on initialization inject a similar object
+      // to the one yielded and store it to make it available in the entire component.
+      //
+      // This this limitation on ember should be fixed soon, this is temporary. Because of that this
+      // object will be passed to the action from the inverse block like if it was yielded.
+      //
+      registerDropdown: function registerDropdown(dropdown) {
+        this.set('registeredDropdown', dropdown);
+      }
+    },
+
+    // Methods
+    onOpen: function onOpen(e) {
+      run.scheduleOnce('afterRender', this, this.focusSearch, e);
+      run.scheduleOnce('afterRender', this, this.scrollIfHighlightedIsOutOfViewport);
+    },
+
+    onClose: function onClose() {
+      this.set('searchText', '');
+    },
+
+    handleVerticalArrowKey: function handleVerticalArrowKey(e) {
+      e.preventDefault();
+      var newHighlighted = this.advanceSelectableOption(this.get('highlighted'), e.keyCode === 40 ? 1 : -1);
+      this.set('highlighted', newHighlighted);
+      run.scheduleOnce('afterRender', this, this.scrollIfHighlightedIsOutOfViewport);
+    },
+
+    scrollIfHighlightedIsOutOfViewport: function scrollIfHighlightedIsOutOfViewport() {
+      var optionsList = document.querySelector('.ember-power-select-options');
+      if (!optionsList) {
+        return;
+      }
+      var highlightedOption = optionsList.querySelector('.ember-power-select-option--highlighted');
+      if (!highlightedOption) {
+        return;
+      }
+      var optionTopScroll = highlightedOption.offsetTop - optionsList.offsetTop;
+      var optionBottomScroll = optionTopScroll + highlightedOption.offsetHeight;
+      if (optionBottomScroll > optionsList.offsetHeight + optionsList.scrollTop) {
+        optionsList.scrollTop = optionBottomScroll - optionsList.offsetHeight;
+      } else if (optionTopScroll < optionsList.scrollTop) {
+        optionsList.scrollTop = optionTopScroll;
+      }
+    },
+
+    indexOfOption: function indexOfOption(option) {
+      return (0, _emberPowerSelectUtilsGroupUtils.indexOfOption)(this.get('results'), option);
+    },
+
+    optionAtIndex: function optionAtIndex(index) {
+      return (0, _emberPowerSelectUtilsGroupUtils.optionAtIndex)(this.get('results'), index);
+    },
+
+    advanceSelectableOption: function advanceSelectableOption(currentHighlight, step) {
+      var resultsLength = this.get('resultsLength');
+      var startIndex = Math.min(Math.max(this.indexOfOption(currentHighlight) + step, 0), resultsLength - 1);
+      var nextOption = this.optionAtIndex(startIndex);
+      while (nextOption && get(nextOption, 'disabled')) {
+        nextOption = this.optionAtIndex(startIndex += step);
+      }
+      return nextOption;
+    },
+
+    filter: function filter(options, searchText) {
+      var _this2 = this;
+
+      var matcher = undefined;
+      if (this.get('searchField')) {
+        matcher = function (option, text) {
+          return _this2.matcher(get(option, _this2.get('searchField')), text);
+        };
+      } else {
+        matcher = function (option, text) {
+          return _this2.matcher(option, text);
+        };
+      }
+      return (0, _emberPowerSelectUtilsGroupUtils.filterOptions)(options || [], searchText, matcher);
+    }
+  });
+});
+define('ember-power-select/components/power-select/multiple/selected', ['exports', 'ember', 'ember-power-select/templates/components/power-select/multiple/selected'], function (exports, _ember, _emberPowerSelectTemplatesComponentsPowerSelectMultipleSelected) {
+  'use strict';
+
+  var computed = _ember['default'].computed;
+  var htmlSafe = _ember['default'].String.htmlSafe;
+
+  exports['default'] = _ember['default'].Component.extend({
+    layout: _emberPowerSelectTemplatesComponentsPowerSelectMultipleSelected['default'],
+    tagName: '',
+
+    // CPs
+    triggerMultipleInputStyle: computed('searchText.length', 'selection.length', function () {
+      if (this.get('selection.length') === 0) {
+        return htmlSafe('width: 100%;');
+      } else {
+        return htmlSafe('width: ' + ((this.get('searchText.length') || 0) * 0.5 + 2) + 'em');
+      }
+    }),
+
+    maybePlaceholder: computed('placeholder', 'selection.length', function () {
+      return this.get('selection.length') === 0 ? this.get('placeholder') || '' : '';
+    }),
+
+    actions: {
+      search: function search(term, e) {
+        var _get = this.get('select.actions');
+
+        var search = _get.search;
+        var open = _get.open;
+
+        search(term, e);
+        open(e);
+      }
+    }
+  });
+});
+define('ember-power-select/components/power-select/multiple', ['exports', 'ember', 'ember-power-select/components/power-select/base', 'ember-power-select/templates/components/power-select/multiple'], function (exports, _ember, _emberPowerSelectComponentsPowerSelectBase, _emberPowerSelectTemplatesComponentsPowerSelectMultiple) {
+  'use strict';
+
+  var computed = _ember['default'].computed;
+  var get = _ember['default'].get;
+
+  exports['default'] = _emberPowerSelectComponentsPowerSelectBase['default'].extend({
+    layout: _emberPowerSelectTemplatesComponentsPowerSelectMultiple['default'],
+
+    // CPs
+    selection: computed('selected', {
+      get: function get() {
+        return _ember['default'].A(this.get('selected'));
+      },
+      set: function set(_, v) {
+        return v;
+      }
+    }),
+
+    triggerUniqueClass: computed('elementId', function () {
+      return 'ember-power-select-trigger-' + this.elementId;
+    }),
+
+    triggerClass: computed('triggerUniqueClass', function () {
+      return 'ember-power-select-trigger ' + this.get('triggerUniqueClass');
+    }),
+
+    concatenatedClasses: computed('class', function () {
+      var classes = ['ember-power-select', 'multiple'];
+      if (this.get('class')) {
+        classes.push(this.get('class'));
+      }
+      return classes.join(' ');
+    }),
+
+    // Actions
+    actions: {
+      select: function select(dropdown, option, e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var newSelection = this.cloneSelection();
+        if (newSelection.indexOf(option) > -1) {
+          newSelection.removeObject(option);
+        } else {
+          newSelection.addObject(option);
+        }
+        if (this.get('closeOnSelect')) {
+          dropdown.actions.close(e);
+        }
+        this.get('onchange')(newSelection, dropdown);
+      },
+
+      removeOption: function removeOption(dropdown, option, e) {
+        e.stopPropagation();
+        this.removeOption(dropdown, option);
+      },
+
+      handleKeydown: function handleKeydown(dropdown, e) {
+        var onkeydown = this.get('onkeydown');
+        if (onkeydown) {
+          onkeydown(dropdown, e);
+        }
+        if (e.defaultPrevented) {
+          return;
+        }
+        if (e.keyCode === 8) {
+          // BACKSPACE
+          this.removeLastOptionIfSearchIsEmpty(dropdown);
+          dropdown.actions.open(e);
+        } else if (e.keyCode === 13) {
+          e.stopPropagation();
+          if (dropdown.isOpen) {
+            var highlighted = this.get('highlighted');
+            if (highlighted && (this.get('selected') || []).indexOf(highlighted) === -1) {
+              this.send('select', dropdown, highlighted, e);
+            } else {
+              dropdown.actions.close(e);
+            }
+          } else {
+            dropdown.actions.open(e);
+          }
+        } else {
+          this._super.apply(this, arguments);
+        }
+      }
+    },
+
+    // Methods
+    defaultHighlighted: function defaultHighlighted() {
+      return this.optionAtIndex(0);
+    },
+
+    removeLastOptionIfSearchIsEmpty: function removeLastOptionIfSearchIsEmpty(dropdown) {
+      if (this.get('searchText.length') !== 0) {
+        return;
+      }
+      var lastSelection = this.get('selection.lastObject');
+      if (!lastSelection) {
+        return;
+      }
+      var lastText = typeof lastSelection === 'string' ? lastSelection : get(lastSelection, this.get('searchField'));
+      this.removeOption(dropdown, lastSelection);
+      this.set('searchText', lastText);
+    },
+
+    removeOption: function removeOption(dropdown, option) {
+      var newSelection = this.cloneSelection();
+      newSelection.removeObject(option);
+      this._resultsDirty = true;
+      this.get('onchange')(newSelection, dropdown);
+    },
+
+    focusSearch: function focusSearch() {
+      var el = _ember['default'].$('.' + this.get('triggerUniqueClass'))[0];
+      if (el) {
+        el.querySelector('.ember-power-select-trigger-multiple-input').focus();
+      }
+    },
+
+    cloneSelection: function cloneSelection() {
+      return _ember['default'].A((this.get('selection') || []).slice(0));
+    }
+  });
+});
+define('ember-power-select/components/power-select/options', ['exports', 'ember', 'ember-power-select/templates/components/power-select/options'], function (exports, _ember, _emberPowerSelectTemplatesComponentsPowerSelectOptions) {
+  'use strict';
+
+  // TODO: Do I really need a component? A recursive template would do ...
+  exports['default'] = _ember['default'].Component.extend({
+    layout: _emberPowerSelectTemplatesComponentsPowerSelectOptions['default'],
+    tagName: ''
+  });
+});
+define('ember-power-select/components/power-select/single/selected', ['exports', 'ember', 'ember-power-select/templates/components/power-select/single/selected'], function (exports, _ember, _emberPowerSelectTemplatesComponentsPowerSelectSingleSelected) {
+  'use strict';
+
+  exports['default'] = _ember['default'].Component.extend({
+    layout: _emberPowerSelectTemplatesComponentsPowerSelectSingleSelected['default'],
+    tagName: ''
+  });
+});
+define('ember-power-select/components/power-select/single', ['exports', 'ember', 'ember-power-select/components/power-select/base', 'ember-power-select/templates/components/power-select/single'], function (exports, _ember, _emberPowerSelectComponentsPowerSelectBase, _emberPowerSelectTemplatesComponentsPowerSelectSingle) {
+  'use strict';
+
+  var computed = _ember['default'].computed;
+
+  exports['default'] = _emberPowerSelectComponentsPowerSelectBase['default'].extend({
+    layout: _emberPowerSelectTemplatesComponentsPowerSelectSingle['default'],
+
+    // CPs
+    selection: computed('selected', {
+      get: function get() {
+        return this.get('selected');
+      },
+      set: function set(_, v) {
+        return v;
+      }
+    }),
+
+    concatenatedClasses: computed('class', function () {
+      var classes = ['ember-power-select'];
+      if (this.get('class')) {
+        classes.push(this.get('class'));
+      }
+      return classes.join(' ');
+    }),
+
+    // Actions
+    actions: {
+      select: function select(dropdown, option, e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (this.get('closeOnSelect')) {
+          dropdown.actions.close(e);
+        }
+        if (this.get('selection') !== option) {
+          this.get('onchange')(option, dropdown);
+        }
+      },
+
+      handleKeydown: function handleKeydown(dropdown, e) {
+        var onkeydown = this.get('onkeydown');
+        if (onkeydown) {
+          onkeydown(dropdown, e);
+        }
+        if (e.defaultPrevented) {
+          return;
+        }
+        if (e.keyCode === 13 && dropdown.isOpen) {
+          // Enter
+          this.send('select', dropdown, this.get('highlighted'), e);
+        } else {
+          this._super.apply(this, arguments);
+        }
+      }
+    },
+
+    // Methods
+
+    defaultHighlighted: function defaultHighlighted() {
+      return this.get('selection') || this.optionAtIndex(0);
+    },
+
+    focusSearch: function focusSearch() {
+      _ember['default'].$('.ember-power-select-search input').focus();
+    }
+  });
+});
+define('ember-power-select/components/power-select', ['exports', 'ember', 'ember-power-select/templates/components/power-select', 'ember-power-select/utils/group-utils'], function (exports, _ember, _emberPowerSelectTemplatesComponentsPowerSelect, _emberPowerSelectUtilsGroupUtils) {
+  'use strict';
+
+  var defaultOptions = {
+    tagName: '',
+    layout: _emberPowerSelectTemplatesComponentsPowerSelect['default'],
+
+    // Universal config
+    disabled: false,
+    placeholder: undefined,
+    loadingMessage: "Loading options...",
+    noMatchesMessage: "No results found",
+    optionsComponent: 'power-select/options',
+    dropdownPosition: 'auto',
+    matcher: _emberPowerSelectUtilsGroupUtils.defaultMatcher,
+    searchField: null,
+    search: null,
+    closeOnSelect: true,
+    dropdownClass: null,
+    dir: null,
+
+    // Select single config
+    searchEnabled: true,
+    searchMessage: "Type to search",
+    searchPlaceholder: null,
+    allowClear: false,
+
+    // Select multiple config
+
+    // Lifecycle hooks
+    didInitAttrs: function didInitAttrs() {
+      this._super.apply(this, arguments);
+      _ember['default'].assert('{{power-select}} requires an `onchange` function', this.get('onchange') && typeof this.get('onchange') === 'function');
+    },
+
+    // CPs
+    concreteComponentName: _ember['default'].computed('multiple', function () {
+      return 'power-select/' + (this.get('multiple') ? 'multiple' : 'single');
+    }),
+
+    selectedComponent: _ember['default'].computed('multiple', function () {
+      return 'power-select/' + (this.get('multiple') ? 'multiple' : 'single') + '/selected';
+    })
+  };
+
+  exports.defaultOptions = defaultOptions;
+  exports['default'] = _ember['default'].Component.extend(defaultOptions);
+});
+define('ember-power-select/helpers/ember-power-select-option-classes', ['exports', 'ember'], function (exports, _ember) {
+  'use strict';
+
+  var _slicedToArray = (function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];var _n = true;var _d = false;var _e = undefined;try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;_e = err;
+      } finally {
+        try {
+          if (!_n && _i['return']) _i['return']();
+        } finally {
+          if (_d) throw _e;
+        }
+      }return _arr;
+    }return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError('Invalid attempt to destructure non-iterable instance');
+      }
+    };
+  })();
+
+  exports.emberPowerSelectOptionClasses = emberPowerSelectOptionClasses;
+
+  var isArray = _ember['default'].isArray;
+  var get = _ember['default'].get;
+
+  // TODO: Make it private or scoped to the component
+
+  function emberPowerSelectOptionClasses(_ref /*, hash*/) {
+    var _ref2 = _slicedToArray(_ref, 3);
+
+    var option = _ref2[0];
+    var selected = _ref2[1];
+    var highlighted = _ref2[2];
+
+    var classes = undefined;
+    if (isArray(selected)) {
+      classes = selected.indexOf(option) > -1 ? 'ember-power-select-option--selected' : '';
+    } else {
+      classes = option === selected ? 'ember-power-select-option--selected' : '';
+    }
+    if (get(option, 'disabled')) {
+      classes += ' ember-power-select-option--disabled';
+    }
+    if (option === highlighted) {
+      classes += ' ember-power-select-option--highlighted';
+    }
+    return classes;
+  }
+
+  exports['default'] = _ember['default'].Helper.helper(emberPowerSelectOptionClasses);
+});
+define("ember-power-select/templates/components/power-select/multiple/selected", ["exports"], function (exports) {
+  "use strict";
+
+  exports["default"] = Ember.HTMLBars.template((function () {
+    var child0 = (function () {
+      var child0 = (function () {
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 3,
+                "column": 4
+              },
+              "end": {
+                "line": 5,
+                "column": 4
+              }
+            },
+            "moduleName": "modules/ember-power-select/templates/components/power-select/multiple/selected.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("      ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("span");
+            dom.setAttribute(el1, "aria-label", "remove element");
+            dom.setAttribute(el1, "class", "ember-power-select-multiple-remove-btn");
+            var el2 = dom.createTextNode("×");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var element0 = dom.childAt(fragment, [1]);
+            var morphs = new Array(1);
+            morphs[0] = dom.createAttrMorph(element0, 'onclick');
+            return morphs;
+          },
+          statements: [["attribute", "onclick", ["subexpr", "action", [["get", "select.actions.removeOption", ["loc", [null, [4, 104], [4, 131]]]], ["get", "opt", ["loc", [null, [4, 132], [4, 135]]]]], [], ["loc", [null, [4, 95], [4, 137]]]]]],
+          locals: [],
+          templates: []
+        };
+      })();
+      return {
+        meta: {
+          "fragmentReason": {
+            "name": "triple-curlies"
+          },
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 1,
+              "column": 0
+            },
+            "end": {
+              "line": 8,
+              "column": 0
+            }
+          },
+          "moduleName": "modules/ember-power-select/templates/components/power-select/multiple/selected.hbs"
+        },
+        isEmpty: false,
+        arity: 1,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("span");
+          dom.setAttribute(el1, "class", "ember-power-select-multiple-option");
+          var el2 = dom.createTextNode("\n");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("    ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n  ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var element1 = dom.childAt(fragment, [1]);
+          var morphs = new Array(2);
+          morphs[0] = dom.createMorphAt(element1, 1, 1);
+          morphs[1] = dom.createMorphAt(element1, 3, 3);
+          return morphs;
+        },
+        statements: [["block", "unless", [["get", "disabled", ["loc", [null, [3, 14], [3, 22]]]]], [], 0, null, ["loc", [null, [3, 4], [5, 15]]]], ["inline", "yield", [["get", "opt", ["loc", [null, [6, 12], [6, 15]]]], ["get", "searchText", ["loc", [null, [6, 16], [6, 26]]]]], [], ["loc", [null, [6, 4], [6, 28]]]]],
+        locals: ["opt"],
+        templates: [child0]
+      };
+    })();
+    return {
+      meta: {
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.2.0",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 13,
+            "column": 52
+          }
+        },
+        "moduleName": "modules/ember-power-select/templates/components/power-select/multiple/selected.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("input");
+        dom.setAttribute(el1, "type", "search");
+        dom.setAttribute(el1, "class", "ember-power-select-trigger-multiple-input");
+        dom.setAttribute(el1, "tabindex", "0");
+        dom.setAttribute(el1, "autocomplete", "off");
+        dom.setAttribute(el1, "autocorrect", "off");
+        dom.setAttribute(el1, "autocapitalize", "off");
+        dom.setAttribute(el1, "spellcheck", "false");
+        dom.setAttribute(el1, "role", "textbox");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("span");
+        dom.setAttribute(el1, "class", "ember-power-select-status-icon");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+        var element2 = dom.childAt(fragment, [1]);
+        var morphs = new Array(7);
+        morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+        morphs[1] = dom.createAttrMorph(element2, 'style');
+        morphs[2] = dom.createAttrMorph(element2, 'placeholder');
+        morphs[3] = dom.createAttrMorph(element2, 'value');
+        morphs[4] = dom.createAttrMorph(element2, 'disabled');
+        morphs[5] = dom.createAttrMorph(element2, 'oninput');
+        morphs[6] = dom.createAttrMorph(element2, 'onkeydown');
+        dom.insertBoundary(fragment, 0);
+        return morphs;
+      },
+      statements: [["block", "each", [["get", "selection", ["loc", [null, [1, 8], [1, 17]]]]], [], 0, null, ["loc", [null, [1, 0], [8, 9]]]], ["attribute", "style", ["get", "triggerMultipleInputStyle", ["loc", [null, [10, 83], [10, 108]]]]], ["attribute", "placeholder", ["get", "maybePlaceholder", ["loc", [null, [11, 16], [11, 32]]]]], ["attribute", "value", ["get", "searchText", ["loc", [null, [11, 43], [11, 53]]]]], ["attribute", "disabled", ["get", "disabled", ["loc", [null, [11, 67], [11, 75]]]]], ["attribute", "oninput", ["subexpr", "action", ["search"], ["value", "target.value"], ["loc", [null, [12, 10], [12, 50]]]]], ["attribute", "onkeydown", ["get", "select.actions.handleKeydown", ["loc", [null, [12, 63], [12, 91]]]]]],
+      locals: [],
+      templates: [child0]
+    };
+  })());
+});
+define("ember-power-select/templates/components/power-select/multiple", ["exports"], function (exports) {
+  "use strict";
+
+  exports["default"] = Ember.HTMLBars.template((function () {
+    var child0 = (function () {
+      var child0 = (function () {
+        var child0 = (function () {
+          return {
+            meta: {
+              "fragmentReason": false,
+              "revision": "Ember@2.2.0",
+              "loc": {
+                "source": null,
+                "start": {
+                  "line": 17,
+                  "column": 6
+                },
+                "end": {
+                  "line": 19,
+                  "column": 6
+                }
+              },
+              "moduleName": "modules/ember-power-select/templates/components/power-select/multiple.hbs"
+            },
+            isEmpty: false,
+            arity: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            buildFragment: function buildFragment(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("        ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createElement("li");
+              dom.setAttribute(el1, "class", "ember-power-select-option");
+              var el2 = dom.createComment("");
+              dom.appendChild(el1, el2);
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+              var morphs = new Array(1);
+              morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 0, 0);
+              return morphs;
+            },
+            statements: [["content", "loadingMessage", ["loc", [null, [18, 46], [18, 64]]]]],
+            locals: [],
+            templates: []
+          };
+        })();
+        var child1 = (function () {
+          var child0 = (function () {
+            return {
+              meta: {
+                "fragmentReason": false,
+                "revision": "Ember@2.2.0",
+                "loc": {
+                  "source": null,
+                  "start": {
+                    "line": 21,
+                    "column": 8
+                  },
+                  "end": {
+                    "line": 25,
+                    "column": 8
+                  }
+                },
+                "moduleName": "modules/ember-power-select/templates/components/power-select/multiple.hbs"
+              },
+              isEmpty: false,
+              arity: 2,
+              cachedFragment: null,
+              hasRendered: false,
+              buildFragment: function buildFragment(dom) {
+                var el0 = dom.createDocumentFragment();
+                var el1 = dom.createTextNode("          ");
+                dom.appendChild(el0, el1);
+                var el1 = dom.createComment("");
+                dom.appendChild(el0, el1);
+                var el1 = dom.createTextNode("\n");
+                dom.appendChild(el0, el1);
+                return el0;
+              },
+              buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+                var morphs = new Array(1);
+                morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+                return morphs;
+              },
+              statements: [["inline", "yield", [["get", "option", ["loc", [null, [24, 18], [24, 24]]]], ["get", "term", ["loc", [null, [24, 25], [24, 29]]]]], [], ["loc", [null, [24, 10], [24, 31]]]]],
+              locals: ["option", "term"],
+              templates: []
+            };
+          })();
+          return {
+            meta: {
+              "fragmentReason": false,
+              "revision": "Ember@2.2.0",
+              "loc": {
+                "source": null,
+                "start": {
+                  "line": 20,
+                  "column": 6
+                },
+                "end": {
+                  "line": 26,
+                  "column": 6
+                }
+              },
+              "moduleName": "modules/ember-power-select/templates/components/power-select/multiple.hbs"
+            },
+            isEmpty: false,
+            arity: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            buildFragment: function buildFragment(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+              var morphs = new Array(1);
+              morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+              dom.insertBoundary(fragment, 0);
+              dom.insertBoundary(fragment, null);
+              return morphs;
+            },
+            statements: [["block", "component", [["get", "optionsComponent", ["loc", [null, [21, 21], [21, 37]]]]], ["options", ["subexpr", "readonly", [["get", "results", ["loc", [null, [21, 56], [21, 63]]]]], [], ["loc", [null, [21, 46], [21, 64]]]], "highlighted", ["subexpr", "readonly", [["get", "highlighted", ["loc", [null, [21, 87], [21, 98]]]]], [], ["loc", [null, [21, 77], [21, 99]]]], "selection", ["subexpr", "readonly", [["get", "selection", ["loc", [null, [22, 30], [22, 39]]]]], [], ["loc", [null, [22, 20], [22, 40]]]], "optionsComponent", ["subexpr", "readonly", [["get", "optionsComponent", ["loc", [null, [22, 68], [22, 84]]]]], [], ["loc", [null, [22, 58], [22, 85]]]], "searchText", ["subexpr", "readonly", [["get", "searchText", ["loc", [null, [22, 107], [22, 117]]]]], [], ["loc", [null, [22, 97], [22, 118]]]], "select", ["subexpr", "readonly", [["get", "select", ["loc", [null, [23, 27], [23, 33]]]]], [], ["loc", [null, [23, 17], [23, 34]]]], "extra", ["subexpr", "readonly", [["get", "extra", ["loc", [null, [23, 51], [23, 56]]]]], [], ["loc", [null, [23, 41], [23, 57]]]]], 0, null, ["loc", [null, [21, 8], [25, 22]]]]],
+            locals: [],
+            templates: [child0]
+          };
+        })();
+        var child2 = (function () {
+          var child0 = (function () {
+            return {
+              meta: {
+                "fragmentReason": false,
+                "revision": "Ember@2.2.0",
+                "loc": {
+                  "source": null,
+                  "start": {
+                    "line": 26,
+                    "column": 6
+                  },
+                  "end": {
+                    "line": 28,
+                    "column": 6
+                  }
+                },
+                "moduleName": "modules/ember-power-select/templates/components/power-select/multiple.hbs"
+              },
+              isEmpty: false,
+              arity: 0,
+              cachedFragment: null,
+              hasRendered: false,
+              buildFragment: function buildFragment(dom) {
+                var el0 = dom.createDocumentFragment();
+                var el1 = dom.createTextNode("        ");
+                dom.appendChild(el0, el1);
+                var el1 = dom.createElement("li");
+                dom.setAttribute(el1, "class", "ember-power-select-option");
+                var el2 = dom.createComment("");
+                dom.appendChild(el1, el2);
+                dom.appendChild(el0, el1);
+                var el1 = dom.createTextNode("\n");
+                dom.appendChild(el0, el1);
+                return el0;
+              },
+              buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+                var morphs = new Array(1);
+                morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 0, 0);
+                return morphs;
+              },
+              statements: [["content", "searchMessage", ["loc", [null, [27, 46], [27, 63]]]]],
+              locals: [],
+              templates: []
+            };
+          })();
+          var child1 = (function () {
+            var child0 = (function () {
+              var child0 = (function () {
+                return {
+                  meta: {
+                    "fragmentReason": false,
+                    "revision": "Ember@2.2.0",
+                    "loc": {
+                      "source": null,
+                      "start": {
+                        "line": 29,
+                        "column": 8
+                      },
+                      "end": {
+                        "line": 31,
+                        "column": 8
+                      }
+                    },
+                    "moduleName": "modules/ember-power-select/templates/components/power-select/multiple.hbs"
+                  },
+                  isEmpty: false,
+                  arity: 0,
+                  cachedFragment: null,
+                  hasRendered: false,
+                  buildFragment: function buildFragment(dom) {
+                    var el0 = dom.createDocumentFragment();
+                    var el1 = dom.createTextNode("          ");
+                    dom.appendChild(el0, el1);
+                    var el1 = dom.createComment("");
+                    dom.appendChild(el0, el1);
+                    var el1 = dom.createTextNode("\n");
+                    dom.appendChild(el0, el1);
+                    return el0;
+                  },
+                  buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+                    var morphs = new Array(1);
+                    morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+                    return morphs;
+                  },
+                  statements: [["inline", "yield", [], ["to", "inverse"], ["loc", [null, [30, 10], [30, 32]]]]],
+                  locals: [],
+                  templates: []
+                };
+              })();
+              var child1 = (function () {
+                var child0 = (function () {
+                  return {
+                    meta: {
+                      "fragmentReason": false,
+                      "revision": "Ember@2.2.0",
+                      "loc": {
+                        "source": null,
+                        "start": {
+                          "line": 31,
+                          "column": 8
+                        },
+                        "end": {
+                          "line": 33,
+                          "column": 8
+                        }
+                      },
+                      "moduleName": "modules/ember-power-select/templates/components/power-select/multiple.hbs"
+                    },
+                    isEmpty: false,
+                    arity: 0,
+                    cachedFragment: null,
+                    hasRendered: false,
+                    buildFragment: function buildFragment(dom) {
+                      var el0 = dom.createDocumentFragment();
+                      var el1 = dom.createTextNode("          ");
+                      dom.appendChild(el0, el1);
+                      var el1 = dom.createElement("li");
+                      dom.setAttribute(el1, "class", "ember-power-select-option");
+                      var el2 = dom.createComment("");
+                      dom.appendChild(el1, el2);
+                      dom.appendChild(el0, el1);
+                      var el1 = dom.createTextNode("\n        ");
+                      dom.appendChild(el0, el1);
+                      return el0;
+                    },
+                    buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+                      var morphs = new Array(1);
+                      morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 0, 0);
+                      return morphs;
+                    },
+                    statements: [["content", "noMatchesMessage", ["loc", [null, [32, 48], [32, 68]]]]],
+                    locals: [],
+                    templates: []
+                  };
+                })();
+                return {
+                  meta: {
+                    "fragmentReason": false,
+                    "revision": "Ember@2.2.0",
+                    "loc": {
+                      "source": null,
+                      "start": {
+                        "line": 31,
+                        "column": 8
+                      },
+                      "end": {
+                        "line": 33,
+                        "column": 8
+                      }
+                    },
+                    "moduleName": "modules/ember-power-select/templates/components/power-select/multiple.hbs"
+                  },
+                  isEmpty: false,
+                  arity: 0,
+                  cachedFragment: null,
+                  hasRendered: false,
+                  buildFragment: function buildFragment(dom) {
+                    var el0 = dom.createDocumentFragment();
+                    var el1 = dom.createComment("");
+                    dom.appendChild(el0, el1);
+                    return el0;
+                  },
+                  buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+                    var morphs = new Array(1);
+                    morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+                    dom.insertBoundary(fragment, 0);
+                    dom.insertBoundary(fragment, null);
+                    return morphs;
+                  },
+                  statements: [["block", "if", [["get", "noMatchesMessage", ["loc", [null, [31, 18], [31, 34]]]]], [], 0, null, ["loc", [null, [31, 8], [33, 8]]]]],
+                  locals: [],
+                  templates: [child0]
+                };
+              })();
+              return {
+                meta: {
+                  "fragmentReason": false,
+                  "revision": "Ember@2.2.0",
+                  "loc": {
+                    "source": null,
+                    "start": {
+                      "line": 28,
+                      "column": 6
+                    },
+                    "end": {
+                      "line": 34,
+                      "column": 6
+                    }
+                  },
+                  "moduleName": "modules/ember-power-select/templates/components/power-select/multiple.hbs"
+                },
+                isEmpty: false,
+                arity: 0,
+                cachedFragment: null,
+                hasRendered: false,
+                buildFragment: function buildFragment(dom) {
+                  var el0 = dom.createDocumentFragment();
+                  var el1 = dom.createComment("");
+                  dom.appendChild(el0, el1);
+                  var el1 = dom.createTextNode("      ");
+                  dom.appendChild(el0, el1);
+                  return el0;
+                },
+                buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+                  var morphs = new Array(1);
+                  morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+                  dom.insertBoundary(fragment, 0);
+                  return morphs;
+                },
+                statements: [["block", "if", [["get", "hasInverseBlock", ["loc", [null, [29, 14], [29, 29]]]]], [], 0, 1, ["loc", [null, [29, 8], [33, 15]]]]],
+                locals: [],
+                templates: [child0, child1]
+              };
+            })();
+            return {
+              meta: {
+                "fragmentReason": false,
+                "revision": "Ember@2.2.0",
+                "loc": {
+                  "source": null,
+                  "start": {
+                    "line": 28,
+                    "column": 6
+                  },
+                  "end": {
+                    "line": 34,
+                    "column": 6
+                  }
+                },
+                "moduleName": "modules/ember-power-select/templates/components/power-select/multiple.hbs"
+              },
+              isEmpty: false,
+              arity: 0,
+              cachedFragment: null,
+              hasRendered: false,
+              buildFragment: function buildFragment(dom) {
+                var el0 = dom.createDocumentFragment();
+                var el1 = dom.createComment("");
+                dom.appendChild(el0, el1);
+                return el0;
+              },
+              buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+                var morphs = new Array(1);
+                morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+                dom.insertBoundary(fragment, 0);
+                dom.insertBoundary(fragment, null);
+                return morphs;
+              },
+              statements: [["block", "if", [["get", "results.isFulfilled", ["loc", [null, [28, 16], [28, 35]]]]], [], 0, null, ["loc", [null, [28, 6], [34, 6]]]]],
+              locals: [],
+              templates: [child0]
+            };
+          })();
+          return {
+            meta: {
+              "fragmentReason": false,
+              "revision": "Ember@2.2.0",
+              "loc": {
+                "source": null,
+                "start": {
+                  "line": 26,
+                  "column": 6
+                },
+                "end": {
+                  "line": 34,
+                  "column": 6
+                }
+              },
+              "moduleName": "modules/ember-power-select/templates/components/power-select/multiple.hbs"
+            },
+            isEmpty: false,
+            arity: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            buildFragment: function buildFragment(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+              var morphs = new Array(1);
+              morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+              dom.insertBoundary(fragment, 0);
+              dom.insertBoundary(fragment, null);
+              return morphs;
+            },
+            statements: [["block", "if", [["get", "mustShowSearchMessage", ["loc", [null, [26, 16], [26, 37]]]]], [], 0, 1, ["loc", [null, [26, 6], [34, 6]]]]],
+            locals: [],
+            templates: [child0, child1]
+          };
+        })();
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 4,
+                "column": 2
+              },
+              "end": {
+                "line": 36,
+                "column": 2
+              }
+            },
+            "moduleName": "modules/ember-power-select/templates/components/power-select/multiple.hbs"
+          },
+          isEmpty: false,
+          arity: 1,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("\n    ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("ul");
+            dom.setAttribute(el1, "class", "ember-power-select-options");
+            var el2 = dom.createTextNode("\n");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createComment("");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createComment("");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createTextNode("    ");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var element0 = dom.childAt(fragment, [1]);
+            var morphs = new Array(2);
+            morphs[0] = dom.createMorphAt(element0, 1, 1);
+            morphs[1] = dom.createMorphAt(element0, 2, 2);
+            return morphs;
+          },
+          statements: [["block", "if", [["get", "showLoadingMessage", ["loc", [null, [17, 12], [17, 30]]]]], [], 0, null, ["loc", [null, [17, 6], [19, 13]]]], ["block", "if", [["get", "resultsLength", ["loc", [null, [20, 12], [20, 25]]]]], [], 1, 2, ["loc", [null, [20, 6], [34, 13]]]]],
+          locals: ["select"],
+          templates: [child0, child1, child2]
+        };
+      })();
+      return {
+        meta: {
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type"]
+          },
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 1,
+              "column": 0
+            },
+            "end": {
+              "line": 37,
+              "column": 0
+            }
+          },
+          "moduleName": "modules/ember-power-select/templates/components/power-select/multiple.hbs"
+        },
+        isEmpty: false,
+        arity: 1,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+          dom.insertBoundary(fragment, 0);
+          dom.insertBoundary(fragment, null);
+          return morphs;
+        },
+        statements: [["block", "with", [["subexpr", "hash", [], ["isOpen", ["get", "dropdown.isOpen", ["loc", [null, [5, 11], [5, 26]]]], "actions", ["subexpr", "hash", [], ["open", ["subexpr", "action", ["open", ["get", "dropdown", ["loc", [null, [7, 26], [7, 34]]]]], [], ["loc", [null, [7, 11], [7, 35]]]], "close", ["subexpr", "action", ["close", ["get", "dropdown", ["loc", [null, [8, 28], [8, 36]]]]], [], ["loc", [null, [8, 12], [8, 37]]]], "select", ["subexpr", "action", ["select", ["get", "dropdown", ["loc", [null, [9, 30], [9, 38]]]]], [], ["loc", [null, [9, 13], [9, 39]]]], "highlight", ["subexpr", "action", ["highlight", ["get", "dropdown", ["loc", [null, [10, 36], [10, 44]]]]], [], ["loc", [null, [10, 16], [10, 45]]]], "search", ["subexpr", "action", ["search", ["get", "dropdown", ["loc", [null, [11, 30], [11, 38]]]]], [], ["loc", [null, [11, 13], [11, 39]]]], "removeOption", ["subexpr", "action", ["removeOption", ["get", "dropdown", ["loc", [null, [12, 42], [12, 50]]]]], [], ["loc", [null, [12, 19], [12, 51]]]], "handleKeydown", ["subexpr", "action", ["handleKeydown", ["get", "dropdown", ["loc", [null, [13, 44], [13, 52]]]]], [], ["loc", [null, [13, 20], [13, 53]]]]], ["loc", [null, [6, 12], [14, 5]]]]], ["loc", [null, [4, 10], [14, 6]]]]], [], 0, null, ["loc", [null, [4, 2], [36, 11]]]]],
+        locals: ["dropdown"],
+        templates: [child0]
+      };
+    })();
+    var child1 = (function () {
+      var child0 = (function () {
+        var child0 = (function () {
+          return {
+            meta: {
+              "fragmentReason": false,
+              "revision": "Ember@2.2.0",
+              "loc": {
+                "source": null,
+                "start": {
+                  "line": 49,
+                  "column": 4
+                },
+                "end": {
+                  "line": 53,
+                  "column": 4
+                }
+              },
+              "moduleName": "modules/ember-power-select/templates/components/power-select/multiple.hbs"
+            },
+            isEmpty: false,
+            arity: 2,
+            cachedFragment: null,
+            hasRendered: false,
+            buildFragment: function buildFragment(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("      ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+              var morphs = new Array(1);
+              morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+              return morphs;
+            },
+            statements: [["inline", "yield", [["get", "opt", ["loc", [null, [52, 14], [52, 17]]]], ["get", "term", ["loc", [null, [52, 18], [52, 22]]]]], [], ["loc", [null, [52, 6], [52, 24]]]]],
+            locals: ["opt", "term"],
+            templates: []
+          };
+        })();
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 38,
+                "column": 2
+              },
+              "end": {
+                "line": 54,
+                "column": 2
+              }
+            },
+            "moduleName": "modules/ember-power-select/templates/components/power-select/multiple.hbs"
+          },
+          isEmpty: false,
+          arity: 1,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var morphs = new Array(1);
+            morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+            dom.insertBoundary(fragment, 0);
+            dom.insertBoundary(fragment, null);
+            return morphs;
+          },
+          statements: [["block", "component", [["get", "selectedComponent", ["loc", [null, [49, 17], [49, 34]]]]], ["options", ["subexpr", "readonly", [["get", "results", ["loc", [null, [49, 53], [49, 60]]]]], [], ["loc", [null, [49, 43], [49, 61]]]], "selection", ["subexpr", "readonly", [["get", "selection", ["loc", [null, [49, 82], [49, 91]]]]], [], ["loc", [null, [49, 72], [49, 92]]]], "searchText", ["subexpr", "readonly", [["get", "searchText", ["loc", [null, [49, 114], [49, 124]]]]], [], ["loc", [null, [49, 104], [49, 125]]]], "placeholder", ["subexpr", "readonly", [["get", "placeholder", ["loc", [null, [50, 28], [50, 39]]]]], [], ["loc", [null, [50, 18], [50, 40]]]], "disabled", ["subexpr", "readonly", [["get", "disabled", ["loc", [null, [50, 60], [50, 68]]]]], [], ["loc", [null, [50, 50], [50, 69]]]], "highlighted", ["subexpr", "readonly", [["get", "highlighted", ["loc", [null, [50, 92], [50, 103]]]]], [], ["loc", [null, [50, 82], [50, 104]]]], "select", ["subexpr", "readonly", [["get", "select", ["loc", [null, [51, 23], [51, 29]]]]], [], ["loc", [null, [51, 13], [51, 30]]]], "extra", ["subexpr", "readonly", [["get", "extra", ["loc", [null, [51, 47], [51, 52]]]]], [], ["loc", [null, [51, 37], [51, 53]]]]], 0, null, ["loc", [null, [49, 4], [53, 18]]]]],
+          locals: ["select"],
+          templates: [child0]
+        };
+      })();
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 37,
+              "column": 0
+            },
+            "end": {
+              "line": 55,
+              "column": 1
+            }
+          },
+          "moduleName": "modules/ember-power-select/templates/components/power-select/multiple.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+          dom.insertBoundary(fragment, 0);
+          dom.insertBoundary(fragment, null);
+          return morphs;
+        },
+        statements: [["block", "with", [["subexpr", "hash", [], ["isOpen", ["get", "registeredDropdown.isOpen", ["loc", [null, [39, 11], [39, 36]]]], "actions", ["subexpr", "hash", [], ["open", ["subexpr", "action", ["open", ["get", "registeredDropdown", ["loc", [null, [41, 26], [41, 44]]]]], [], ["loc", [null, [41, 11], [41, 45]]]], "close", ["subexpr", "action", ["close", ["get", "registeredDropdown", ["loc", [null, [42, 28], [42, 46]]]]], [], ["loc", [null, [42, 12], [42, 47]]]], "select", ["subexpr", "action", ["select", ["get", "registeredDropdown", ["loc", [null, [43, 30], [43, 48]]]]], [], ["loc", [null, [43, 13], [43, 49]]]], "highlight", ["subexpr", "action", ["highlight", ["get", "registeredDropdown", ["loc", [null, [44, 36], [44, 54]]]]], [], ["loc", [null, [44, 16], [44, 55]]]], "search", ["subexpr", "action", ["search", ["get", "registeredDropdown", ["loc", [null, [45, 30], [45, 48]]]]], [], ["loc", [null, [45, 13], [45, 49]]]], "removeOption", ["subexpr", "action", ["removeOption", ["get", "registeredDropdown", ["loc", [null, [46, 42], [46, 60]]]]], [], ["loc", [null, [46, 19], [46, 61]]]], "handleKeydown", ["subexpr", "action", ["handleKeydown", ["get", "registeredDropdown", ["loc", [null, [47, 44], [47, 62]]]]], [], ["loc", [null, [47, 20], [47, 63]]]]], ["loc", [null, [40, 12], [48, 5]]]]], ["loc", [null, [38, 10], [48, 6]]]]], [], 0, null, ["loc", [null, [38, 2], [54, 11]]]]],
+        locals: [],
+        templates: [child0]
+      };
+    })();
+    return {
+      meta: {
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.2.0",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 56,
+            "column": 0
+          }
+        },
+        "moduleName": "modules/ember-power-select/templates/components/power-select/multiple.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+        var morphs = new Array(1);
+        morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+        dom.insertBoundary(fragment, 0);
+        dom.insertBoundary(fragment, null);
+        return morphs;
+      },
+      statements: [["block", "basic-dropdown", [], ["class", ["subexpr", "readonly", [["get", "concatenatedClasses", ["loc", [null, [1, 34], [1, 53]]]]], [], ["loc", [null, [1, 24], [1, 54]]]], "dir", ["subexpr", "@mut", [["get", "dir", ["loc", [null, [1, 59], [1, 62]]]]], [], []], "tabindex", ["subexpr", "readonly", [["get", "tabindex", ["loc", [null, [1, 82], [1, 90]]]]], [], ["loc", [null, [1, 72], [1, 91]]]], "renderInPlace", ["subexpr", "@mut", [["get", "renderInPlace", ["loc", [null, [1, 106], [1, 119]]]]], [], []], "matchTriggerWidth", true, "disabled", ["subexpr", "@mut", [["get", "disabled", ["loc", [null, [2, 11], [2, 19]]]]], [], []], "dropdownPosition", ["subexpr", "@mut", [["get", "dropdownPosition", ["loc", [null, [2, 37], [2, 53]]]]], [], []], "triggerClass", ["subexpr", "readonly", [["get", "triggerClass", ["loc", [null, [2, 77], [2, 89]]]]], [], ["loc", [null, [2, 67], [2, 90]]]], "dropdownClass", ["subexpr", "@mut", [["get", "concatenatedDropdownClasses", ["loc", [null, [2, 105], [2, 132]]]]], [], []], "onOpen", ["subexpr", "action", [["get", "onOpen", ["loc", [null, [3, 17], [3, 23]]]]], [], ["loc", [null, [3, 9], [3, 24]]]], "onClose", ["subexpr", "action", [["get", "onClose", ["loc", [null, [3, 41], [3, 48]]]]], [], ["loc", [null, [3, 33], [3, 49]]]], "onFocus", ["subexpr", "action", [["get", "focusSearch", ["loc", [null, [3, 66], [3, 77]]]]], [], ["loc", [null, [3, 58], [3, 78]]]], "onKeydown", ["subexpr", "action", ["handleKeydown"], [], ["loc", [null, [3, 89], [3, 113]]]], "registerActionsInParent", ["subexpr", "action", ["registerDropdown"], [], ["loc", [null, [3, 138], [3, 165]]]]], 0, 1, ["loc", [null, [1, 0], [55, 20]]]]],
+      locals: [],
+      templates: [child0, child1]
+    };
+  })());
+});
+define("ember-power-select/templates/components/power-select/options", ["exports"], function (exports) {
+  "use strict";
+
+  exports["default"] = Ember.HTMLBars.template((function () {
+    var child0 = (function () {
+      var child0 = (function () {
+        var child0 = (function () {
+          return {
+            meta: {
+              "fragmentReason": false,
+              "revision": "Ember@2.2.0",
+              "loc": {
+                "source": null,
+                "start": {
+                  "line": 6,
+                  "column": 8
+                },
+                "end": {
+                  "line": 9,
+                  "column": 8
+                }
+              },
+              "moduleName": "modules/ember-power-select/templates/components/power-select/options.hbs"
+            },
+            isEmpty: false,
+            arity: 1,
+            cachedFragment: null,
+            hasRendered: false,
+            buildFragment: function buildFragment(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("          ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+              var morphs = new Array(1);
+              morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+              return morphs;
+            },
+            statements: [["inline", "yield", [["get", "option", ["loc", [null, [8, 18], [8, 24]]]], ["get", "searchText", ["loc", [null, [8, 25], [8, 35]]]]], [], ["loc", [null, [8, 10], [8, 37]]]]],
+            locals: ["option"],
+            templates: []
+          };
+        })();
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 2,
+                "column": 2
+              },
+              "end": {
+                "line": 12,
+                "column": 2
+              }
+            },
+            "moduleName": "modules/ember-power-select/templates/components/power-select/options.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("    ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("li");
+            dom.setAttribute(el1, "class", "ember-power-select-group");
+            var el2 = dom.createTextNode("\n      ");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createElement("span");
+            dom.setAttribute(el2, "class", "ember-power-select-group-name");
+            var el3 = dom.createComment("");
+            dom.appendChild(el2, el3);
+            dom.appendChild(el1, el2);
+            var el2 = dom.createTextNode("\n      ");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createElement("ul");
+            dom.setAttribute(el2, "class", "ember-power-select-options ember-power-select-options--nested");
+            var el3 = dom.createTextNode("\n");
+            dom.appendChild(el2, el3);
+            var el3 = dom.createComment("");
+            dom.appendChild(el2, el3);
+            var el3 = dom.createTextNode("      ");
+            dom.appendChild(el2, el3);
+            dom.appendChild(el1, el2);
+            var el2 = dom.createTextNode("\n    ");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var element1 = dom.childAt(fragment, [1]);
+            var morphs = new Array(2);
+            morphs[0] = dom.createMorphAt(dom.childAt(element1, [1]), 0, 0);
+            morphs[1] = dom.createMorphAt(dom.childAt(element1, [3]), 1, 1);
+            return morphs;
+          },
+          statements: [["content", "opt.groupName", ["loc", [null, [4, 50], [4, 67]]]], ["block", "component", [["get", "optionsComponent", ["loc", [null, [6, 21], [6, 37]]]]], ["highlighted", ["subexpr", "readonly", [["get", "highlighted", ["loc", [null, [6, 60], [6, 71]]]]], [], ["loc", [null, [6, 50], [6, 72]]]], "selection", ["subexpr", "readonly", [["get", "selection", ["loc", [null, [6, 93], [6, 102]]]]], [], ["loc", [null, [6, 83], [6, 103]]]], "options", ["subexpr", "readonly", [["get", "opt.options", ["loc", [null, [7, 28], [7, 39]]]]], [], ["loc", [null, [7, 18], [7, 40]]]], "optionsComponent", ["subexpr", "readonly", [["get", "optionsComponent", ["loc", [null, [7, 68], [7, 84]]]]], [], ["loc", [null, [7, 58], [7, 85]]]], "select", ["subexpr", "readonly", [["get", "select", ["loc", [null, [7, 103], [7, 109]]]]], [], ["loc", [null, [7, 93], [7, 110]]]]], 0, null, ["loc", [null, [6, 8], [9, 22]]]]],
+          locals: [],
+          templates: [child0]
+        };
+      })();
+      var child1 = (function () {
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 12,
+                "column": 2
+              },
+              "end": {
+                "line": 17,
+                "column": 2
+              }
+            },
+            "moduleName": "modules/ember-power-select/templates/components/power-select/options.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("    ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("li");
+            var el2 = dom.createTextNode("\n      ");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createComment("");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createTextNode("\n    ");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var element0 = dom.childAt(fragment, [1]);
+            var morphs = new Array(4);
+            morphs[0] = dom.createAttrMorph(element0, 'class');
+            morphs[1] = dom.createAttrMorph(element0, 'onclick');
+            morphs[2] = dom.createAttrMorph(element0, 'onmouseover');
+            morphs[3] = dom.createMorphAt(element0, 1, 1);
+            return morphs;
+          },
+          statements: [["attribute", "class", ["concat", ["ember-power-select-option ", ["subexpr", "ember-power-select-option-classes", [["get", "opt", ["loc", [null, [13, 77], [13, 80]]]], ["get", "selection", ["loc", [null, [13, 81], [13, 90]]]], ["get", "highlighted", ["loc", [null, [13, 91], [13, 102]]]]], [], ["loc", [null, [13, 41], [13, 104]]]]]]], ["attribute", "onclick", ["subexpr", "action", [["get", "select.actions.select", ["loc", [null, [14, 23], [14, 44]]]], ["get", "opt", ["loc", [null, [14, 45], [14, 48]]]]], [], ["loc", [null, [14, 14], [14, 50]]]]], ["attribute", "onmouseover", ["subexpr", "action", [["get", "select.actions.highlight", ["loc", [null, [14, 72], [14, 96]]]], ["get", "opt", ["loc", [null, [14, 97], [14, 100]]]]], [], ["loc", [null, [14, 63], [14, 102]]]]], ["inline", "yield", [["get", "opt", ["loc", [null, [15, 14], [15, 17]]]], ["get", "searchText", ["loc", [null, [15, 18], [15, 28]]]]], [], ["loc", [null, [15, 6], [15, 30]]]]],
+          locals: [],
+          templates: []
+        };
+      })();
+      return {
+        meta: {
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type"]
+          },
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 1,
+              "column": 0
+            },
+            "end": {
+              "line": 18,
+              "column": 0
+            }
+          },
+          "moduleName": "modules/ember-power-select/templates/components/power-select/options.hbs"
+        },
+        isEmpty: false,
+        arity: 1,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+          dom.insertBoundary(fragment, 0);
+          dom.insertBoundary(fragment, null);
+          return morphs;
+        },
+        statements: [["block", "if", [["get", "opt.groupName", ["loc", [null, [2, 8], [2, 21]]]]], [], 0, 1, ["loc", [null, [2, 2], [17, 9]]]]],
+        locals: ["opt"],
+        templates: [child0, child1]
+      };
+    })();
+    return {
+      meta: {
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.2.0",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 19,
+            "column": 0
+          }
+        },
+        "moduleName": "modules/ember-power-select/templates/components/power-select/options.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+        var morphs = new Array(1);
+        morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+        dom.insertBoundary(fragment, 0);
+        dom.insertBoundary(fragment, null);
+        return morphs;
+      },
+      statements: [["block", "each", [["get", "options", ["loc", [null, [1, 8], [1, 15]]]]], [], 0, null, ["loc", [null, [1, 0], [18, 9]]]]],
+      locals: [],
+      templates: [child0]
+    };
+  })());
+});
+define("ember-power-select/templates/components/power-select/single/selected", ["exports"], function (exports) {
+  "use strict";
+
+  exports["default"] = Ember.HTMLBars.template((function () {
+    var child0 = (function () {
+      var child0 = (function () {
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 3,
+                "column": 2
+              },
+              "end": {
+                "line": 5,
+                "column": 2
+              }
+            },
+            "moduleName": "modules/ember-power-select/templates/components/power-select/single/selected.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("    ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("span");
+            dom.setAttribute(el1, "class", "ember-power-select-clear-btn");
+            var el2 = dom.createTextNode("×");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var element0 = dom.childAt(fragment, [1]);
+            var morphs = new Array(1);
+            morphs[0] = dom.createAttrMorph(element0, 'onclick');
+            return morphs;
+          },
+          statements: [["attribute", "onclick", ["get", "select.actions.clear", ["loc", [null, [4, 57], [4, 77]]]]]],
+          locals: [],
+          templates: []
+        };
+      })();
+      return {
+        meta: {
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 1,
+              "column": 0
+            },
+            "end": {
+              "line": 6,
+              "column": 0
+            }
+          },
+          "moduleName": "modules/ember-power-select/templates/components/power-select/single/selected.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(2);
+          morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+          morphs[1] = dom.createMorphAt(fragment, 3, 3, contextualElement);
+          dom.insertBoundary(fragment, null);
+          return morphs;
+        },
+        statements: [["inline", "yield", [["get", "selection", ["loc", [null, [2, 10], [2, 19]]]], ["get", "searchText", ["loc", [null, [2, 20], [2, 30]]]]], [], ["loc", [null, [2, 2], [2, 32]]]], ["block", "if", [["get", "select.actions.clear", ["loc", [null, [3, 8], [3, 28]]]]], [], 0, null, ["loc", [null, [3, 2], [5, 9]]]]],
+        locals: [],
+        templates: [child0]
+      };
+    })();
+    var child1 = (function () {
+      var child0 = (function () {
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 6,
+                "column": 0
+              },
+              "end": {
+                "line": 8,
+                "column": 0
+              }
+            },
+            "moduleName": "modules/ember-power-select/templates/components/power-select/single/selected.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("  ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("span");
+            dom.setAttribute(el1, "class", "ember-power-select-placeholder");
+            var el2 = dom.createComment("");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var morphs = new Array(1);
+            morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 0, 0);
+            return morphs;
+          },
+          statements: [["content", "placeholder", ["loc", [null, [7, 47], [7, 62]]]]],
+          locals: [],
+          templates: []
+        };
+      })();
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 6,
+              "column": 0
+            },
+            "end": {
+              "line": 8,
+              "column": 0
+            }
+          },
+          "moduleName": "modules/ember-power-select/templates/components/power-select/single/selected.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+          dom.insertBoundary(fragment, 0);
+          dom.insertBoundary(fragment, null);
+          return morphs;
+        },
+        statements: [["block", "if", [["get", "placeholder", ["loc", [null, [6, 10], [6, 21]]]]], [], 0, null, ["loc", [null, [6, 0], [8, 0]]]]],
+        locals: [],
+        templates: [child0]
+      };
+    })();
+    return {
+      meta: {
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type", "multiple-nodes"]
+        },
+        "revision": "Ember@2.2.0",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 9,
+            "column": 52
+          }
+        },
+        "moduleName": "modules/ember-power-select/templates/components/power-select/single/selected.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("span");
+        dom.setAttribute(el1, "class", "ember-power-select-status-icon");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+        var morphs = new Array(1);
+        morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+        dom.insertBoundary(fragment, 0);
+        return morphs;
+      },
+      statements: [["block", "if", [["get", "selection", ["loc", [null, [1, 6], [1, 15]]]]], [], 0, 1, ["loc", [null, [1, 0], [8, 7]]]]],
+      locals: [],
+      templates: [child0, child1]
+    };
+  })());
+});
+define("ember-power-select/templates/components/power-select/single", ["exports"], function (exports) {
+  "use strict";
+
+  exports["default"] = Ember.HTMLBars.template((function () {
+    var child0 = (function () {
+      var child0 = (function () {
+        var child0 = (function () {
+          return {
+            meta: {
+              "fragmentReason": false,
+              "revision": "Ember@2.2.0",
+              "loc": {
+                "source": null,
+                "start": {
+                  "line": 15,
+                  "column": 4
+                },
+                "end": {
+                  "line": 21,
+                  "column": 4
+                }
+              },
+              "moduleName": "modules/ember-power-select/templates/components/power-select/single.hbs"
+            },
+            isEmpty: false,
+            arity: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            buildFragment: function buildFragment(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("      ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createElement("div");
+              dom.setAttribute(el1, "class", "ember-power-select-search");
+              var el2 = dom.createTextNode("\n        ");
+              dom.appendChild(el1, el2);
+              var el2 = dom.createElement("input");
+              dom.setAttribute(el2, "type", "search");
+              dom.setAttribute(el2, "autocomplete", "off");
+              dom.setAttribute(el2, "autocorrect", "off");
+              dom.setAttribute(el2, "autocapitalize", "off");
+              dom.setAttribute(el2, "spellcheck", "false");
+              dom.setAttribute(el2, "role", "textbox");
+              dom.appendChild(el1, el2);
+              var el2 = dom.createTextNode("\n      ");
+              dom.appendChild(el1, el2);
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+              var element0 = dom.childAt(fragment, [1, 1]);
+              var morphs = new Array(3);
+              morphs[0] = dom.createAttrMorph(element0, 'oninput');
+              morphs[1] = dom.createAttrMorph(element0, 'onkeydown');
+              morphs[2] = dom.createAttrMorph(element0, 'placeholder');
+              return morphs;
+            },
+            statements: [["attribute", "oninput", ["subexpr", "action", [["get", "select.actions.search", ["loc", [null, [18, 59], [18, 80]]]]], ["value", "target.value"], ["loc", [null, [18, 50], [18, 103]]]]], ["attribute", "onkeydown", ["get", "select.actions.handleKeydown", ["loc", [null, [19, 20], [19, 48]]]]], ["attribute", "placeholder", ["get", "searchPlaceholder", ["loc", [null, [19, 65], [19, 82]]]]]],
+            locals: [],
+            templates: []
+          };
+        })();
+        var child1 = (function () {
+          return {
+            meta: {
+              "fragmentReason": false,
+              "revision": "Ember@2.2.0",
+              "loc": {
+                "source": null,
+                "start": {
+                  "line": 23,
+                  "column": 6
+                },
+                "end": {
+                  "line": 25,
+                  "column": 6
+                }
+              },
+              "moduleName": "modules/ember-power-select/templates/components/power-select/single.hbs"
+            },
+            isEmpty: false,
+            arity: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            buildFragment: function buildFragment(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("        ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createElement("li");
+              dom.setAttribute(el1, "class", "ember-power-select-option");
+              var el2 = dom.createComment("");
+              dom.appendChild(el1, el2);
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+              var morphs = new Array(1);
+              morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 0, 0);
+              return morphs;
+            },
+            statements: [["content", "loadingMessage", ["loc", [null, [24, 46], [24, 64]]]]],
+            locals: [],
+            templates: []
+          };
+        })();
+        var child2 = (function () {
+          var child0 = (function () {
+            return {
+              meta: {
+                "fragmentReason": false,
+                "revision": "Ember@2.2.0",
+                "loc": {
+                  "source": null,
+                  "start": {
+                    "line": 27,
+                    "column": 8
+                  },
+                  "end": {
+                    "line": 31,
+                    "column": 8
+                  }
+                },
+                "moduleName": "modules/ember-power-select/templates/components/power-select/single.hbs"
+              },
+              isEmpty: false,
+              arity: 2,
+              cachedFragment: null,
+              hasRendered: false,
+              buildFragment: function buildFragment(dom) {
+                var el0 = dom.createDocumentFragment();
+                var el1 = dom.createTextNode("          ");
+                dom.appendChild(el0, el1);
+                var el1 = dom.createComment("");
+                dom.appendChild(el0, el1);
+                var el1 = dom.createTextNode("\n");
+                dom.appendChild(el0, el1);
+                return el0;
+              },
+              buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+                var morphs = new Array(1);
+                morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+                return morphs;
+              },
+              statements: [["inline", "yield", [["get", "option", ["loc", [null, [30, 18], [30, 24]]]], ["get", "term", ["loc", [null, [30, 25], [30, 29]]]]], [], ["loc", [null, [30, 10], [30, 31]]]]],
+              locals: ["option", "term"],
+              templates: []
+            };
+          })();
+          return {
+            meta: {
+              "fragmentReason": false,
+              "revision": "Ember@2.2.0",
+              "loc": {
+                "source": null,
+                "start": {
+                  "line": 26,
+                  "column": 6
+                },
+                "end": {
+                  "line": 32,
+                  "column": 6
+                }
+              },
+              "moduleName": "modules/ember-power-select/templates/components/power-select/single.hbs"
+            },
+            isEmpty: false,
+            arity: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            buildFragment: function buildFragment(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+              var morphs = new Array(1);
+              morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+              dom.insertBoundary(fragment, 0);
+              dom.insertBoundary(fragment, null);
+              return morphs;
+            },
+            statements: [["block", "component", [["get", "optionsComponent", ["loc", [null, [27, 21], [27, 37]]]]], ["options", ["subexpr", "readonly", [["get", "results", ["loc", [null, [27, 56], [27, 63]]]]], [], ["loc", [null, [27, 46], [27, 64]]]], "highlighted", ["subexpr", "readonly", [["get", "highlighted", ["loc", [null, [27, 87], [27, 98]]]]], [], ["loc", [null, [27, 77], [27, 99]]]], "selection", ["subexpr", "readonly", [["get", "selection", ["loc", [null, [28, 30], [28, 39]]]]], [], ["loc", [null, [28, 20], [28, 40]]]], "optionsComponent", ["subexpr", "readonly", [["get", "optionsComponent", ["loc", [null, [28, 68], [28, 84]]]]], [], ["loc", [null, [28, 58], [28, 85]]]], "searchText", ["subexpr", "readonly", [["get", "searchText", ["loc", [null, [28, 107], [28, 117]]]]], [], ["loc", [null, [28, 97], [28, 118]]]], "select", ["subexpr", "readonly", [["get", "select", ["loc", [null, [29, 27], [29, 33]]]]], [], ["loc", [null, [29, 17], [29, 34]]]], "extra", ["subexpr", "readonly", [["get", "extra", ["loc", [null, [29, 51], [29, 56]]]]], [], ["loc", [null, [29, 41], [29, 57]]]]], 0, null, ["loc", [null, [27, 8], [31, 22]]]]],
+            locals: [],
+            templates: [child0]
+          };
+        })();
+        var child3 = (function () {
+          var child0 = (function () {
+            return {
+              meta: {
+                "fragmentReason": false,
+                "revision": "Ember@2.2.0",
+                "loc": {
+                  "source": null,
+                  "start": {
+                    "line": 32,
+                    "column": 6
+                  },
+                  "end": {
+                    "line": 34,
+                    "column": 6
+                  }
+                },
+                "moduleName": "modules/ember-power-select/templates/components/power-select/single.hbs"
+              },
+              isEmpty: false,
+              arity: 0,
+              cachedFragment: null,
+              hasRendered: false,
+              buildFragment: function buildFragment(dom) {
+                var el0 = dom.createDocumentFragment();
+                var el1 = dom.createTextNode("        ");
+                dom.appendChild(el0, el1);
+                var el1 = dom.createElement("li");
+                dom.setAttribute(el1, "class", "ember-power-select-option");
+                var el2 = dom.createComment("");
+                dom.appendChild(el1, el2);
+                dom.appendChild(el0, el1);
+                var el1 = dom.createTextNode("\n");
+                dom.appendChild(el0, el1);
+                return el0;
+              },
+              buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+                var morphs = new Array(1);
+                morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 0, 0);
+                return morphs;
+              },
+              statements: [["content", "searchMessage", ["loc", [null, [33, 46], [33, 63]]]]],
+              locals: [],
+              templates: []
+            };
+          })();
+          var child1 = (function () {
+            var child0 = (function () {
+              var child0 = (function () {
+                return {
+                  meta: {
+                    "fragmentReason": false,
+                    "revision": "Ember@2.2.0",
+                    "loc": {
+                      "source": null,
+                      "start": {
+                        "line": 35,
+                        "column": 8
+                      },
+                      "end": {
+                        "line": 37,
+                        "column": 8
+                      }
+                    },
+                    "moduleName": "modules/ember-power-select/templates/components/power-select/single.hbs"
+                  },
+                  isEmpty: false,
+                  arity: 0,
+                  cachedFragment: null,
+                  hasRendered: false,
+                  buildFragment: function buildFragment(dom) {
+                    var el0 = dom.createDocumentFragment();
+                    var el1 = dom.createTextNode("          ");
+                    dom.appendChild(el0, el1);
+                    var el1 = dom.createComment("");
+                    dom.appendChild(el0, el1);
+                    var el1 = dom.createTextNode("\n");
+                    dom.appendChild(el0, el1);
+                    return el0;
+                  },
+                  buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+                    var morphs = new Array(1);
+                    morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+                    return morphs;
+                  },
+                  statements: [["inline", "yield", [], ["to", "inverse"], ["loc", [null, [36, 10], [36, 32]]]]],
+                  locals: [],
+                  templates: []
+                };
+              })();
+              var child1 = (function () {
+                var child0 = (function () {
+                  return {
+                    meta: {
+                      "fragmentReason": false,
+                      "revision": "Ember@2.2.0",
+                      "loc": {
+                        "source": null,
+                        "start": {
+                          "line": 37,
+                          "column": 8
+                        },
+                        "end": {
+                          "line": 39,
+                          "column": 8
+                        }
+                      },
+                      "moduleName": "modules/ember-power-select/templates/components/power-select/single.hbs"
+                    },
+                    isEmpty: false,
+                    arity: 0,
+                    cachedFragment: null,
+                    hasRendered: false,
+                    buildFragment: function buildFragment(dom) {
+                      var el0 = dom.createDocumentFragment();
+                      var el1 = dom.createTextNode("          ");
+                      dom.appendChild(el0, el1);
+                      var el1 = dom.createElement("li");
+                      dom.setAttribute(el1, "class", "ember-power-select-option");
+                      var el2 = dom.createComment("");
+                      dom.appendChild(el1, el2);
+                      dom.appendChild(el0, el1);
+                      var el1 = dom.createTextNode("\n        ");
+                      dom.appendChild(el0, el1);
+                      return el0;
+                    },
+                    buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+                      var morphs = new Array(1);
+                      morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 0, 0);
+                      return morphs;
+                    },
+                    statements: [["content", "noMatchesMessage", ["loc", [null, [38, 48], [38, 68]]]]],
+                    locals: [],
+                    templates: []
+                  };
+                })();
+                return {
+                  meta: {
+                    "fragmentReason": false,
+                    "revision": "Ember@2.2.0",
+                    "loc": {
+                      "source": null,
+                      "start": {
+                        "line": 37,
+                        "column": 8
+                      },
+                      "end": {
+                        "line": 39,
+                        "column": 8
+                      }
+                    },
+                    "moduleName": "modules/ember-power-select/templates/components/power-select/single.hbs"
+                  },
+                  isEmpty: false,
+                  arity: 0,
+                  cachedFragment: null,
+                  hasRendered: false,
+                  buildFragment: function buildFragment(dom) {
+                    var el0 = dom.createDocumentFragment();
+                    var el1 = dom.createComment("");
+                    dom.appendChild(el0, el1);
+                    return el0;
+                  },
+                  buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+                    var morphs = new Array(1);
+                    morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+                    dom.insertBoundary(fragment, 0);
+                    dom.insertBoundary(fragment, null);
+                    return morphs;
+                  },
+                  statements: [["block", "if", [["get", "noMatchesMessage", ["loc", [null, [37, 18], [37, 34]]]]], [], 0, null, ["loc", [null, [37, 8], [39, 8]]]]],
+                  locals: [],
+                  templates: [child0]
+                };
+              })();
+              return {
+                meta: {
+                  "fragmentReason": false,
+                  "revision": "Ember@2.2.0",
+                  "loc": {
+                    "source": null,
+                    "start": {
+                      "line": 34,
+                      "column": 6
+                    },
+                    "end": {
+                      "line": 40,
+                      "column": 6
+                    }
+                  },
+                  "moduleName": "modules/ember-power-select/templates/components/power-select/single.hbs"
+                },
+                isEmpty: false,
+                arity: 0,
+                cachedFragment: null,
+                hasRendered: false,
+                buildFragment: function buildFragment(dom) {
+                  var el0 = dom.createDocumentFragment();
+                  var el1 = dom.createComment("");
+                  dom.appendChild(el0, el1);
+                  var el1 = dom.createTextNode("      ");
+                  dom.appendChild(el0, el1);
+                  return el0;
+                },
+                buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+                  var morphs = new Array(1);
+                  morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+                  dom.insertBoundary(fragment, 0);
+                  return morphs;
+                },
+                statements: [["block", "if", [["get", "hasInverseBlock", ["loc", [null, [35, 14], [35, 29]]]]], [], 0, 1, ["loc", [null, [35, 8], [39, 15]]]]],
+                locals: [],
+                templates: [child0, child1]
+              };
+            })();
+            return {
+              meta: {
+                "fragmentReason": false,
+                "revision": "Ember@2.2.0",
+                "loc": {
+                  "source": null,
+                  "start": {
+                    "line": 34,
+                    "column": 6
+                  },
+                  "end": {
+                    "line": 40,
+                    "column": 6
+                  }
+                },
+                "moduleName": "modules/ember-power-select/templates/components/power-select/single.hbs"
+              },
+              isEmpty: false,
+              arity: 0,
+              cachedFragment: null,
+              hasRendered: false,
+              buildFragment: function buildFragment(dom) {
+                var el0 = dom.createDocumentFragment();
+                var el1 = dom.createComment("");
+                dom.appendChild(el0, el1);
+                return el0;
+              },
+              buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+                var morphs = new Array(1);
+                morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+                dom.insertBoundary(fragment, 0);
+                dom.insertBoundary(fragment, null);
+                return morphs;
+              },
+              statements: [["block", "if", [["get", "results.isFulfilled", ["loc", [null, [34, 16], [34, 35]]]]], [], 0, null, ["loc", [null, [34, 6], [40, 6]]]]],
+              locals: [],
+              templates: [child0]
+            };
+          })();
+          return {
+            meta: {
+              "fragmentReason": false,
+              "revision": "Ember@2.2.0",
+              "loc": {
+                "source": null,
+                "start": {
+                  "line": 32,
+                  "column": 6
+                },
+                "end": {
+                  "line": 40,
+                  "column": 6
+                }
+              },
+              "moduleName": "modules/ember-power-select/templates/components/power-select/single.hbs"
+            },
+            isEmpty: false,
+            arity: 0,
+            cachedFragment: null,
+            hasRendered: false,
+            buildFragment: function buildFragment(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+              var morphs = new Array(1);
+              morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+              dom.insertBoundary(fragment, 0);
+              dom.insertBoundary(fragment, null);
+              return morphs;
+            },
+            statements: [["block", "if", [["get", "mustShowSearchMessage", ["loc", [null, [32, 16], [32, 37]]]]], [], 0, 1, ["loc", [null, [32, 6], [40, 6]]]]],
+            locals: [],
+            templates: [child0, child1]
+          };
+        })();
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 4,
+                "column": 2
+              },
+              "end": {
+                "line": 42,
+                "column": 2
+              }
+            },
+            "moduleName": "modules/ember-power-select/templates/components/power-select/single.hbs"
+          },
+          isEmpty: false,
+          arity: 1,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("    ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("ul");
+            dom.setAttribute(el1, "class", "ember-power-select-options");
+            var el2 = dom.createTextNode("\n");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createComment("");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createComment("");
+            dom.appendChild(el1, el2);
+            var el2 = dom.createTextNode("    ");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var element1 = dom.childAt(fragment, [2]);
+            var morphs = new Array(3);
+            morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+            morphs[1] = dom.createMorphAt(element1, 1, 1);
+            morphs[2] = dom.createMorphAt(element1, 2, 2);
+            dom.insertBoundary(fragment, 0);
+            return morphs;
+          },
+          statements: [["block", "if", [["get", "searchEnabled", ["loc", [null, [15, 10], [15, 23]]]]], [], 0, null, ["loc", [null, [15, 4], [21, 11]]]], ["block", "if", [["get", "showLoadingMessage", ["loc", [null, [23, 12], [23, 30]]]]], [], 1, null, ["loc", [null, [23, 6], [25, 13]]]], ["block", "if", [["get", "resultsLength", ["loc", [null, [26, 12], [26, 25]]]]], [], 2, 3, ["loc", [null, [26, 6], [40, 13]]]]],
+          locals: ["select"],
+          templates: [child0, child1, child2, child3]
+        };
+      })();
+      return {
+        meta: {
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type"]
+          },
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 1,
+              "column": 0
+            },
+            "end": {
+              "line": 43,
+              "column": 0
+            }
+          },
+          "moduleName": "modules/ember-power-select/templates/components/power-select/single.hbs"
+        },
+        isEmpty: false,
+        arity: 1,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+          dom.insertBoundary(fragment, 0);
+          dom.insertBoundary(fragment, null);
+          return morphs;
+        },
+        statements: [["block", "with", [["subexpr", "hash", [], ["isOpen", ["get", "dropdown.isOpen", ["loc", [null, [5, 11], [5, 26]]]], "actions", ["subexpr", "hash", [], ["open", ["subexpr", "action", ["open", ["get", "dropdown", ["loc", [null, [7, 26], [7, 34]]]]], [], ["loc", [null, [7, 11], [7, 35]]]], "close", ["subexpr", "action", ["close", ["get", "dropdown", ["loc", [null, [8, 28], [8, 36]]]]], [], ["loc", [null, [8, 12], [8, 37]]]], "select", ["subexpr", "action", ["select", ["get", "dropdown", ["loc", [null, [9, 30], [9, 38]]]]], [], ["loc", [null, [9, 13], [9, 39]]]], "highlight", ["subexpr", "action", ["highlight", ["get", "dropdown", ["loc", [null, [10, 36], [10, 44]]]]], [], ["loc", [null, [10, 16], [10, 45]]]], "search", ["subexpr", "action", ["search", ["get", "dropdown", ["loc", [null, [11, 30], [11, 38]]]]], [], ["loc", [null, [11, 13], [11, 39]]]], "clear", ["subexpr", "if", [["get", "allowClear", ["loc", [null, [12, 16], [12, 26]]]], ["subexpr", "action", ["select", ["get", "dropdown", ["loc", [null, [12, 44], [12, 52]]]], null], [], ["loc", [null, [12, 27], [12, 58]]]]], [], ["loc", [null, [12, 12], [12, 59]]]], "handleKeydown", ["subexpr", "action", ["handleKeydown", ["get", "dropdown", ["loc", [null, [13, 44], [13, 52]]]]], [], ["loc", [null, [13, 20], [13, 53]]]]], ["loc", [null, [6, 12], [14, 5]]]]], ["loc", [null, [4, 10], [14, 6]]]]], [], 0, null, ["loc", [null, [4, 2], [42, 11]]]]],
+        locals: ["dropdown"],
+        templates: [child0]
+      };
+    })();
+    var child1 = (function () {
+      var child0 = (function () {
+        var child0 = (function () {
+          return {
+            meta: {
+              "fragmentReason": false,
+              "revision": "Ember@2.2.0",
+              "loc": {
+                "source": null,
+                "start": {
+                  "line": 55,
+                  "column": 4
+                },
+                "end": {
+                  "line": 59,
+                  "column": 4
+                }
+              },
+              "moduleName": "modules/ember-power-select/templates/components/power-select/single.hbs"
+            },
+            isEmpty: false,
+            arity: 2,
+            cachedFragment: null,
+            hasRendered: false,
+            buildFragment: function buildFragment(dom) {
+              var el0 = dom.createDocumentFragment();
+              var el1 = dom.createTextNode("      ");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createComment("");
+              dom.appendChild(el0, el1);
+              var el1 = dom.createTextNode("\n");
+              dom.appendChild(el0, el1);
+              return el0;
+            },
+            buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+              var morphs = new Array(1);
+              morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+              return morphs;
+            },
+            statements: [["inline", "yield", [["get", "opt", ["loc", [null, [58, 14], [58, 17]]]], ["get", "term", ["loc", [null, [58, 18], [58, 22]]]]], [], ["loc", [null, [58, 6], [58, 24]]]]],
+            locals: ["opt", "term"],
+            templates: []
+          };
+        })();
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 44,
+                "column": 2
+              },
+              "end": {
+                "line": 60,
+                "column": 2
+              }
+            },
+            "moduleName": "modules/ember-power-select/templates/components/power-select/single.hbs"
+          },
+          isEmpty: false,
+          arity: 1,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createComment("");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+            var morphs = new Array(1);
+            morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+            dom.insertBoundary(fragment, 0);
+            dom.insertBoundary(fragment, null);
+            return morphs;
+          },
+          statements: [["block", "component", [["get", "selectedComponent", ["loc", [null, [55, 17], [55, 34]]]]], ["options", ["subexpr", "readonly", [["get", "results", ["loc", [null, [55, 53], [55, 60]]]]], [], ["loc", [null, [55, 43], [55, 61]]]], "selection", ["subexpr", "readonly", [["get", "selection", ["loc", [null, [55, 82], [55, 91]]]]], [], ["loc", [null, [55, 72], [55, 92]]]], "searchText", ["subexpr", "readonly", [["get", "searchText", ["loc", [null, [55, 114], [55, 124]]]]], [], ["loc", [null, [55, 104], [55, 125]]]], "placeholder", ["subexpr", "readonly", [["get", "placeholder", ["loc", [null, [56, 28], [56, 39]]]]], [], ["loc", [null, [56, 18], [56, 40]]]], "disabled", ["subexpr", "readonly", [["get", "disabled", ["loc", [null, [56, 60], [56, 68]]]]], [], ["loc", [null, [56, 50], [56, 69]]]], "highlighted", ["subexpr", "readonly", [["get", "highlighted", ["loc", [null, [56, 92], [56, 103]]]]], [], ["loc", [null, [56, 82], [56, 104]]]], "select", ["subexpr", "readonly", [["get", "select", ["loc", [null, [57, 23], [57, 29]]]]], [], ["loc", [null, [57, 13], [57, 30]]]], "extra", ["subexpr", "readonly", [["get", "extra", ["loc", [null, [57, 47], [57, 52]]]]], [], ["loc", [null, [57, 37], [57, 53]]]]], 0, null, ["loc", [null, [55, 4], [59, 18]]]]],
+          locals: ["select"],
+          templates: [child0]
+        };
+      })();
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 43,
+              "column": 0
+            },
+            "end": {
+              "line": 61,
+              "column": 0
+            }
+          },
+          "moduleName": "modules/ember-power-select/templates/components/power-select/single.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+          dom.insertBoundary(fragment, 0);
+          dom.insertBoundary(fragment, null);
+          return morphs;
+        },
+        statements: [["block", "with", [["subexpr", "hash", [], ["isOpen", ["get", "registeredDropdown.isOpen", ["loc", [null, [45, 11], [45, 36]]]], "actions", ["subexpr", "hash", [], ["open", ["subexpr", "action", ["open", ["get", "registeredDropdown", ["loc", [null, [47, 26], [47, 44]]]]], [], ["loc", [null, [47, 11], [47, 45]]]], "close", ["subexpr", "action", ["close", ["get", "registeredDropdown", ["loc", [null, [48, 28], [48, 46]]]]], [], ["loc", [null, [48, 12], [48, 47]]]], "select", ["subexpr", "action", ["select", ["get", "registeredDropdown", ["loc", [null, [49, 30], [49, 48]]]]], [], ["loc", [null, [49, 13], [49, 49]]]], "highlight", ["subexpr", "action", ["highlight", ["get", "registeredDropdown", ["loc", [null, [50, 36], [50, 54]]]]], [], ["loc", [null, [50, 16], [50, 55]]]], "search", ["subexpr", "action", ["search", ["get", "registeredDropdown", ["loc", [null, [51, 30], [51, 48]]]]], [], ["loc", [null, [51, 13], [51, 49]]]], "clear", ["subexpr", "if", [["get", "allowClear", ["loc", [null, [52, 16], [52, 26]]]], ["subexpr", "action", ["select", ["get", "registeredDropdown", ["loc", [null, [52, 44], [52, 62]]]], null], [], ["loc", [null, [52, 27], [52, 68]]]]], [], ["loc", [null, [52, 12], [52, 69]]]], "handleKeydown", ["subexpr", "action", ["handleKeydown", ["get", "registeredDropdown", ["loc", [null, [53, 44], [53, 62]]]]], [], ["loc", [null, [53, 20], [53, 63]]]]], ["loc", [null, [46, 12], [54, 5]]]]], ["loc", [null, [44, 10], [54, 6]]]]], [], 0, null, ["loc", [null, [44, 2], [60, 11]]]]],
+        locals: [],
+        templates: [child0]
+      };
+    })();
+    return {
+      meta: {
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.2.0",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 62,
+            "column": 0
+          }
+        },
+        "moduleName": "modules/ember-power-select/templates/components/power-select/single.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+        var morphs = new Array(1);
+        morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+        dom.insertBoundary(fragment, 0);
+        dom.insertBoundary(fragment, null);
+        return morphs;
+      },
+      statements: [["block", "basic-dropdown", [], ["class", ["subexpr", "readonly", [["get", "concatenatedClasses", ["loc", [null, [1, 34], [1, 53]]]]], [], ["loc", [null, [1, 24], [1, 54]]]], "dir", ["subexpr", "@mut", [["get", "dir", ["loc", [null, [1, 59], [1, 62]]]]], [], []], "tabindex", ["subexpr", "readonly", [["get", "tabindex", ["loc", [null, [1, 82], [1, 90]]]]], [], ["loc", [null, [1, 72], [1, 91]]]], "renderInPlace", ["subexpr", "@mut", [["get", "renderInPlace", ["loc", [null, [1, 106], [1, 119]]]]], [], []], "matchTriggerWidth", true, "disabled", ["subexpr", "@mut", [["get", "disabled", ["loc", [null, [2, 11], [2, 19]]]]], [], []], "dropdownPosition", ["subexpr", "@mut", [["get", "dropdownPosition", ["loc", [null, [2, 37], [2, 53]]]]], [], []], "triggerClass", "ember-power-select-trigger", "dropdownClass", ["subexpr", "@mut", [["get", "concatenatedDropdownClasses", ["loc", [null, [2, 110], [2, 137]]]]], [], []], "onOpen", ["subexpr", "action", [["get", "onOpen", ["loc", [null, [3, 17], [3, 23]]]]], [], ["loc", [null, [3, 9], [3, 24]]]], "onClose", ["subexpr", "action", [["get", "onClose", ["loc", [null, [3, 41], [3, 48]]]]], [], ["loc", [null, [3, 33], [3, 49]]]], "onKeydown", ["subexpr", "action", ["handleKeydown"], [], ["loc", [null, [3, 60], [3, 84]]]], "registerActionsInParent", ["subexpr", "action", ["registerDropdown"], [], ["loc", [null, [3, 109], [3, 136]]]]], 0, 1, ["loc", [null, [1, 0], [61, 19]]]]],
+      locals: [],
+      templates: [child0, child1]
+    };
+  })());
+});
+define("ember-power-select/templates/components/power-select", ["exports"], function (exports) {
+  "use strict";
+
+  exports["default"] = Ember.HTMLBars.template((function () {
+    var child0 = (function () {
+      return {
+        meta: {
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type"]
+          },
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 1,
+              "column": 0
+            },
+            "end": {
+              "line": 30,
+              "column": 2
+            }
+          },
+          "moduleName": "modules/ember-power-select/templates/components/power-select.hbs"
+        },
+        isEmpty: false,
+        arity: 2,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+          return morphs;
+        },
+        statements: [["inline", "yield", [["get", "option", ["loc", [null, [29, 12], [29, 18]]]], ["get", "term", ["loc", [null, [29, 19], [29, 23]]]]], [], ["loc", [null, [29, 4], [29, 25]]]]],
+        locals: ["option", "term"],
+        templates: []
+      };
+    })();
+    var child1 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 30,
+              "column": 2
+            },
+            "end": {
+              "line": 32,
+              "column": 0
+            }
+          },
+          "moduleName": "modules/ember-power-select/templates/components/power-select.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("    ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(1);
+          morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+          return morphs;
+        },
+        statements: [["inline", "yield", [], ["to", "inverse"], ["loc", [null, [31, 4], [31, 26]]]]],
+        locals: [],
+        templates: []
+      };
+    })();
+    return {
+      meta: {
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.2.0",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 33,
+            "column": 0
+          }
+        },
+        "moduleName": "modules/ember-power-select/templates/components/power-select.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+        var morphs = new Array(1);
+        morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+        dom.insertBoundary(fragment, 0);
+        dom.insertBoundary(fragment, null);
+        return morphs;
+      },
+      statements: [["block", "component", [["get", "concreteComponentName", ["loc", [null, [1, 13], [1, 34]]]]], ["options", ["subexpr", "@mut", [["get", "options", ["loc", [null, [2, 12], [2, 19]]]]], [], []], "selected", ["subexpr", "@mut", [["get", "selected", ["loc", [null, [3, 13], [3, 21]]]]], [], []], "onchange", ["subexpr", "@mut", [["get", "onchange", ["loc", [null, [4, 13], [4, 21]]]]], [], []], "onkeydown", ["subexpr", "@mut", [["get", "onkeydown", ["loc", [null, [5, 14], [5, 23]]]]], [], []], "disabled", ["subexpr", "@mut", [["get", "disabled", ["loc", [null, [6, 13], [6, 21]]]]], [], []], "placeholder", ["subexpr", "@mut", [["get", "placeholder", ["loc", [null, [7, 16], [7, 27]]]]], [], []], "searchEnabled", ["subexpr", "@mut", [["get", "searchEnabled", ["loc", [null, [8, 18], [8, 31]]]]], [], []], "searchPlaceholder", ["subexpr", "@mut", [["get", "searchPlaceholder", ["loc", [null, [9, 22], [9, 39]]]]], [], []], "loadingMessage", ["subexpr", "@mut", [["get", "loadingMessage", ["loc", [null, [10, 19], [10, 33]]]]], [], []], "noMatchesMessage", ["subexpr", "@mut", [["get", "noMatchesMessage", ["loc", [null, [11, 21], [11, 37]]]]], [], []], "searchMessage", ["subexpr", "@mut", [["get", "searchMessage", ["loc", [null, [12, 18], [12, 31]]]]], [], []], "selectedComponent", ["subexpr", "@mut", [["get", "selectedComponent", ["loc", [null, [13, 22], [13, 39]]]]], [], []], "optionsComponent", ["subexpr", "@mut", [["get", "optionsComponent", ["loc", [null, [14, 21], [14, 37]]]]], [], []], "matcher", ["subexpr", "@mut", [["get", "matcher", ["loc", [null, [15, 12], [15, 19]]]]], [], []], "searchField", ["subexpr", "@mut", [["get", "searchField", ["loc", [null, [16, 16], [16, 27]]]]], [], []], "renderInPlace", ["subexpr", "@mut", [["get", "renderInPlace", ["loc", [null, [17, 18], [17, 31]]]]], [], []], "search", ["subexpr", "@mut", [["get", "search", ["loc", [null, [18, 11], [18, 17]]]]], [], []], "allowClear", ["subexpr", "@mut", [["get", "allowClear", ["loc", [null, [19, 15], [19, 25]]]]], [], []], "dropdownPosition", ["subexpr", "@mut", [["get", "dropdownPosition", ["loc", [null, [20, 21], [20, 37]]]]], [], []], "closeOnSelect", ["subexpr", "@mut", [["get", "closeOnSelect", ["loc", [null, [21, 18], [21, 31]]]]], [], []], "hasInverseBlock", ["subexpr", "hasBlock", ["inverse"], [], ["loc", [null, [22, 20], [22, 40]]]], "tabindex", ["subexpr", "@mut", [["get", "tabindex", ["loc", [null, [23, 13], [23, 21]]]]], [], []], "dir", ["subexpr", "@mut", [["get", "dir", ["loc", [null, [24, 8], [24, 11]]]]], [], []], "class", ["subexpr", "@mut", [["get", "class", ["loc", [null, [25, 10], [25, 15]]]]], [], []], "dropdownClass", ["subexpr", "@mut", [["get", "dropdownClass", ["loc", [null, [26, 18], [26, 31]]]]], [], []], "extra", ["subexpr", "@mut", [["get", "extra", ["loc", [null, [27, 10], [27, 15]]]]], [], []]], 0, 1, ["loc", [null, [1, 0], [32, 14]]]]],
+      locals: [],
+      templates: [child0, child1]
+    };
+  })());
+});
+define('ember-power-select/utils/group-utils', ['exports', 'ember'], function (exports, _ember) {
+  'use strict';
+
+  exports.isGroup = isGroup;
+  exports.countOptions = countOptions;
+  exports.indexOfOption = indexOfOption;
+  exports.optionAtIndex = optionAtIndex;
+  exports.filterOptions = filterOptions;
+  exports.stripDiacritics = stripDiacritics;
+  exports.defaultMatcher = defaultMatcher;
+
+  var get = _ember['default'].get;
+
+  function isGroup(entry) {
+    return !!entry && !!get(entry, 'groupName') && !!get(entry, 'options');
+  }
+
+  function countOptions(collection) {
+    var counter = 0;
+    (function walk(collection) {
+      if (!collection) {
+        return null;
+      }
+      if (!collection.objectAt) {
+        collection = _ember['default'].A(collection);
+      }
+      for (var i = 0; i < get(collection, 'length'); i++) {
+        var entry = collection.objectAt(i);
+        if (isGroup(entry)) {
+          walk(get(entry, 'options'));
+        } else {
+          counter++;
+        }
+      }
+    })(collection);
+    return counter;
+  }
+
+  function indexOfOption(collection, option) {
+    var index = 0;
+    return (function walk(collection) {
+      if (!collection) {
+        return null;
+      }
+      if (!collection.objectAt) {
+        collection = _ember['default'].A(collection);
+      }
+      for (var i = 0; i < get(collection, 'length'); i++) {
+        var entry = collection.objectAt(i);
+        if (isGroup(entry)) {
+          var result = walk(get(entry, 'options'));
+          if (result > -1) {
+            return result;
+          }
+        } else if (entry === option) {
+          return index;
+        } else {
+          index++;
+        }
+      }
+      return -1;
+    })(collection);
+  }
+
+  function optionAtIndex(originalCollection, index) {
+    var counter = 0;
+    return (function walk(collection) {
+      if (!collection) {
+        return null;
+      }
+      if (!collection.objectAt) {
+        collection = _ember['default'].A(collection);
+      }
+      var localCounter = 0;
+      var length = get(collection, 'length');
+      while (counter <= index && localCounter < length) {
+        var entry = collection.objectAt(localCounter);
+        if (isGroup(entry)) {
+          var found = walk(get(entry, 'options'));
+          if (found) {
+            return found;
+          }
+        } else if (counter === index) {
+          return entry;
+        } else {
+          counter++;
+        }
+        localCounter++;
+      }
+    })(originalCollection);
+  }
+
+  function filterOptions(options, text, matcher) {
+    var sanitizedOptions = options.objectAt ? options : _ember['default'].A(options);
+    var opts = _ember['default'].A();
+    var length = get(options, 'length');
+    for (var i = 0; i < length; i++) {
+      var entry = sanitizedOptions.objectAt(i);
+      if (isGroup(entry)) {
+        var suboptions = filterOptions(get(entry, 'options'), text, matcher);
+        if (get(suboptions, 'length') > 0) {
+          opts.push({ groupName: entry.groupName, options: suboptions });
+        }
+      } else if (matcher(entry, text)) {
+        opts.push(entry);
+      }
+    }
+    return opts;
+  }
+
+  var DIACRITICS = {
+    'Ⓐ': 'A',
+    'Ａ': 'A',
+    'À': 'A',
+    'Á': 'A',
+    'Â': 'A',
+    'Ầ': 'A',
+    'Ấ': 'A',
+    'Ẫ': 'A',
+    'Ẩ': 'A',
+    'Ã': 'A',
+    'Ā': 'A',
+    'Ă': 'A',
+    'Ằ': 'A',
+    'Ắ': 'A',
+    'Ẵ': 'A',
+    'Ẳ': 'A',
+    'Ȧ': 'A',
+    'Ǡ': 'A',
+    'Ä': 'A',
+    'Ǟ': 'A',
+    'Ả': 'A',
+    'Å': 'A',
+    'Ǻ': 'A',
+    'Ǎ': 'A',
+    'Ȁ': 'A',
+    'Ȃ': 'A',
+    'Ạ': 'A',
+    'Ậ': 'A',
+    'Ặ': 'A',
+    'Ḁ': 'A',
+    'Ą': 'A',
+    'Ⱥ': 'A',
+    'Ɐ': 'A',
+    'Ꜳ': 'AA',
+    'Æ': 'AE',
+    'Ǽ': 'AE',
+    'Ǣ': 'AE',
+    'Ꜵ': 'AO',
+    'Ꜷ': 'AU',
+    'Ꜹ': 'AV',
+    'Ꜻ': 'AV',
+    'Ꜽ': 'AY',
+    'Ⓑ': 'B',
+    'Ｂ': 'B',
+    'Ḃ': 'B',
+    'Ḅ': 'B',
+    'Ḇ': 'B',
+    'Ƀ': 'B',
+    'Ƃ': 'B',
+    'Ɓ': 'B',
+    'Ⓒ': 'C',
+    'Ｃ': 'C',
+    'Ć': 'C',
+    'Ĉ': 'C',
+    'Ċ': 'C',
+    'Č': 'C',
+    'Ç': 'C',
+    'Ḉ': 'C',
+    'Ƈ': 'C',
+    'Ȼ': 'C',
+    'Ꜿ': 'C',
+    'Ⓓ': 'D',
+    'Ｄ': 'D',
+    'Ḋ': 'D',
+    'Ď': 'D',
+    'Ḍ': 'D',
+    'Ḑ': 'D',
+    'Ḓ': 'D',
+    'Ḏ': 'D',
+    'Đ': 'D',
+    'Ƌ': 'D',
+    'Ɗ': 'D',
+    'Ɖ': 'D',
+    'Ꝺ': 'D',
+    'Ǳ': 'DZ',
+    'Ǆ': 'DZ',
+    'ǲ': 'Dz',
+    'ǅ': 'Dz',
+    'Ⓔ': 'E',
+    'Ｅ': 'E',
+    'È': 'E',
+    'É': 'E',
+    'Ê': 'E',
+    'Ề': 'E',
+    'Ế': 'E',
+    'Ễ': 'E',
+    'Ể': 'E',
+    'Ẽ': 'E',
+    'Ē': 'E',
+    'Ḕ': 'E',
+    'Ḗ': 'E',
+    'Ĕ': 'E',
+    'Ė': 'E',
+    'Ë': 'E',
+    'Ẻ': 'E',
+    'Ě': 'E',
+    'Ȅ': 'E',
+    'Ȇ': 'E',
+    'Ẹ': 'E',
+    'Ệ': 'E',
+    'Ȩ': 'E',
+    'Ḝ': 'E',
+    'Ę': 'E',
+    'Ḙ': 'E',
+    'Ḛ': 'E',
+    'Ɛ': 'E',
+    'Ǝ': 'E',
+    'Ⓕ': 'F',
+    'Ｆ': 'F',
+    'Ḟ': 'F',
+    'Ƒ': 'F',
+    'Ꝼ': 'F',
+    'Ⓖ': 'G',
+    'Ｇ': 'G',
+    'Ǵ': 'G',
+    'Ĝ': 'G',
+    'Ḡ': 'G',
+    'Ğ': 'G',
+    'Ġ': 'G',
+    'Ǧ': 'G',
+    'Ģ': 'G',
+    'Ǥ': 'G',
+    'Ɠ': 'G',
+    'Ꞡ': 'G',
+    'Ᵹ': 'G',
+    'Ꝿ': 'G',
+    'Ⓗ': 'H',
+    'Ｈ': 'H',
+    'Ĥ': 'H',
+    'Ḣ': 'H',
+    'Ḧ': 'H',
+    'Ȟ': 'H',
+    'Ḥ': 'H',
+    'Ḩ': 'H',
+    'Ḫ': 'H',
+    'Ħ': 'H',
+    'Ⱨ': 'H',
+    'Ⱶ': 'H',
+    'Ɥ': 'H',
+    'Ⓘ': 'I',
+    'Ｉ': 'I',
+    'Ì': 'I',
+    'Í': 'I',
+    'Î': 'I',
+    'Ĩ': 'I',
+    'Ī': 'I',
+    'Ĭ': 'I',
+    'İ': 'I',
+    'Ï': 'I',
+    'Ḯ': 'I',
+    'Ỉ': 'I',
+    'Ǐ': 'I',
+    'Ȉ': 'I',
+    'Ȋ': 'I',
+    'Ị': 'I',
+    'Į': 'I',
+    'Ḭ': 'I',
+    'Ɨ': 'I',
+    'Ⓙ': 'J',
+    'Ｊ': 'J',
+    'Ĵ': 'J',
+    'Ɉ': 'J',
+    'Ⓚ': 'K',
+    'Ｋ': 'K',
+    'Ḱ': 'K',
+    'Ǩ': 'K',
+    'Ḳ': 'K',
+    'Ķ': 'K',
+    'Ḵ': 'K',
+    'Ƙ': 'K',
+    'Ⱪ': 'K',
+    'Ꝁ': 'K',
+    'Ꝃ': 'K',
+    'Ꝅ': 'K',
+    'Ꞣ': 'K',
+    'Ⓛ': 'L',
+    'Ｌ': 'L',
+    'Ŀ': 'L',
+    'Ĺ': 'L',
+    'Ľ': 'L',
+    'Ḷ': 'L',
+    'Ḹ': 'L',
+    'Ļ': 'L',
+    'Ḽ': 'L',
+    'Ḻ': 'L',
+    'Ł': 'L',
+    'Ƚ': 'L',
+    'Ɫ': 'L',
+    'Ⱡ': 'L',
+    'Ꝉ': 'L',
+    'Ꝇ': 'L',
+    'Ꞁ': 'L',
+    'Ǉ': 'LJ',
+    'ǈ': 'Lj',
+    'Ⓜ': 'M',
+    'Ｍ': 'M',
+    'Ḿ': 'M',
+    'Ṁ': 'M',
+    'Ṃ': 'M',
+    'Ɱ': 'M',
+    'Ɯ': 'M',
+    'Ⓝ': 'N',
+    'Ｎ': 'N',
+    'Ǹ': 'N',
+    'Ń': 'N',
+    'Ñ': 'N',
+    'Ṅ': 'N',
+    'Ň': 'N',
+    'Ṇ': 'N',
+    'Ņ': 'N',
+    'Ṋ': 'N',
+    'Ṉ': 'N',
+    'Ƞ': 'N',
+    'Ɲ': 'N',
+    'Ꞑ': 'N',
+    'Ꞥ': 'N',
+    'Ǌ': 'NJ',
+    'ǋ': 'Nj',
+    'Ⓞ': 'O',
+    'Ｏ': 'O',
+    'Ò': 'O',
+    'Ó': 'O',
+    'Ô': 'O',
+    'Ồ': 'O',
+    'Ố': 'O',
+    'Ỗ': 'O',
+    'Ổ': 'O',
+    'Õ': 'O',
+    'Ṍ': 'O',
+    'Ȭ': 'O',
+    'Ṏ': 'O',
+    'Ō': 'O',
+    'Ṑ': 'O',
+    'Ṓ': 'O',
+    'Ŏ': 'O',
+    'Ȯ': 'O',
+    'Ȱ': 'O',
+    'Ö': 'O',
+    'Ȫ': 'O',
+    'Ỏ': 'O',
+    'Ő': 'O',
+    'Ǒ': 'O',
+    'Ȍ': 'O',
+    'Ȏ': 'O',
+    'Ơ': 'O',
+    'Ờ': 'O',
+    'Ớ': 'O',
+    'Ỡ': 'O',
+    'Ở': 'O',
+    'Ợ': 'O',
+    'Ọ': 'O',
+    'Ộ': 'O',
+    'Ǫ': 'O',
+    'Ǭ': 'O',
+    'Ø': 'O',
+    'Ǿ': 'O',
+    'Ɔ': 'O',
+    'Ɵ': 'O',
+    'Ꝋ': 'O',
+    'Ꝍ': 'O',
+    'Ƣ': 'OI',
+    'Ꝏ': 'OO',
+    'Ȣ': 'OU',
+    'Ⓟ': 'P',
+    'Ｐ': 'P',
+    'Ṕ': 'P',
+    'Ṗ': 'P',
+    'Ƥ': 'P',
+    'Ᵽ': 'P',
+    'Ꝑ': 'P',
+    'Ꝓ': 'P',
+    'Ꝕ': 'P',
+    'Ⓠ': 'Q',
+    'Ｑ': 'Q',
+    'Ꝗ': 'Q',
+    'Ꝙ': 'Q',
+    'Ɋ': 'Q',
+    'Ⓡ': 'R',
+    'Ｒ': 'R',
+    'Ŕ': 'R',
+    'Ṙ': 'R',
+    'Ř': 'R',
+    'Ȑ': 'R',
+    'Ȓ': 'R',
+    'Ṛ': 'R',
+    'Ṝ': 'R',
+    'Ŗ': 'R',
+    'Ṟ': 'R',
+    'Ɍ': 'R',
+    'Ɽ': 'R',
+    'Ꝛ': 'R',
+    'Ꞧ': 'R',
+    'Ꞃ': 'R',
+    'Ⓢ': 'S',
+    'Ｓ': 'S',
+    'ẞ': 'S',
+    'Ś': 'S',
+    'Ṥ': 'S',
+    'Ŝ': 'S',
+    'Ṡ': 'S',
+    'Š': 'S',
+    'Ṧ': 'S',
+    'Ṣ': 'S',
+    'Ṩ': 'S',
+    'Ș': 'S',
+    'Ş': 'S',
+    'Ȿ': 'S',
+    'Ꞩ': 'S',
+    'Ꞅ': 'S',
+    'Ⓣ': 'T',
+    'Ｔ': 'T',
+    'Ṫ': 'T',
+    'Ť': 'T',
+    'Ṭ': 'T',
+    'Ț': 'T',
+    'Ţ': 'T',
+    'Ṱ': 'T',
+    'Ṯ': 'T',
+    'Ŧ': 'T',
+    'Ƭ': 'T',
+    'Ʈ': 'T',
+    'Ⱦ': 'T',
+    'Ꞇ': 'T',
+    'Ꜩ': 'TZ',
+    'Ⓤ': 'U',
+    'Ｕ': 'U',
+    'Ù': 'U',
+    'Ú': 'U',
+    'Û': 'U',
+    'Ũ': 'U',
+    'Ṹ': 'U',
+    'Ū': 'U',
+    'Ṻ': 'U',
+    'Ŭ': 'U',
+    'Ü': 'U',
+    'Ǜ': 'U',
+    'Ǘ': 'U',
+    'Ǖ': 'U',
+    'Ǚ': 'U',
+    'Ủ': 'U',
+    'Ů': 'U',
+    'Ű': 'U',
+    'Ǔ': 'U',
+    'Ȕ': 'U',
+    'Ȗ': 'U',
+    'Ư': 'U',
+    'Ừ': 'U',
+    'Ứ': 'U',
+    'Ữ': 'U',
+    'Ử': 'U',
+    'Ự': 'U',
+    'Ụ': 'U',
+    'Ṳ': 'U',
+    'Ų': 'U',
+    'Ṷ': 'U',
+    'Ṵ': 'U',
+    'Ʉ': 'U',
+    'Ⓥ': 'V',
+    'Ｖ': 'V',
+    'Ṽ': 'V',
+    'Ṿ': 'V',
+    'Ʋ': 'V',
+    'Ꝟ': 'V',
+    'Ʌ': 'V',
+    'Ꝡ': 'VY',
+    'Ⓦ': 'W',
+    'Ｗ': 'W',
+    'Ẁ': 'W',
+    'Ẃ': 'W',
+    'Ŵ': 'W',
+    'Ẇ': 'W',
+    'Ẅ': 'W',
+    'Ẉ': 'W',
+    'Ⱳ': 'W',
+    'Ⓧ': 'X',
+    'Ｘ': 'X',
+    'Ẋ': 'X',
+    'Ẍ': 'X',
+    'Ⓨ': 'Y',
+    'Ｙ': 'Y',
+    'Ỳ': 'Y',
+    'Ý': 'Y',
+    'Ŷ': 'Y',
+    'Ỹ': 'Y',
+    'Ȳ': 'Y',
+    'Ẏ': 'Y',
+    'Ÿ': 'Y',
+    'Ỷ': 'Y',
+    'Ỵ': 'Y',
+    'Ƴ': 'Y',
+    'Ɏ': 'Y',
+    'Ỿ': 'Y',
+    'Ⓩ': 'Z',
+    'Ｚ': 'Z',
+    'Ź': 'Z',
+    'Ẑ': 'Z',
+    'Ż': 'Z',
+    'Ž': 'Z',
+    'Ẓ': 'Z',
+    'Ẕ': 'Z',
+    'Ƶ': 'Z',
+    'Ȥ': 'Z',
+    'Ɀ': 'Z',
+    'Ⱬ': 'Z',
+    'Ꝣ': 'Z',
+    'ⓐ': 'a',
+    'ａ': 'a',
+    'ẚ': 'a',
+    'à': 'a',
+    'á': 'a',
+    'â': 'a',
+    'ầ': 'a',
+    'ấ': 'a',
+    'ẫ': 'a',
+    'ẩ': 'a',
+    'ã': 'a',
+    'ā': 'a',
+    'ă': 'a',
+    'ằ': 'a',
+    'ắ': 'a',
+    'ẵ': 'a',
+    'ẳ': 'a',
+    'ȧ': 'a',
+    'ǡ': 'a',
+    'ä': 'a',
+    'ǟ': 'a',
+    'ả': 'a',
+    'å': 'a',
+    'ǻ': 'a',
+    'ǎ': 'a',
+    'ȁ': 'a',
+    'ȃ': 'a',
+    'ạ': 'a',
+    'ậ': 'a',
+    'ặ': 'a',
+    'ḁ': 'a',
+    'ą': 'a',
+    'ⱥ': 'a',
+    'ɐ': 'a',
+    'ꜳ': 'aa',
+    'æ': 'ae',
+    'ǽ': 'ae',
+    'ǣ': 'ae',
+    'ꜵ': 'ao',
+    'ꜷ': 'au',
+    'ꜹ': 'av',
+    'ꜻ': 'av',
+    'ꜽ': 'ay',
+    'ⓑ': 'b',
+    'ｂ': 'b',
+    'ḃ': 'b',
+    'ḅ': 'b',
+    'ḇ': 'b',
+    'ƀ': 'b',
+    'ƃ': 'b',
+    'ɓ': 'b',
+    'ⓒ': 'c',
+    'ｃ': 'c',
+    'ć': 'c',
+    'ĉ': 'c',
+    'ċ': 'c',
+    'č': 'c',
+    'ç': 'c',
+    'ḉ': 'c',
+    'ƈ': 'c',
+    'ȼ': 'c',
+    'ꜿ': 'c',
+    'ↄ': 'c',
+    'ⓓ': 'd',
+    'ｄ': 'd',
+    'ḋ': 'd',
+    'ď': 'd',
+    'ḍ': 'd',
+    'ḑ': 'd',
+    'ḓ': 'd',
+    'ḏ': 'd',
+    'đ': 'd',
+    'ƌ': 'd',
+    'ɖ': 'd',
+    'ɗ': 'd',
+    'ꝺ': 'd',
+    'ǳ': 'dz',
+    'ǆ': 'dz',
+    'ⓔ': 'e',
+    'ｅ': 'e',
+    'è': 'e',
+    'é': 'e',
+    'ê': 'e',
+    'ề': 'e',
+    'ế': 'e',
+    'ễ': 'e',
+    'ể': 'e',
+    'ẽ': 'e',
+    'ē': 'e',
+    'ḕ': 'e',
+    'ḗ': 'e',
+    'ĕ': 'e',
+    'ė': 'e',
+    'ë': 'e',
+    'ẻ': 'e',
+    'ě': 'e',
+    'ȅ': 'e',
+    'ȇ': 'e',
+    'ẹ': 'e',
+    'ệ': 'e',
+    'ȩ': 'e',
+    'ḝ': 'e',
+    'ę': 'e',
+    'ḙ': 'e',
+    'ḛ': 'e',
+    'ɇ': 'e',
+    'ɛ': 'e',
+    'ǝ': 'e',
+    'ⓕ': 'f',
+    'ｆ': 'f',
+    'ḟ': 'f',
+    'ƒ': 'f',
+    'ꝼ': 'f',
+    'ⓖ': 'g',
+    'ｇ': 'g',
+    'ǵ': 'g',
+    'ĝ': 'g',
+    'ḡ': 'g',
+    'ğ': 'g',
+    'ġ': 'g',
+    'ǧ': 'g',
+    'ģ': 'g',
+    'ǥ': 'g',
+    'ɠ': 'g',
+    'ꞡ': 'g',
+    'ᵹ': 'g',
+    'ꝿ': 'g',
+    'ⓗ': 'h',
+    'ｈ': 'h',
+    'ĥ': 'h',
+    'ḣ': 'h',
+    'ḧ': 'h',
+    'ȟ': 'h',
+    'ḥ': 'h',
+    'ḩ': 'h',
+    'ḫ': 'h',
+    'ẖ': 'h',
+    'ħ': 'h',
+    'ⱨ': 'h',
+    'ⱶ': 'h',
+    'ɥ': 'h',
+    'ƕ': 'hv',
+    'ⓘ': 'i',
+    'ｉ': 'i',
+    'ì': 'i',
+    'í': 'i',
+    'î': 'i',
+    'ĩ': 'i',
+    'ī': 'i',
+    'ĭ': 'i',
+    'ï': 'i',
+    'ḯ': 'i',
+    'ỉ': 'i',
+    'ǐ': 'i',
+    'ȉ': 'i',
+    'ȋ': 'i',
+    'ị': 'i',
+    'į': 'i',
+    'ḭ': 'i',
+    'ɨ': 'i',
+    'ı': 'i',
+    'ⓙ': 'j',
+    'ｊ': 'j',
+    'ĵ': 'j',
+    'ǰ': 'j',
+    'ɉ': 'j',
+    'ⓚ': 'k',
+    'ｋ': 'k',
+    'ḱ': 'k',
+    'ǩ': 'k',
+    'ḳ': 'k',
+    'ķ': 'k',
+    'ḵ': 'k',
+    'ƙ': 'k',
+    'ⱪ': 'k',
+    'ꝁ': 'k',
+    'ꝃ': 'k',
+    'ꝅ': 'k',
+    'ꞣ': 'k',
+    'ⓛ': 'l',
+    'ｌ': 'l',
+    'ŀ': 'l',
+    'ĺ': 'l',
+    'ľ': 'l',
+    'ḷ': 'l',
+    'ḹ': 'l',
+    'ļ': 'l',
+    'ḽ': 'l',
+    'ḻ': 'l',
+    'ſ': 'l',
+    'ł': 'l',
+    'ƚ': 'l',
+    'ɫ': 'l',
+    'ⱡ': 'l',
+    'ꝉ': 'l',
+    'ꞁ': 'l',
+    'ꝇ': 'l',
+    'ǉ': 'lj',
+    'ⓜ': 'm',
+    'ｍ': 'm',
+    'ḿ': 'm',
+    'ṁ': 'm',
+    'ṃ': 'm',
+    'ɱ': 'm',
+    'ɯ': 'm',
+    'ⓝ': 'n',
+    'ｎ': 'n',
+    'ǹ': 'n',
+    'ń': 'n',
+    'ñ': 'n',
+    'ṅ': 'n',
+    'ň': 'n',
+    'ṇ': 'n',
+    'ņ': 'n',
+    'ṋ': 'n',
+    'ṉ': 'n',
+    'ƞ': 'n',
+    'ɲ': 'n',
+    'ŉ': 'n',
+    'ꞑ': 'n',
+    'ꞥ': 'n',
+    'ǌ': 'nj',
+    'ⓞ': 'o',
+    'ｏ': 'o',
+    'ò': 'o',
+    'ó': 'o',
+    'ô': 'o',
+    'ồ': 'o',
+    'ố': 'o',
+    'ỗ': 'o',
+    'ổ': 'o',
+    'õ': 'o',
+    'ṍ': 'o',
+    'ȭ': 'o',
+    'ṏ': 'o',
+    'ō': 'o',
+    'ṑ': 'o',
+    'ṓ': 'o',
+    'ŏ': 'o',
+    'ȯ': 'o',
+    'ȱ': 'o',
+    'ö': 'o',
+    'ȫ': 'o',
+    'ỏ': 'o',
+    'ő': 'o',
+    'ǒ': 'o',
+    'ȍ': 'o',
+    'ȏ': 'o',
+    'ơ': 'o',
+    'ờ': 'o',
+    'ớ': 'o',
+    'ỡ': 'o',
+    'ở': 'o',
+    'ợ': 'o',
+    'ọ': 'o',
+    'ộ': 'o',
+    'ǫ': 'o',
+    'ǭ': 'o',
+    'ø': 'o',
+    'ǿ': 'o',
+    'ɔ': 'o',
+    'ꝋ': 'o',
+    'ꝍ': 'o',
+    'ɵ': 'o',
+    'ƣ': 'oi',
+    'ȣ': 'ou',
+    'ꝏ': 'oo',
+    'ⓟ': 'p',
+    'ｐ': 'p',
+    'ṕ': 'p',
+    'ṗ': 'p',
+    'ƥ': 'p',
+    'ᵽ': 'p',
+    'ꝑ': 'p',
+    'ꝓ': 'p',
+    'ꝕ': 'p',
+    'ⓠ': 'q',
+    'ｑ': 'q',
+    'ɋ': 'q',
+    'ꝗ': 'q',
+    'ꝙ': 'q',
+    'ⓡ': 'r',
+    'ｒ': 'r',
+    'ŕ': 'r',
+    'ṙ': 'r',
+    'ř': 'r',
+    'ȑ': 'r',
+    'ȓ': 'r',
+    'ṛ': 'r',
+    'ṝ': 'r',
+    'ŗ': 'r',
+    'ṟ': 'r',
+    'ɍ': 'r',
+    'ɽ': 'r',
+    'ꝛ': 'r',
+    'ꞧ': 'r',
+    'ꞃ': 'r',
+    'ⓢ': 's',
+    'ｓ': 's',
+    'ß': 's',
+    'ś': 's',
+    'ṥ': 's',
+    'ŝ': 's',
+    'ṡ': 's',
+    'š': 's',
+    'ṧ': 's',
+    'ṣ': 's',
+    'ṩ': 's',
+    'ș': 's',
+    'ş': 's',
+    'ȿ': 's',
+    'ꞩ': 's',
+    'ꞅ': 's',
+    'ẛ': 's',
+    'ⓣ': 't',
+    'ｔ': 't',
+    'ṫ': 't',
+    'ẗ': 't',
+    'ť': 't',
+    'ṭ': 't',
+    'ț': 't',
+    'ţ': 't',
+    'ṱ': 't',
+    'ṯ': 't',
+    'ŧ': 't',
+    'ƭ': 't',
+    'ʈ': 't',
+    'ⱦ': 't',
+    'ꞇ': 't',
+    'ꜩ': 'tz',
+    'ⓤ': 'u',
+    'ｕ': 'u',
+    'ù': 'u',
+    'ú': 'u',
+    'û': 'u',
+    'ũ': 'u',
+    'ṹ': 'u',
+    'ū': 'u',
+    'ṻ': 'u',
+    'ŭ': 'u',
+    'ü': 'u',
+    'ǜ': 'u',
+    'ǘ': 'u',
+    'ǖ': 'u',
+    'ǚ': 'u',
+    'ủ': 'u',
+    'ů': 'u',
+    'ű': 'u',
+    'ǔ': 'u',
+    'ȕ': 'u',
+    'ȗ': 'u',
+    'ư': 'u',
+    'ừ': 'u',
+    'ứ': 'u',
+    'ữ': 'u',
+    'ử': 'u',
+    'ự': 'u',
+    'ụ': 'u',
+    'ṳ': 'u',
+    'ų': 'u',
+    'ṷ': 'u',
+    'ṵ': 'u',
+    'ʉ': 'u',
+    'ⓥ': 'v',
+    'ｖ': 'v',
+    'ṽ': 'v',
+    'ṿ': 'v',
+    'ʋ': 'v',
+    'ꝟ': 'v',
+    'ʌ': 'v',
+    'ꝡ': 'vy',
+    'ⓦ': 'w',
+    'ｗ': 'w',
+    'ẁ': 'w',
+    'ẃ': 'w',
+    'ŵ': 'w',
+    'ẇ': 'w',
+    'ẅ': 'w',
+    'ẘ': 'w',
+    'ẉ': 'w',
+    'ⱳ': 'w',
+    'ⓧ': 'x',
+    'ｘ': 'x',
+    'ẋ': 'x',
+    'ẍ': 'x',
+    'ⓨ': 'y',
+    'ｙ': 'y',
+    'ỳ': 'y',
+    'ý': 'y',
+    'ŷ': 'y',
+    'ỹ': 'y',
+    'ȳ': 'y',
+    'ẏ': 'y',
+    'ÿ': 'y',
+    'ỷ': 'y',
+    'ẙ': 'y',
+    'ỵ': 'y',
+    'ƴ': 'y',
+    'ɏ': 'y',
+    'ỿ': 'y',
+    'ⓩ': 'z',
+    'ｚ': 'z',
+    'ź': 'z',
+    'ẑ': 'z',
+    'ż': 'z',
+    'ž': 'z',
+    'ẓ': 'z',
+    'ẕ': 'z',
+    'ƶ': 'z',
+    'ȥ': 'z',
+    'ɀ': 'z',
+    'ⱬ': 'z',
+    'ꝣ': 'z',
+    'Ά': 'Α',
+    'Έ': 'Ε',
+    'Ή': 'Η',
+    'Ί': 'Ι',
+    'Ϊ': 'Ι',
+    'Ό': 'Ο',
+    'Ύ': 'Υ',
+    'Ϋ': 'Υ',
+    'Ώ': 'Ω',
+    'ά': 'α',
+    'έ': 'ε',
+    'ή': 'η',
+    'ί': 'ι',
+    'ϊ': 'ι',
+    'ΐ': 'ι',
+    'ό': 'ο',
+    'ύ': 'υ',
+    'ϋ': 'υ',
+    'ΰ': 'υ',
+    'ω': 'ω',
+    'ς': 'σ'
+  };
+
+  // Copied from Select2
+
+  function stripDiacritics(text) {
+    // Used 'uni range + named function' from http://jsperf.com/diacritics/18
+    function match(a) {
+      return DIACRITICS[a] || a;
+    }
+
+    return ('' + text).replace(/[^\u0000-\u007E]/g, match);
+  }
+
+  function defaultMatcher(value, text) {
+    return text === '' || stripDiacritics(value).toUpperCase().indexOf(stripDiacritics(text).toUpperCase()) > -1;
+  }
+});
+define('ember-power-select', ['ember-power-select/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
+  'use strict';
+  var keys = Object.keys || __Ember__['default'].keys;
+  var forEach = Array.prototype.forEach && function(array, cb) {
+    array.forEach(cb);
+  } || __Ember__['default'].EnumerableUtils.forEach;
+
+  forEach(keys(__index__), (function(key) {
+    __exports__[key] = __index__[key];
+  }));
+});
+
 define('ember-truth-helpers/helpers/and', ['exports', 'ember-truth-helpers/utils/truth-convert'], function (exports, _emberTruthHelpersUtilsTruthConvert) {
   'use strict';
 
@@ -99007,6 +104547,93 @@ define("ember-webcam-input/components/ember-webcam-input", ["exports", "ember"],
   exports["default"] = EmberWebcamInputComponent;
 });
 define('ember-webcam-input', ['ember-webcam-input/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
+  'use strict';
+  var keys = Object.keys || __Ember__['default'].keys;
+  var forEach = Array.prototype.forEach && function(array, cb) {
+    array.forEach(cb);
+  } || __Ember__['default'].EnumerableUtils.forEach;
+
+  forEach(keys(__index__), (function(key) {
+    __exports__[key] = __index__[key];
+  }));
+});
+
+define('ember-wormhole/components/ember-wormhole', ['exports', 'ember'], function (exports, _ember) {
+  'use strict';
+
+  var computed = _ember['default'].computed;
+  var observer = _ember['default'].observer;
+  var run = _ember['default'].run;
+
+  exports['default'] = _ember['default'].Component.extend({
+    to: computed.alias('destinationElementId'),
+    destinationElementId: null,
+    destinationElement: computed('destinationElementId', 'renderInPlace', function () {
+      return this.get('renderInPlace') ? this.element : document.getElementById(this.get('destinationElementId'));
+    }),
+    renderInPlace: false,
+
+    didInsertElement: function didInsertElement() {
+      this._super.apply(this, arguments);
+      this._firstNode = this.element.firstChild;
+      this._lastNode = this.element.lastChild;
+      this.appendToDestination();
+    },
+
+    willDestroyElement: function willDestroyElement() {
+      var _this = this;
+
+      this._super.apply(this, arguments);
+      var firstNode = this._firstNode;
+      var lastNode = this._lastNode;
+      run.schedule('render', function () {
+        _this.removeRange(firstNode, lastNode);
+      });
+    },
+
+    destinationDidChange: observer('destinationElement', function () {
+      var destinationElement = this.get('destinationElement');
+      if (destinationElement !== this._firstNode.parentNode) {
+        run.schedule('render', this, 'appendToDestination');
+      }
+    }),
+
+    appendToDestination: function appendToDestination() {
+      var destinationElement = this.get('destinationElement');
+      if (!destinationElement) {
+        var destinationElementId = this.get('destinationElementId');
+        if (destinationElementId) {
+          throw new Error('ember-wormhole failed to render into \'#' + this.get('destinationElementId') + '\' because the element is not in the DOM');
+        }
+        throw new Error('ember-wormhole failed to render content because the destinationElementId was set to an undefined or falsy value.');
+      }
+      this.appendRange(destinationElement, this._firstNode, this._lastNode);
+    },
+
+    appendRange: function appendRange(destinationElement, firstNode, lastNode) {
+      while (firstNode) {
+        destinationElement.insertBefore(firstNode, null);
+        firstNode = firstNode !== lastNode ? lastNode.parentNode.firstChild : null;
+      }
+    },
+
+    removeRange: function removeRange(firstNode, lastNode) {
+      var node = lastNode;
+      do {
+        var next = node.previousSibling;
+        if (node.parentNode) {
+          node.parentNode.removeChild(node);
+          if (node === firstNode) {
+            break;
+          }
+        }
+        node = next;
+      } while (node);
+    }
+
+  });
+});
+define('ember-wormhole', ['ember-wormhole/index', 'ember', 'exports'], function(__index__, __Ember__, __exports__) {
   'use strict';
   var keys = Object.keys || __Ember__['default'].keys;
   var forEach = Array.prototype.forEach && function(array, cb) {
