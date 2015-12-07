@@ -1,0 +1,15 @@
+<label for="{{controlId}}" class="control-label">
+  {{input type="checkbox"
+    id=controlId
+    checked=(mut value)
+    disabled=disabled
+    tabindex=tabindex
+    indeterminate=indeterminate
+    name=name
+    autofocus=autofocus
+    form=form}}
+  {{yield}}
+</label>
+{{#each errorMessages as |msg|}}
+  <div class="help-block error-text">{{msg}}</div>
+{{/each}}

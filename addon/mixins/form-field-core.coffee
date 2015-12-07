@@ -1,6 +1,6 @@
 `import Ember from 'ember'`
 
-{computed, isBlank, Mixin, get} = Ember
+{guidFor, computed, isBlank, Mixin, get} = Ember
 {mapBy, filter, alias, oneWay, notEmpty, match, or: ifAny} = computed
 
 FormFieldCoreMixin = Mixin.create
@@ -20,9 +20,11 @@ FormFieldCoreMixin = Mixin.create
   name: oneWay "type"
   label: oneWay "name"
   errorMessages: mapBy "errors", "message"
+  
   didInitAttrs: ->
     if isBlank( name = @get "name" )
       throw new Error("You need to specify a name attribute")
     @set "value", alias "model.#{name}"
-
+    if isBlank @get "controlId"
+      @set "controlId", "em-input-#{guidFor(@)}"
 `export default FormFieldCoreMixin`

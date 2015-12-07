@@ -21,7 +21,7 @@ genErr = (model) ->
     message: xxx(get model, field)
 
 BasicsController = Controller.extend
-  fields: ["email", "password", "username", "feelings", "expectedAt"]
+  fields: ["email", "password", "username", "feelings", "expectedAt", "money"]
   frameworks: ["ember", "angular", "react"]
   candies: [chocolate, poprock, taffy]
   makeMistakes: (model) ->

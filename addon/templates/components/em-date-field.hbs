@@ -1,7 +1,8 @@
-<label for="{{name}}" class="control-label">
+<label for="{{controlId}}" class="control-label">
   <span class="label-text">{{label}}</span>
 </label>
 {{bs-datetimepicker name=name
+  id=controlId
   date=value
   format=format
   updateDate=(action (mut value))

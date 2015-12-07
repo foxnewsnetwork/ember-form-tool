@@ -1,4 +1,4 @@
-<label for="{{name}}" class="control-label">
+<label for="{{controlId}}" class="control-label">
   <span class="label-text">{{label}}</span>
 </label>
 <div class={{if shouldInputGroup 'input-group'}}>
@@ -15,6 +15,7 @@
   {{/if}}
 
   {{#power-select 
+    id=controlId
     allowClear=allowClear
     placeholder=placeholder
     disabled=disabled

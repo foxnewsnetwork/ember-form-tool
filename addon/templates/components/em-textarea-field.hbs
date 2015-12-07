@@ -1,4 +1,4 @@
-<label for="{{name}}" class="control-label">
+<label for="{{controlId}}" class="control-label">
   <span class="label-text">{{label}}</span>
 </label>
 <div class={{if shouldInputGroup 'input-group'}}>
@@ -14,6 +14,7 @@
     </span>
   {{/if}}
   {{textarea class="form-control"
+    id=controlId
     value=(mut value) 
     name=name
     rows=rows
