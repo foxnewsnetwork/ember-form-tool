@@ -3,3 +3,15 @@
   height: 14px;
   width: 20px;
 }
+
+.em-file-field-label {
+  background: #34495e;
+  padding: 15px;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.em-file-field {
+  text-align: center;
+}

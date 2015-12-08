@@ -5,7 +5,7 @@
 
 EmFileFieldComponent = Ember.Component.extend FormFieldCore, DragDrop,
   layout: layout
-  classNames: ['input-field', 'form-input', 'input-section', 'form-group', 'well']
+  classNames: ['input-field', 'form-input', 'input-section', 'form-group', 'well', 'em-file-field']
   type: "file"
   label: "Upload a file"
   count: 1
