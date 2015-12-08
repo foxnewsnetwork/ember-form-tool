@@ -94,6 +94,14 @@ define("dummy/components/code-snippet", ["exports", "ember", "dummy/snippets"], 
     })
   });
 });
+define('dummy/components/em-checkbox-field', ['exports', 'ember-form-tool/components/em-checkbox-field'], function (exports, _emberFormToolComponentsEmCheckboxField) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberFormToolComponentsEmCheckboxField['default'];
+    }
+  });
+});
 define('dummy/components/em-date-field', ['exports', 'ember-form-tool/components/em-date-field'], function (exports, _emberFormToolComponentsEmDateField) {
   Object.defineProperty(exports, 'default', {
     enumerable: true,
@@ -118,9 +126,57 @@ define('dummy/components/em-email-field', ['exports', 'ember-form-tool/component
     }
   });
 });
+define('dummy/components/em-file-field', ['exports', 'ember-form-tool/components/em-file-field'], function (exports, _emberFormToolComponentsEmFileField) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberFormToolComponentsEmFileField['default'];
+    }
+  });
+});
+define('dummy/components/em-file-preview-core', ['exports', 'ember-form-tool/components/em-file-preview-core'], function (exports, _emberFormToolComponentsEmFilePreviewCore) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberFormToolComponentsEmFilePreviewCore['default'];
+    }
+  });
+});
+define('dummy/components/em-file-preview', ['exports', 'ember-form-tool/components/em-file-preview'], function (exports, _emberFormToolComponentsEmFilePreview) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberFormToolComponentsEmFilePreview['default'];
+    }
+  });
+});
+define('dummy/components/em-files-field', ['exports', 'ember-form-tool/components/em-files-field'], function (exports, _emberFormToolComponentsEmFilesField) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberFormToolComponentsEmFilesField['default'];
+    }
+  });
+});
+define('dummy/components/em-files-preview', ['exports', 'ember-form-tool/components/em-files-preview'], function (exports, _emberFormToolComponentsEmFilesPreview) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberFormToolComponentsEmFilesPreview['default'];
+    }
+  });
+});
 define('dummy/components/em-form-for', ['exports', 'ember-form-tool/components/em-form-for', 'dummy/config/environment'], function (exports, _emberFormToolComponentsEmFormFor, _dummyConfigEnvironment) {
   exports['default'] = _emberFormToolComponentsEmFormFor['default'].extend({
     flavor: _dummyConfigEnvironment['default'].FormFrameworkFlavor
+  });
+});
+define('dummy/components/em-number-field', ['exports', 'ember-form-tool/components/em-number-field'], function (exports, _emberFormToolComponentsEmNumberField) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberFormToolComponentsEmNumberField['default'];
+    }
   });
 });
 define('dummy/components/em-password-field', ['exports', 'ember-form-tool/components/em-password-field'], function (exports, _emberFormToolComponentsEmPasswordField) {
@@ -270,7 +326,7 @@ define('dummy/controllers/basics', ['exports', 'ember', 'dummy/utils/error-messa
   };
 
   BasicsController = Controller.extend({
-    fields: ["email", "password", "username", "feelings", "expectedAt"],
+    fields: ["email", "password", "username", "feelings", "expectedAt", "money"],
     frameworks: ["ember", "angular", "react"],
     candies: [chocolate, poprock, taffy],
     makeMistakes: function makeMistakes(model) {
@@ -294,6 +350,15 @@ define('dummy/controllers/datetime', ['exports', 'ember', 'dummy/controllers/bas
 
   exports['default'] = DatetimeController;
 });
+define('dummy/controllers/files', ['exports', 'ember', 'dummy/controllers/basics'], function (exports, _ember, _dummyControllersBasics) {
+  var FilesController;
+
+  FilesController = _dummyControllersBasics['default'].extend({
+    fields: ["file", "files"]
+  });
+
+  exports['default'] = FilesController;
+});
 define('dummy/controllers/index', ['exports', 'ember'], function (exports, _ember) {
   var IndexController;
 
@@ -312,6 +377,20 @@ define('dummy/controllers/selection', ['exports', 'ember', 'dummy/controllers/ba
   });
 
   exports['default'] = SelectController;
+});
+define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-checkbox-field', ['exports', 'ember', 'dummy/ember-form-tool/tests/modules/ember-form-tool/templates/components/em-checkbox-field', 'dummy/ember-form-tool/tests/modules/ember-form-tool/mixins/form-field-core'], function (exports, _ember, _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmCheckboxField, _dummyEmberFormToolTestsModulesEmberFormToolMixinsFormFieldCore) {
+  var EmCheckboxFieldComponent;
+
+  EmCheckboxFieldComponent = _ember['default'].Component.extend(_dummyEmberFormToolTestsModulesEmberFormToolMixinsFormFieldCore['default'], {
+    layout: _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmCheckboxField['default'],
+    classNames: ['checkbox']
+  });
+
+  EmCheckboxFieldComponent.reopenClass({
+    positionalParams: ["formHeart"]
+  });
+
+  exports['default'] = EmCheckboxFieldComponent;
 });
 define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-date-field', ['exports', 'ember', 'dummy/ember-form-tool/tests/modules/ember-form-tool/templates/components/em-date-field', 'dummy/ember-form-tool/tests/modules/ember-form-tool/mixins/form-field-core'], function (exports, _ember, _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmDateField, _dummyEmberFormToolTestsModulesEmberFormToolMixinsFormFieldCore) {
   var Component, EmDateFieldComponent, computed;
@@ -373,6 +452,149 @@ define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-email-
 
   exports['default'] = EmEmailFieldComponent;
 });
+define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-file-field', ['exports', 'ember', 'dummy/ember-form-tool/tests/modules/ember-form-tool/templates/components/em-file-field', 'dummy/ember-form-tool/tests/modules/ember-form-tool/mixins/form-field-core', 'dummy/ember-form-tool/tests/modules/ember-form-tool/mixins/drag-drop'], function (exports, _ember, _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmFileField, _dummyEmberFormToolTestsModulesEmberFormToolMixinsFormFieldCore, _dummyEmberFormToolTestsModulesEmberFormToolMixinsDragDrop) {
+  var EmFileFieldComponent;
+
+  EmFileFieldComponent = _ember['default'].Component.extend(_dummyEmberFormToolTestsModulesEmberFormToolMixinsFormFieldCore['default'], _dummyEmberFormToolTestsModulesEmberFormToolMixinsDragDrop['default'], {
+    layout: _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmFileField['default'],
+    classNames: ['input-field', 'form-input', 'input-section', 'form-group', 'well', 'em-file-field'],
+    type: "file",
+    label: "Upload a file",
+    count: 1,
+    handleFiles: function handleFiles(arg) {
+      var file;
+      file = arg[0];
+      return this.set("value", file);
+    },
+    change: function change(e) {
+      var files;
+      files = e.target.files;
+      return this.handleFiles(files);
+    }
+  });
+
+  EmFileFieldComponent.reopenClass({
+    positionalParams: ["formHeart"]
+  });
+
+  exports['default'] = EmFileFieldComponent;
+});
+define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-file-preview-core', ['exports', 'ember', 'dummy/ember-form-tool/tests/modules/ember-form-tool/templates/components/em-file-preview-core'], function (exports, _ember, _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmFilePreviewCore) {
+  var EmFilePreviewCoreComponent, imageType;
+
+  imageType = /^image\//;
+
+  EmFilePreviewCoreComponent = _ember['default'].Component.extend({
+    tagName: "figure",
+    classNames: ["img-thumbnail", "em-file-preview-core"],
+    classNameBindings: ["state"],
+    layout: _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmFilePreviewCore['default'],
+    didInitAttrs: function didInitAttrs() {
+      var file;
+      this.set("state", "busy");
+      if ((file = this.get("file")) != null) {
+        return this.prepareDataURI(file);
+      } else {
+        throw new Error("You must pass a file to the file preview");
+      }
+    },
+    prepareDataURI: function prepareDataURI(file) {
+      var reader;
+      if (imageType.test(file.type)) {
+        reader = new FileReader();
+        reader.onloadend = (function (_this) {
+          return function () {
+            _this.set("isPic", true);
+            _this.set("state", "ready");
+            return _this.set("dataURI", reader.result);
+          };
+        })(this);
+        return reader.readAsDataURL(file);
+      } else {
+        this.set("isPic", false);
+        return this.set("state", "ready");
+      }
+    },
+    actions: {
+      kill: function kill() {
+        return this.sendAction("action", this.get("file"));
+      }
+    }
+  });
+
+  exports['default'] = EmFilePreviewCoreComponent;
+});
+define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-file-preview', ['exports', 'ember', 'dummy/ember-form-tool/tests/modules/ember-form-tool/templates/components/em-file-preview', 'dummy/ember-form-tool/tests/modules/ember-form-tool/mixins/form-field-core'], function (exports, _ember, _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmFilePreview, _dummyEmberFormToolTestsModulesEmberFormToolMixinsFormFieldCore) {
+  var EmFilePreviewComponent, alias;
+
+  alias = _ember['default'].computed.alias;
+
+  EmFilePreviewComponent = _ember['default'].Component.extend(_dummyEmberFormToolTestsModulesEmberFormToolMixinsFormFieldCore['default'], {
+    layout: _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmFilePreview['default'],
+    name: "file",
+    file: alias("value"),
+    actions: {
+      kill: function kill() {
+        return this.set("file", null);
+      }
+    }
+  });
+
+  EmFilePreviewComponent.reopenClass({
+    positionalParams: ["formHeart"]
+  });
+
+  exports['default'] = EmFilePreviewComponent;
+});
+define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-files-field', ['exports', 'ember', 'dummy/ember-form-tool/tests/modules/ember-form-tool/templates/components/em-file-field', 'dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-file-field'], function (exports, _ember, _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmFileField, _dummyEmberFormToolTestsModulesEmberFormToolComponentsEmFileField) {
+  var A, EmFilesFieldComponent, alias, ref;
+
+  A = _ember['default'].A, (ref = _ember['default'].computed, alias = ref.alias);
+
+  EmFilesFieldComponent = _dummyEmberFormToolTestsModulesEmberFormToolComponentsEmFileField['default'].extend({
+    layout: _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmFileField['default'],
+    type: "files",
+    label: "Upload files",
+    multiple: true,
+    count: alias("value.length"),
+    handleFiles: function handleFiles(files) {
+      return this.set("value", this.arrayify(files));
+    },
+    arrayify: function arrayify(filelist) {
+      var file, i, len, output;
+      output = A();
+      for (i = 0, len = filelist.length; i < len; i++) {
+        file = filelist[i];
+        output.pushObject(file);
+      }
+      return output;
+    }
+  });
+
+  exports['default'] = EmFilesFieldComponent;
+});
+define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-files-preview', ['exports', 'ember', 'dummy/ember-form-tool/tests/modules/ember-form-tool/templates/components/em-files-preview', 'dummy/ember-form-tool/tests/modules/ember-form-tool/mixins/form-field-core'], function (exports, _ember, _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmFilesPreview, _dummyEmberFormToolTestsModulesEmberFormToolMixinsFormFieldCore) {
+  var EmFilesPreviewComponent, alias;
+
+  alias = _ember['default'].computed.alias;
+
+  EmFilesPreviewComponent = _ember['default'].Component.extend(_dummyEmberFormToolTestsModulesEmberFormToolMixinsFormFieldCore['default'], {
+    layout: _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmFilesPreview['default'],
+    name: "files",
+    files: alias("value"),
+    actions: {
+      kill: function kill(file) {
+        return this.get("files").removeObject(file);
+      }
+    }
+  });
+
+  EmFilesPreviewComponent.reopenClass({
+    positionalParams: ["formHeart"]
+  });
+
+  exports['default'] = EmFilesPreviewComponent;
+});
 define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-form-for', ['exports', 'ember', 'dummy/ember-form-tool/tests/modules/ember-form-tool/templates/components/em-form-for'], function (exports, _ember, _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmFormFor) {
   var Component, EmFormForComponent, KnownFlavors, computed, oneWay;
 
@@ -407,6 +629,23 @@ define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-form-f
   });
 
   exports['default'] = EmFormForComponent;
+});
+define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-number-field', ['exports', 'ember', 'dummy/ember-form-tool/tests/modules/ember-form-tool/templates/components/em-text-field', 'dummy/ember-form-tool/tests/modules/ember-form-tool/mixins/form-field-core'], function (exports, _ember, _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmTextField, _dummyEmberFormToolTestsModulesEmberFormToolMixinsFormFieldCore) {
+  var Component, EmNumberFieldComponent;
+
+  Component = _ember['default'].Component;
+
+  EmNumberFieldComponent = _ember['default'].Component.extend(_dummyEmberFormToolTestsModulesEmberFormToolMixinsFormFieldCore['default'], {
+    layout: _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmTextField['default'],
+    classNames: ['input-field', 'form-input', 'input-section', 'form-group'],
+    type: "number"
+  });
+
+  EmNumberFieldComponent.reopenClass({
+    positionalParams: ["formHeart"]
+  });
+
+  exports['default'] = EmNumberFieldComponent;
 });
 define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-password-field', ['exports', 'ember', 'dummy/ember-form-tool/tests/modules/ember-form-tool/templates/components/em-text-field', 'dummy/ember-form-tool/tests/modules/ember-form-tool/mixins/form-field-core'], function (exports, _ember, _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmTextField, _dummyEmberFormToolTestsModulesEmberFormToolMixinsFormFieldCore) {
   var EmPasswordFieldComponent;
@@ -478,10 +717,52 @@ define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-time-f
 
   exports['default'] = EmTimeFieldComponent;
 });
-define("dummy/ember-form-tool/tests/modules/ember-form-tool/mixins/form-field-core", ["exports", "ember"], function (exports, _ember) {
-  var FormFieldCoreMixin, Mixin, alias, computed, filter, get, ifAny, isBlank, mapBy, match, notEmpty, oneWay;
+define("dummy/ember-form-tool/tests/modules/ember-form-tool/mixins/drag-drop", ["exports", "ember"], function (exports, _ember) {
+  var DragDropMixin, K, Mixin, equal, ref;
 
-  computed = _ember["default"].computed, isBlank = _ember["default"].isBlank, Mixin = _ember["default"].Mixin, get = _ember["default"].get;
+  K = _ember["default"].K, Mixin = _ember["default"].Mixin, (ref = _ember["default"].computed, equal = ref.equal);
+
+  DragDropMixin = Mixin.create({
+    handleFiles: K,
+    classNameBindings: ["dragDropState", "isDragEntered:well-lg:"],
+    isDragEntered: equal("dragDropState", "drag-entered"),
+    dragDropState: "drag-left",
+    dragOver: function dragOver(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      return this.set("dragDropState", "drag-entered");
+    },
+    dragLeave: function dragLeave(e) {
+      e.stopPropagation();
+      e.preventDefault();
+      return this.set("dragDropState", "drag-left");
+    },
+    drop: function drop(e) {
+      var files;
+      e.stopPropagation();
+      e.preventDefault();
+      files = e.dataTransfer.files;
+      this.set("dragDropState", "drag-left");
+      return this.handleFiles(files);
+    },
+    didInsertElement: function didInsertElement() {
+      this.$().on("dragover", this.dragOver.bind(this));
+      this.$().on("dragleave", this.dragLeave.bind(this));
+      return this.$().on("drop", this.drop.bind(this));
+    },
+    willDestroyElement: function willDestroyElement() {
+      this.$().off("dragover");
+      this.$().off("dragleave");
+      return this.$().off("drop");
+    }
+  });
+
+  exports["default"] = DragDropMixin;
+});
+define("dummy/ember-form-tool/tests/modules/ember-form-tool/mixins/form-field-core", ["exports", "ember"], function (exports, _ember) {
+  var FormFieldCoreMixin, Mixin, alias, computed, filter, get, guidFor, ifAny, isBlank, mapBy, match, notEmpty, oneWay;
+
+  guidFor = _ember["default"].guidFor, computed = _ember["default"].computed, isBlank = _ember["default"].isBlank, Mixin = _ember["default"].Mixin, get = _ember["default"].get;
 
   mapBy = computed.mapBy, filter = computed.filter, alias = computed.alias, oneWay = computed.oneWay, notEmpty = computed.notEmpty, match = computed.match, ifAny = computed.or;
 
@@ -508,7 +789,10 @@ define("dummy/ember-form-tool/tests/modules/ember-form-tool/mixins/form-field-co
       if (isBlank(name = this.get("name"))) {
         throw new Error("You need to specify a name attribute");
       }
-      return this.set("value", alias("model." + name));
+      this.set("value", alias("model." + name));
+      if (isBlank(this.get("controlId"))) {
+        return this.set("controlId", "em-input-" + guidFor(this));
+      }
     }
   });
 
@@ -823,6 +1107,19 @@ define('dummy/routes/datetime', ['exports', 'ember', 'moment'], function (export
 
   exports['default'] = BasicsRoute;
 });
+define('dummy/routes/files', ['exports', 'ember'], function (exports, _ember) {
+  var FilesRoute, Object, Route;
+
+  Object = _ember['default'].Object, Route = _ember['default'].Route;
+
+  FilesRoute = Route.extend({
+    model: function model() {
+      return Object.create();
+    }
+  });
+
+  exports['default'] = FilesRoute;
+});
 define("dummy/routes/index", ["exports", "ember"], function (exports, _ember) {
   var IndexRoute;
 
@@ -909,245 +1206,11 @@ define('dummy/services/moment', ['exports', 'ember', 'moment'], function (export
 });
 define("dummy/snippets", ["exports"], function (exports) {
   exports["default"] = {
-    "-basics.hbs": "{{#em-form-for model action=\"submit\" as |f|}}\n  {{#em-email-field f prefix=\"fa-check\"}}\n    <span class=\"helper-text\">put your primary email</span>\n  {{/em-email-field}}\n  {{#em-password-field f prefix=\"fa-times\"}}\n    <span class=\"helper-text\">password fields also work</span>\n  {{/em-password-field}}\n  {{#em-text-field f name=\"username\" prefix=\"fa-user\"}}\n    <span class=\"helper-text\">text fields work as expected</span>\n  {{/em-text-field}}\n  {{#em-textarea-field f name=\"feelings\" prefix=\"fa-heart\"}}\n    <span class=\"helper-text\">Very similar to regular text fields</span>\n  {{/em-textarea-field}}\n  <button class=\"btn btn-success\" type=\"submit\">\n    <span>Click Me</span>\n  </button>\n{{/em-form-for}}",
+    "-basics.hbs": "{{#em-form-for model action=\"submit\" as |f|}}\n  {{#em-email-field f prefix=\"fa-check\"}}\n    <span class=\"helper-text\">put your primary email</span>\n  {{/em-email-field}}\n  {{#em-password-field f prefix=\"fa-times\"}}\n    <span class=\"helper-text\">password fields also work</span>\n  {{/em-password-field}}\n  {{#em-text-field f name=\"username\" prefix=\"fa-user\"}}\n    <span class=\"helper-text\">text fields work as expected</span>\n  {{/em-text-field}}\n  {{#em-textarea-field f name=\"feelings\" prefix=\"fa-heart\"}}\n    <span class=\"helper-text\">Very similar to regular text fields</span>\n  {{/em-textarea-field}}\n  {{#em-number-field f name=\"money\" prefix=\"fa-money\"}}\n    <span class=\"helper-text\">Number fields have a little scroller to the side</span>\n  {{/em-number-field}}\n  <button class=\"btn btn-success\" type=\"submit\">\n    <span>Click Me</span>\n  </button>\n{{/em-form-for}}",
     "-datetime.hbs": "{{#em-form-for model action=\"submit\" as |f|}}\n  {{#em-date-field f suffix=\"fa-calendar\"}}\n    <span class=\"helper-text\">select a date (note, prefix isn't available on date fields)</span>\n  {{/em-date-field}}\n  {{#em-time-field f suffix=\"glyphicon-time\"}}\n    <span class=\"helper-text\">select a time (note, prefix isn't available on date fields)</span>\n  {{/em-time-field}}\n  {{#em-datetime-field f suffix=\"fa-twitter\"}}\n    <span class=\"helper-text\">select a datetime</span>\n  {{/em-datetime-field}}\n  {{#em-datetime-field f name=\"moment\" suffix=\"fa-twitter\"}}\n    <span class=\"helper-text\">you can use moment objects as well</span>\n  {{/em-datetime-field}}\n  <button class=\"btn btn-success\" type=\"submit\">\n    <span>Click Me</span>\n  </button>\n{{/em-form-for}}",
-    "-select.hbs": "{{#em-form-for model action=\"submit\" as |f|}}\n  {{#em-select-field f name=\"framework\" options=frameworks prefix=\"fa-cubes\"}}\n    <span class=\"helper-text\">select a framework (if you care to customize, the yield'd block will be the usual helper text)</span>\n  {{/em-select-field}}\n  {{#em-select-field f name=\"candy\" options=candies prefix=\"fa-cubes\" as |candy|}}\n    <img src=\"{{candy.pic}}\" class=\"icon-flag\"> <strong>{{candy.id}}</strong>\n    <small>{{candy.presentation}}</small>\n  {{/em-select-field}}\n  <div class=\"helper-text\">\n    If you do customize your options, the helper text goes away\n  </div>\n  <button class=\"btn btn-success\" type=\"submit\">\n    <span>Click Me</span>\n  </button>\n{{/em-form-for}}"
+    "-files.hbs": "{{#em-form-for model action=\"submit\" as |f|}}\n  {{em-file-field f prefix=\"fa-file\"}}\n  {{em-file-preview f}}\n  {{#em-files-field f suffix=\"fa-twitter\"}}\n    <span class=\"helper-text\">upload multiple files here</span>\n  {{/em-files-field}}\n  {{em-files-preview f}}\n  <button class=\"btn btn-success\" type=\"submit\">\n    <span>Click Me</span>\n  </button>\n{{/em-form-for}}",
+    "-select.hbs": "{{#em-form-for model action=\"submit\" as |f|}}\n  {{#em-select-field f name=\"framework\" options=frameworks prefix=\"fa-cubes\"}}\n    <span class=\"helper-text\">select a framework (if you care to customize, the yield'd block will be the usual helper text)</span>\n  {{/em-select-field}}\n  {{#em-select-field f name=\"candy\" options=candies prefix=\"fa-cubes\" as |candy|}}\n    <img src=\"{{candy.pic}}\" class=\"icon-flag\"> <strong>{{candy.id}}</strong>\n    <small>{{candy.presentation}}</small>\n  {{/em-select-field}}\n  <div class=\"helper-text\">\n    If you do customize your options, the helper text goes away\n  </div>\n  {{#em-checkbox-field f name=\"rememberMe\"}}\n    Remember Me?\n  {{/em-checkbox-field}}\n  <button class=\"btn btn-success\" type=\"submit\">\n    <span>Click Me</span>\n  </button>\n{{/em-form-for}}"
   };
-});
-define("dummy/templates/-fixture", ["exports"], function (exports) {
-  exports["default"] = Ember.HTMLBars.template((function () {
-    var child0 = (function () {
-      return {
-        meta: {
-          "fragmentReason": false,
-          "revision": "Ember@2.2.0",
-          "loc": {
-            "source": null,
-            "start": {
-              "line": 2,
-              "column": 0
-            },
-            "end": {
-              "line": 4,
-              "column": 0
-            }
-          },
-          "moduleName": "dummy/templates/-fixture.hbs"
-        },
-        isEmpty: false,
-        arity: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        buildFragment: function buildFragment(dom) {
-          var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("  ");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createElement("span");
-          dom.setAttribute(el1, "class", "helper-text");
-          var el2 = dom.createTextNode("put your primary email");
-          dom.appendChild(el1, el2);
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        buildRenderNodes: function buildRenderNodes() {
-          return [];
-        },
-        statements: [],
-        locals: [],
-        templates: []
-      };
-    })();
-    var child1 = (function () {
-      return {
-        meta: {
-          "fragmentReason": false,
-          "revision": "Ember@2.2.0",
-          "loc": {
-            "source": null,
-            "start": {
-              "line": 7,
-              "column": 0
-            },
-            "end": {
-              "line": 9,
-              "column": 0
-            }
-          },
-          "moduleName": "dummy/templates/-fixture.hbs"
-        },
-        isEmpty: false,
-        arity: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        buildFragment: function buildFragment(dom) {
-          var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("  ");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createElement("span");
-          dom.setAttribute(el1, "class", "helper-text");
-          var el2 = dom.createComment("");
-          dom.appendChild(el1, el2);
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-          var morphs = new Array(1);
-          morphs[0] = dom.createMorphAt(dom.childAt(fragment, [1]), 0, 0);
-          return morphs;
-        },
-        statements: [["content", "model.framework", ["loc", [null, [8, 28], [8, 47]]]]],
-        locals: [],
-        templates: []
-      };
-    })();
-    var child2 = (function () {
-      return {
-        meta: {
-          "fragmentReason": false,
-          "revision": "Ember@2.2.0",
-          "loc": {
-            "source": null,
-            "start": {
-              "line": 10,
-              "column": 0
-            },
-            "end": {
-              "line": 12,
-              "column": 0
-            }
-          },
-          "moduleName": "dummy/templates/-fixture.hbs"
-        },
-        isEmpty: false,
-        arity: 0,
-        cachedFragment: null,
-        hasRendered: false,
-        buildFragment: function buildFragment(dom) {
-          var el0 = dom.createDocumentFragment();
-          var el1 = dom.createTextNode("  ");
-          dom.appendChild(el0, el1);
-          var el1 = dom.createElement("span");
-          dom.setAttribute(el1, "class", "helper-text");
-          var el2 = dom.createComment("");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createTextNode("--");
-          dom.appendChild(el1, el2);
-          var el2 = dom.createComment("");
-          dom.appendChild(el1, el2);
-          dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n");
-          dom.appendChild(el0, el1);
-          return el0;
-        },
-        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-          var element0 = dom.childAt(fragment, [1]);
-          var morphs = new Array(2);
-          morphs[0] = dom.createMorphAt(element0, 0, 0);
-          morphs[1] = dom.createMorphAt(element0, 2, 2);
-          return morphs;
-        },
-        statements: [["content", "model.candy.id", ["loc", [null, [11, 28], [11, 46]]]], ["content", "model.candy.presentation", ["loc", [null, [11, 48], [11, 76]]]]],
-        locals: [],
-        templates: []
-      };
-    })();
-    return {
-      meta: {
-        "fragmentReason": {
-          "name": "missing-wrapper",
-          "problems": ["multiple-nodes", "wrong-type"]
-        },
-        "revision": "Ember@2.2.0",
-        "loc": {
-          "source": null,
-          "start": {
-            "line": 1,
-            "column": 0
-          },
-          "end": {
-            "line": 20,
-            "column": 0
-          }
-        },
-        "moduleName": "dummy/templates/-fixture.hbs"
-      },
-      isEmpty: false,
-      arity: 0,
-      cachedFragment: null,
-      hasRendered: false,
-      buildFragment: function buildFragment(dom) {
-        var el0 = dom.createDocumentFragment();
-        var el1 = dom.createElement("legend");
-        dom.setAttribute(el1, "class", "whatever");
-        var el2 = dom.createTextNode("stuff");
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createComment("");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        var el1 = dom.createElement("button");
-        dom.setAttribute(el1, "type", "submit");
-        var el2 = dom.createTextNode("\n  ");
-        dom.appendChild(el1, el2);
-        var el2 = dom.createElement("span");
-        var el3 = dom.createTextNode("submit");
-        dom.appendChild(el2, el3);
-        dom.appendChild(el1, el2);
-        var el2 = dom.createTextNode("\n");
-        dom.appendChild(el1, el2);
-        dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n");
-        dom.appendChild(el0, el1);
-        return el0;
-      },
-      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-        var morphs = new Array(8);
-        morphs[0] = dom.createMorphAt(fragment, 2, 2, contextualElement);
-        morphs[1] = dom.createMorphAt(fragment, 4, 4, contextualElement);
-        morphs[2] = dom.createMorphAt(fragment, 6, 6, contextualElement);
-        morphs[3] = dom.createMorphAt(fragment, 7, 7, contextualElement);
-        morphs[4] = dom.createMorphAt(fragment, 8, 8, contextualElement);
-        morphs[5] = dom.createMorphAt(fragment, 10, 10, contextualElement);
-        morphs[6] = dom.createMorphAt(fragment, 12, 12, contextualElement);
-        morphs[7] = dom.createMorphAt(fragment, 14, 14, contextualElement);
-        return morphs;
-      },
-      statements: [["block", "em-form-input", [], ["id", "charlie-401", "type", "email", "name", "email", "label", "email", "prefix", "fa-check"], 0, null, ["loc", [null, [2, 0], [4, 18]]]], ["inline", "em-form-input", [], ["type", "datetime-local", "name", "expectedAt"], ["loc", [null, [6, 0], [6, 57]]]], ["block", "em-form-input", [], ["type", "select", "name", "framework", "label", "worst framework ever", "content", ["subexpr", "@mut", [["get", "frameworks", ["loc", [null, [7, 85], [7, 95]]]]], [], []]], 1, null, ["loc", [null, [7, 0], [9, 18]]]], ["block", "em-form-input", [], ["type", "select", "name", "candy", "label", "worst framework ever", "content", ["subexpr", "@mut", [["get", "candies", ["loc", [null, [10, 81], [10, 88]]]]], [], []], "optionLabelPath", "presentation", "optionLabelValue", "id"], 2, null, ["loc", [null, [10, 0], [12, 18]]]], ["inline", "em-form-input", [], ["type", "webcam", "name", "mugshots"], ["loc", [null, [13, 0], [13, 47]]]], ["inline", "em-form-input", [], ["type", "file", "name", "file", "label", "vanilla file"], ["loc", [null, [14, 0], [14, 62]]]], ["inline", "em-form-input", [], ["type", "file", "name", "file", "label", "capture", "accept", "image/*;capture=camera"], ["loc", [null, [15, 0], [15, 89]]]], ["inline", "em-form-input", [], ["type", "files", "name", "files", "label", "all files"], ["loc", [null, [16, 0], [16, 61]]]]],
-      locals: [],
-      templates: [child0, child1, child2]
-    };
-  })());
 });
 define("dummy/templates/application", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template((function () {
@@ -1187,6 +1250,42 @@ define("dummy/templates/application", ["exports"], function (exports) {
         templates: []
       };
     })();
+    var child1 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 19,
+              "column": 6
+            },
+            "end": {
+              "line": 19,
+              "column": 39
+            }
+          },
+          "moduleName": "dummy/templates/application.hbs"
+        },
+        isEmpty: false,
+        arity: 0,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("Back to Index");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes() {
+          return [];
+        },
+        statements: [],
+        locals: [],
+        templates: []
+      };
+    })();
     return {
       meta: {
         "fragmentReason": {
@@ -1201,7 +1300,7 @@ define("dummy/templates/application", ["exports"], function (exports) {
             "column": 0
           },
           "end": {
-            "line": 23,
+            "line": 28,
             "column": 0
           }
         },
@@ -1289,6 +1388,24 @@ define("dummy/templates/application", ["exports"], function (exports) {
         var el3 = dom.createTextNode("\n  ");
         dom.appendChild(el2, el3);
         dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n  ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2, "class", "row");
+        var el3 = dom.createTextNode("\n    ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3, "class", "col-xs-12");
+        var el4 = dom.createTextNode("\n      ");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createComment("");
+        dom.appendChild(el3, el4);
+        var el4 = dom.createTextNode("\n    ");
+        dom.appendChild(el3, el4);
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n  ");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
         var el2 = dom.createTextNode("\n");
         dom.appendChild(el1, el2);
         dom.appendChild(el0, el1);
@@ -1297,14 +1414,16 @@ define("dummy/templates/application", ["exports"], function (exports) {
         return el0;
       },
       buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-        var morphs = new Array(2);
+        var element0 = dom.childAt(fragment, [4]);
+        var morphs = new Array(3);
         morphs[0] = dom.createMorphAt(dom.childAt(fragment, [2, 1, 1, 1, 1]), 1, 1);
-        morphs[1] = dom.createMorphAt(dom.childAt(fragment, [4, 1, 1]), 1, 1);
+        morphs[1] = dom.createMorphAt(dom.childAt(element0, [1, 1]), 1, 1);
+        morphs[2] = dom.createMorphAt(dom.childAt(element0, [3, 1]), 1, 1);
         return morphs;
       },
-      statements: [["block", "link-to", ["index"], [], 0, null, ["loc", [null, [8, 10], [8, 58]]]], ["content", "outlet", ["loc", [null, [19, 6], [19, 16]]]]],
+      statements: [["block", "link-to", ["index"], [], 0, null, ["loc", [null, [8, 10], [8, 58]]]], ["block", "link-to", ["index"], [], 1, null, ["loc", [null, [19, 6], [19, 51]]]], ["content", "outlet", ["loc", [null, [24, 6], [24, 16]]]]],
       locals: [],
-      templates: [child0]
+      templates: [child0, child1]
     };
   })());
 });
@@ -1710,6 +1829,69 @@ define("dummy/templates/datetime", ["exports"], function (exports) {
     };
   })());
 });
+define("dummy/templates/files", ["exports"], function (exports) {
+  exports["default"] = Ember.HTMLBars.template((function () {
+    return {
+      meta: {
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes", "wrong-type"]
+        },
+        "revision": "Ember@2.2.0",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 9,
+            "column": 0
+          }
+        },
+        "moduleName": "dummy/templates/files.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1, "class", "alert alert-warning");
+        var el2 = dom.createTextNode("\n  You may want to `label.em-file-field-label` yourself to make it easier to click on\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("div");
+        var el2 = dom.createTextNode("\n  ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+        var morphs = new Array(2);
+        morphs[0] = dom.createMorphAt(fragment, 2, 2, contextualElement);
+        morphs[1] = dom.createMorphAt(dom.childAt(fragment, [4]), 1, 1);
+        return morphs;
+      },
+      statements: [["inline", "partial", ["snippets/files"], [], ["loc", [null, [4, 0], [4, 28]]]], ["inline", "code-snippet", [], ["name", "-files.hbs"], ["loc", [null, [7, 2], [7, 36]]]]],
+      locals: [],
+      templates: []
+    };
+  })());
+});
 define("dummy/templates/index", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template((function () {
     var child0 = (function () {
@@ -1835,7 +2017,7 @@ define("dummy/templates/index", ["exports"], function (exports) {
           var el1 = dom.createTextNode("    ");
           dom.appendChild(el0, el1);
           var el1 = dom.createElement("h4");
-          var el2 = dom.createTextNode("select inputs");
+          var el2 = dom.createTextNode("select inputs (WIP)");
           dom.appendChild(el1, el2);
           dom.appendChild(el0, el1);
           var el1 = dom.createTextNode("\n    ");
@@ -1889,7 +2071,7 @@ define("dummy/templates/index", ["exports"], function (exports) {
           var el1 = dom.createTextNode("\n    ");
           dom.appendChild(el0, el1);
           var el1 = dom.createElement("div");
-          var el2 = dom.createTextNode("WIP");
+          var el2 = dom.createTextNode("file, files, pictures, and other binary things");
           dom.appendChild(el1, el2);
           dom.appendChild(el0, el1);
           var el1 = dom.createTextNode("\n");
@@ -2106,7 +2288,7 @@ define("dummy/templates/index", ["exports"], function (exports) {
         morphs[6] = dom.createMorphAt(element0, 7, 7);
         return morphs;
       },
-      statements: [["block", "link-to", ["basics"], ["class", "list-group-item"], 0, null, ["loc", [null, [2, 2], [5, 14]]]], ["block", "link-to", ["datetime"], ["class", "list-group-item"], 1, null, ["loc", [null, [6, 2], [9, 14]]]], ["block", "link-to", ["selection"], ["class", "list-group-item"], 2, null, ["loc", [null, [10, 2], [13, 14]]]], ["block", "link-to", ["files"], ["class", "list-group-item", "disabled", true], 3, null, ["loc", [null, [14, 2], [17, 14]]]], ["block", "link-to", ["usermedia"], ["class", "list-group-item", "disabled", true], 4, null, ["loc", [null, [18, 2], [21, 14]]]], ["block", "link-to", ["material"], ["class", "list-group-item", "disabled", true], 5, null, ["loc", [null, [22, 2], [25, 14]]]], ["block", "link-to", ["creative"], ["class", "list-group-item", "disabled", true], 6, null, ["loc", [null, [26, 2], [29, 14]]]]],
+      statements: [["block", "link-to", ["basics"], ["class", "list-group-item"], 0, null, ["loc", [null, [2, 2], [5, 14]]]], ["block", "link-to", ["datetime"], ["class", "list-group-item"], 1, null, ["loc", [null, [6, 2], [9, 14]]]], ["block", "link-to", ["selection"], ["class", "list-group-item"], 2, null, ["loc", [null, [10, 2], [13, 14]]]], ["block", "link-to", ["files"], ["class", "list-group-item"], 3, null, ["loc", [null, [14, 2], [17, 14]]]], ["block", "link-to", ["usermedia"], ["class", "list-group-item", "disabled", true], 4, null, ["loc", [null, [18, 2], [21, 14]]]], ["block", "link-to", ["material"], ["class", "list-group-item", "disabled", true], 5, null, ["loc", [null, [22, 2], [25, 14]]]], ["block", "link-to", ["creative"], ["class", "list-group-item", "disabled", true], 6, null, ["loc", [null, [26, 2], [29, 14]]]]],
       locals: [],
       templates: [child0, child1, child2, child3, child4, child5, child6]
     };
@@ -2357,6 +2539,49 @@ define("dummy/templates/snippets/-basics", ["exports"], function (exports) {
           templates: []
         };
       })();
+      var child4 = (function () {
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 14,
+                "column": 2
+              },
+              "end": {
+                "line": 16,
+                "column": 2
+              }
+            },
+            "moduleName": "dummy/templates/snippets/-basics.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("    ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("span");
+            dom.setAttribute(el1, "class", "helper-text");
+            var el2 = dom.createTextNode("Number fields have a little scroller to the side");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes() {
+            return [];
+          },
+          statements: [],
+          locals: [],
+          templates: []
+        };
+      })();
       return {
         meta: {
           "fragmentReason": {
@@ -2371,7 +2596,7 @@ define("dummy/templates/snippets/-basics", ["exports"], function (exports) {
               "column": 0
             },
             "end": {
-              "line": 17,
+              "line": 20,
               "column": 0
             }
           },
@@ -2383,6 +2608,8 @@ define("dummy/templates/snippets/-basics", ["exports"], function (exports) {
         hasRendered: false,
         buildFragment: function buildFragment(dom) {
           var el0 = dom.createDocumentFragment();
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
           var el1 = dom.createComment("");
           dom.appendChild(el0, el1);
           var el1 = dom.createComment("");
@@ -2410,17 +2637,18 @@ define("dummy/templates/snippets/-basics", ["exports"], function (exports) {
           return el0;
         },
         buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-          var morphs = new Array(4);
+          var morphs = new Array(5);
           morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
           morphs[1] = dom.createMorphAt(fragment, 1, 1, contextualElement);
           morphs[2] = dom.createMorphAt(fragment, 2, 2, contextualElement);
           morphs[3] = dom.createMorphAt(fragment, 3, 3, contextualElement);
+          morphs[4] = dom.createMorphAt(fragment, 4, 4, contextualElement);
           dom.insertBoundary(fragment, 0);
           return morphs;
         },
-        statements: [["block", "em-email-field", [["get", "f", ["loc", [null, [2, 20], [2, 21]]]]], ["prefix", "fa-check"], 0, null, ["loc", [null, [2, 2], [4, 21]]]], ["block", "em-password-field", [["get", "f", ["loc", [null, [5, 23], [5, 24]]]]], ["prefix", "fa-times"], 1, null, ["loc", [null, [5, 2], [7, 24]]]], ["block", "em-text-field", [["get", "f", ["loc", [null, [8, 19], [8, 20]]]]], ["name", "username", "prefix", "fa-user"], 2, null, ["loc", [null, [8, 2], [10, 20]]]], ["block", "em-textarea-field", [["get", "f", ["loc", [null, [11, 23], [11, 24]]]]], ["name", "feelings", "prefix", "fa-heart"], 3, null, ["loc", [null, [11, 2], [13, 24]]]]],
+        statements: [["block", "em-email-field", [["get", "f", ["loc", [null, [2, 20], [2, 21]]]]], ["prefix", "fa-check"], 0, null, ["loc", [null, [2, 2], [4, 21]]]], ["block", "em-password-field", [["get", "f", ["loc", [null, [5, 23], [5, 24]]]]], ["prefix", "fa-times"], 1, null, ["loc", [null, [5, 2], [7, 24]]]], ["block", "em-text-field", [["get", "f", ["loc", [null, [8, 19], [8, 20]]]]], ["name", "username", "prefix", "fa-user"], 2, null, ["loc", [null, [8, 2], [10, 20]]]], ["block", "em-textarea-field", [["get", "f", ["loc", [null, [11, 23], [11, 24]]]]], ["name", "feelings", "prefix", "fa-heart"], 3, null, ["loc", [null, [11, 2], [13, 24]]]], ["block", "em-number-field", [["get", "f", ["loc", [null, [14, 21], [14, 22]]]]], ["name", "money", "prefix", "fa-money"], 4, null, ["loc", [null, [14, 2], [16, 22]]]]],
         locals: ["f"],
-        templates: [child0, child1, child2, child3]
+        templates: [child0, child1, child2, child3, child4]
       };
     })();
     return {
@@ -2437,7 +2665,7 @@ define("dummy/templates/snippets/-basics", ["exports"], function (exports) {
             "column": 0
           },
           "end": {
-            "line": 17,
+            "line": 20,
             "column": 16
           }
         },
@@ -2460,7 +2688,7 @@ define("dummy/templates/snippets/-basics", ["exports"], function (exports) {
         dom.insertBoundary(fragment, null);
         return morphs;
       },
-      statements: [["block", "em-form-for", [["get", "model", ["loc", [null, [1, 15], [1, 20]]]]], ["action", "submit"], 0, null, ["loc", [null, [1, 0], [17, 16]]]]],
+      statements: [["block", "em-form-for", [["get", "model", ["loc", [null, [1, 15], [1, 20]]]]], ["action", "submit"], 0, null, ["loc", [null, [1, 0], [20, 16]]]]],
       locals: [],
       templates: [child0]
     };
@@ -2750,6 +2978,168 @@ define("dummy/templates/snippets/-datetime", ["exports"], function (exports) {
     };
   })());
 });
+define("dummy/templates/snippets/-files", ["exports"], function (exports) {
+  exports["default"] = Ember.HTMLBars.template((function () {
+    var child0 = (function () {
+      var child0 = (function () {
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 4,
+                "column": 2
+              },
+              "end": {
+                "line": 6,
+                "column": 2
+              }
+            },
+            "moduleName": "dummy/templates/snippets/-files.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("    ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("span");
+            dom.setAttribute(el1, "class", "helper-text");
+            var el2 = dom.createTextNode("upload multiple files here");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes() {
+            return [];
+          },
+          statements: [],
+          locals: [],
+          templates: []
+        };
+      })();
+      return {
+        meta: {
+          "fragmentReason": {
+            "name": "missing-wrapper",
+            "problems": ["wrong-type", "multiple-nodes"]
+          },
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 1,
+              "column": 0
+            },
+            "end": {
+              "line": 11,
+              "column": 0
+            }
+          },
+          "moduleName": "dummy/templates/snippets/-files.hbs"
+        },
+        isEmpty: false,
+        arity: 1,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n  ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("button");
+          dom.setAttribute(el1, "class", "btn btn-success");
+          dom.setAttribute(el1, "type", "submit");
+          var el2 = dom.createTextNode("\n    ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("span");
+          var el3 = dom.createTextNode("Click Me");
+          dom.appendChild(el2, el3);
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n  ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var morphs = new Array(4);
+          morphs[0] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+          morphs[1] = dom.createMorphAt(fragment, 3, 3, contextualElement);
+          morphs[2] = dom.createMorphAt(fragment, 5, 5, contextualElement);
+          morphs[3] = dom.createMorphAt(fragment, 7, 7, contextualElement);
+          return morphs;
+        },
+        statements: [["inline", "em-file-field", [["get", "f", ["loc", [null, [2, 18], [2, 19]]]]], ["prefix", "fa-file"], ["loc", [null, [2, 2], [2, 38]]]], ["inline", "em-file-preview", [["get", "f", ["loc", [null, [3, 20], [3, 21]]]]], [], ["loc", [null, [3, 2], [3, 23]]]], ["block", "em-files-field", [["get", "f", ["loc", [null, [4, 20], [4, 21]]]]], ["suffix", "fa-twitter"], 0, null, ["loc", [null, [4, 2], [6, 21]]]], ["inline", "em-files-preview", [["get", "f", ["loc", [null, [7, 21], [7, 22]]]]], [], ["loc", [null, [7, 2], [7, 24]]]]],
+        locals: ["f"],
+        templates: [child0]
+      };
+    })();
+    return {
+      meta: {
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["wrong-type"]
+        },
+        "revision": "Ember@2.2.0",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 11,
+            "column": 16
+          }
+        },
+        "moduleName": "dummy/templates/snippets/-files.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createComment("");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+        var morphs = new Array(1);
+        morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
+        dom.insertBoundary(fragment, 0);
+        dom.insertBoundary(fragment, null);
+        return morphs;
+      },
+      statements: [["block", "em-form-for", [["get", "model", ["loc", [null, [1, 15], [1, 20]]]]], ["action", "submit"], 0, null, ["loc", [null, [1, 0], [11, 16]]]]],
+      locals: [],
+      templates: [child0]
+    };
+  })());
+});
 define("dummy/templates/snippets/-select", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template((function () {
     var child0 = (function () {
@@ -2854,6 +3244,42 @@ define("dummy/templates/snippets/-select", ["exports"], function (exports) {
           templates: []
         };
       })();
+      var child2 = (function () {
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 12,
+                "column": 2
+              },
+              "end": {
+                "line": 14,
+                "column": 2
+              }
+            },
+            "moduleName": "dummy/templates/snippets/-select.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("    Remember Me?\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes() {
+            return [];
+          },
+          statements: [],
+          locals: [],
+          templates: []
+        };
+      })();
       return {
         meta: {
           "fragmentReason": {
@@ -2868,7 +3294,7 @@ define("dummy/templates/snippets/-select", ["exports"], function (exports) {
               "column": 0
             },
             "end": {
-              "line": 15,
+              "line": 18,
               "column": 0
             }
           },
@@ -2891,7 +3317,11 @@ define("dummy/templates/snippets/-select", ["exports"], function (exports) {
           var el2 = dom.createTextNode("\n    If you do customize your options, the helper text goes away\n  ");
           dom.appendChild(el1, el2);
           dom.appendChild(el0, el1);
-          var el1 = dom.createTextNode("\n  ");
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("  ");
           dom.appendChild(el0, el1);
           var el1 = dom.createElement("button");
           dom.setAttribute(el1, "class", "btn btn-success");
@@ -2910,15 +3340,16 @@ define("dummy/templates/snippets/-select", ["exports"], function (exports) {
           return el0;
         },
         buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-          var morphs = new Array(2);
+          var morphs = new Array(3);
           morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
           morphs[1] = dom.createMorphAt(fragment, 1, 1, contextualElement);
+          morphs[2] = dom.createMorphAt(fragment, 5, 5, contextualElement);
           dom.insertBoundary(fragment, 0);
           return morphs;
         },
-        statements: [["block", "em-select-field", [["get", "f", ["loc", [null, [2, 21], [2, 22]]]]], ["name", "framework", "options", ["subexpr", "@mut", [["get", "frameworks", ["loc", [null, [2, 48], [2, 58]]]]], [], []], "prefix", "fa-cubes"], 0, null, ["loc", [null, [2, 2], [4, 22]]]], ["block", "em-select-field", [["get", "f", ["loc", [null, [5, 21], [5, 22]]]]], ["name", "candy", "options", ["subexpr", "@mut", [["get", "candies", ["loc", [null, [5, 44], [5, 51]]]]], [], []], "prefix", "fa-cubes"], 1, null, ["loc", [null, [5, 2], [8, 22]]]]],
+        statements: [["block", "em-select-field", [["get", "f", ["loc", [null, [2, 21], [2, 22]]]]], ["name", "framework", "options", ["subexpr", "@mut", [["get", "frameworks", ["loc", [null, [2, 48], [2, 58]]]]], [], []], "prefix", "fa-cubes"], 0, null, ["loc", [null, [2, 2], [4, 22]]]], ["block", "em-select-field", [["get", "f", ["loc", [null, [5, 21], [5, 22]]]]], ["name", "candy", "options", ["subexpr", "@mut", [["get", "candies", ["loc", [null, [5, 44], [5, 51]]]]], [], []], "prefix", "fa-cubes"], 1, null, ["loc", [null, [5, 2], [8, 22]]]], ["block", "em-checkbox-field", [["get", "f", ["loc", [null, [12, 23], [12, 24]]]]], ["name", "rememberMe"], 2, null, ["loc", [null, [12, 2], [14, 24]]]]],
         locals: ["f"],
-        templates: [child0, child1]
+        templates: [child0, child1, child2]
       };
     })();
     return {
@@ -2935,7 +3366,7 @@ define("dummy/templates/snippets/-select", ["exports"], function (exports) {
             "column": 0
           },
           "end": {
-            "line": 15,
+            "line": 18,
             "column": 16
           }
         },
@@ -2958,7 +3389,7 @@ define("dummy/templates/snippets/-select", ["exports"], function (exports) {
         dom.insertBoundary(fragment, null);
         return morphs;
       },
-      statements: [["block", "em-form-for", [["get", "model", ["loc", [null, [1, 15], [1, 20]]]]], ["action", "submit"], 0, null, ["loc", [null, [1, 0], [15, 16]]]]],
+      statements: [["block", "em-form-for", [["get", "model", ["loc", [null, [1, 15], [1, 20]]]]], ["action", "submit"], 0, null, ["loc", [null, [1, 0], [18, 16]]]]],
       locals: [],
       templates: [child0]
     };
@@ -3006,7 +3437,7 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("dummy/app")["default"].create({"name":"ember-form-tool","version":"v0.2.5"});
+  require("dummy/app")["default"].create({"name":"ember-form-tool","version":"v0.2.8"});
 }
 
 /* jshint ignore:end */
