@@ -1,0 +1,12 @@
+{{#if (eq state "ready")}}
+  {{#if isPic}}
+    <img src="{{dataURI}}" class="em-files-preview-pic img-responsive">
+  {{else}}
+    <i class="fa fa-file-o"></i>
+  {{/if}}
+  <button type="button" class="close" {{action "kill"}}>
+    &times;
+  </button>
+{{else}}
+  <i class="fa fa-cog fa-spin"></i>
+{{/if}}

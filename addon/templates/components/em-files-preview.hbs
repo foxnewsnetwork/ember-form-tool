@@ -1,0 +1,9 @@
+{{#if hasBlockParams}}
+  {{#each files as |file|}}
+    {{yield file}}
+  {{/each}}
+{{else}}
+  {{#each files as |file|}}
+    {{em-file-preview-core file=file action="kill"}}
+  {{/each}}
+{{/if}}

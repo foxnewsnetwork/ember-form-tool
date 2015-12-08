@@ -1,0 +1,11 @@
+{{#em-form-for model action="submit" as |f|}}
+  {{em-file-field f prefix="fa-file"}}
+  {{em-file-preview f}}
+  {{#em-files-field f suffix="fa-twitter"}}
+    <span class="helper-text">upload multiple files here</span>
+  {{/em-files-field}}
+  {{em-files-preview f}}
+  <button class="btn btn-success" type="submit">
+    <span>Click Me</span>
+  </button>
+{{/em-form-for}}

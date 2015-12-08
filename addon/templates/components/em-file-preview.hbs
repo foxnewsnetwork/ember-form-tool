@@ -1,0 +1,7 @@
+{{#if hasBlockParams}}
+  {{yield file}}
+{{else}}
+  {{#if file}}
+    {{em-file-preview-core file=file action="kill"}}
+  {{/if}}
+{{/if}}

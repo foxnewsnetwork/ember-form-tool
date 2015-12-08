@@ -1,0 +1,44 @@
+<label for="{{controlId}}" class="em-file-field-label control-label">
+  {{#if hasBlock}}
+    {{yield}}
+  {{else}}
+    <h3 class="label label-default">{{label}}</h3>
+  {{/if}}
+  {{#if value}}
+    <div class="label-info">You have uploaded 
+      <span class="badge">{{count}}</span> 
+      file(s)
+    </div>
+  {{/if}}
+  {{#if (eq dragDropState "drag-entered")}}
+    <div class="label-info">Drop file to upload</div>
+  {{/if}}
+</label>
+{{input class="form-control hidden"
+  enter="change"
+  id=controlId
+  type="file"
+  readonly=readonly
+  required=required
+  autofocus=autofocus
+  disabled=disabled
+  size=size
+  tabindex=tabindex
+  maxlength=maxlength
+  name=name
+  accept=accept
+  autocomplete=autocomplete
+  autosave=autosave
+  formaction=formaction
+  formenctype=formenctype
+  formmethod=formmethod
+  formnovalidate=formnovalidate
+  formtarget=formtarget
+  height=height
+  inputmode=inputmode
+  multiple=multiple
+  width=width
+  form=form}}
+{{#each errorMessages as |msg|}}
+  <div class="help-block error-text">{{msg}}</div>
+{{/each}}
