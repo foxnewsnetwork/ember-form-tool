@@ -23,49 +23,45 @@ Use like the following:
 {{/em-form-for}}
 ```
 
-### TODOs
+### Available Features
 
-1. add support for files input
-2. add support for datetime input
+`em-form-for`: takes a model and handles a lot of the overseer work
+`em-checkbox-field`
+`em-date-field`:
+`em-datetime-field`
+`em-email-field`
+`em-file-field`: handles file upload
+`em-file-preview`: use with the file-field to preview the uploaded file
+`em-files-field`: handles multiple file uploads
+`em-files-preview`: use with the files-field to preview uploaded files
+`em-number-field`
+`em-password-field`
+`em-select-field`
+`em-text-field`
+`em-textarea-field`
+`em-time-field`
+
+### TODOs
+1. support a/v stream input
+2. support radio and switch input
 3. add support for phone input
-4. add support for select
+4. support captcha input
+5. support url input
+6. support timezone input
+7. support geolocation input
+8. support belongs-to input
+9. support has-many input
+10. support slider input
+11. support dial input
+12. support typeahead search
+13. support color input
+14. support tile select input
+15. support canvas draw input
+16. support math formula input
 
 ### Assumptions
 
-This library exists because I personally want a super-clean syntax for constructing standard forms, and in order to achieve that, I make a ton of assumptions regarding what you will and will not do in the construction of your forms.
-
-- If you give a prefix or suffix like "fa-phone", you want to use a "i" element for font-awesome (or glyphicon)
-- If you put "fa-whatever" in your submitText, you want it as an icon
-
-Yes, every conceiveable type of input goes under the form-input component, you, as the user, only vary the type.
-
-### Existing Types ###
-1. text
-2. textarea
-3. email (html5)
-4. password
-5. date, day, week, month, year (html5)
-6. time (html5)
-7. radio
-8. checkbox
-9. select
-10. Webcam
-11. multiselect
-12. datetime-local (html5)
-13. telephone (fancy emberjs junk)
-14. files (fancy emberjs)
-
-### Types to implement in the future
-- autocomplete
-- dials
-- visual password
-- color (html5)
-- search (html5)
-- url (html5)
-- range (html5)
-- switch (material)
-- audio stream (usermedia)
-- video stream (usermedia)
+v.0.2.x of this library is my second attempt at creating form tool that handles common form features across different front-end frameworks. As usual, this thing makes a lot of assumptions regarding where things are stored.
 
 
 ## Installation
