@@ -1,6 +1,6 @@
 {
   "name": "ember-form-tool",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "description": "Yet another form component tool for ember",
   "directories": {
     "doc": "doc",
