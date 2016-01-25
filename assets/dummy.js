@@ -219,6 +219,22 @@ define('dummy/components/em-time-field', ['exports', 'ember-form-tool/components
     }
   });
 });
+define('dummy/components/em-timezone-field', ['exports', 'ember-form-tool/components/em-timezone-field'], function (exports, _emberFormToolComponentsEmTimezoneField) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberFormToolComponentsEmTimezoneField['default'];
+    }
+  });
+});
+define('dummy/components/em-timezone-input', ['exports', 'ember-timezone-input/components/em-timezone-input'], function (exports, _emberTimezoneInputComponentsEmTimezoneInput) {
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function get() {
+      return _emberTimezoneInputComponentsEmTimezoneInput['default'];
+    }
+  });
+});
 define('dummy/components/ember-webcam-input', ['exports', 'ember-webcam-input/components/ember-webcam-input'], function (exports, _emberWebcamInputComponentsEmberWebcamInput) {
   Object.defineProperty(exports, 'default', {
     enumerable: true,
@@ -717,6 +733,22 @@ define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-time-f
 
   exports['default'] = EmTimeFieldComponent;
 });
+define('dummy/ember-form-tool/tests/modules/ember-form-tool/components/em-timezone-field', ['exports', 'ember', 'dummy/ember-form-tool/tests/modules/ember-form-tool/templates/components/em-timezone-field', 'dummy/ember-form-tool/tests/modules/ember-form-tool/mixins/form-field-core'], function (exports, _ember, _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmTimezoneField, _dummyEmberFormToolTestsModulesEmberFormToolMixinsFormFieldCore) {
+  var EmTimezoneFieldComponent;
+
+  EmTimezoneFieldComponent = _ember['default'].Component.extend(_dummyEmberFormToolTestsModulesEmberFormToolMixinsFormFieldCore['default'], {
+    layout: _dummyEmberFormToolTestsModulesEmberFormToolTemplatesComponentsEmTimezoneField['default'],
+    classNames: ['input-field', 'form-input', 'input-section', 'form-group'],
+    selectClass: ['ember-timezone-input', 'form-control'].join(" "),
+    name: "timezone"
+  });
+
+  EmTimezoneFieldComponent.reopenClass({
+    positionalParams: ["formHeart"]
+  });
+
+  exports['default'] = EmTimezoneFieldComponent;
+});
 define("dummy/ember-form-tool/tests/modules/ember-form-tool/mixins/drag-drop", ["exports", "ember"], function (exports, _ember) {
   var DragDropMixin, K, Mixin, equal, ref;
 
@@ -1207,7 +1239,7 @@ define('dummy/services/moment', ['exports', 'ember', 'moment'], function (export
 define("dummy/snippets", ["exports"], function (exports) {
   exports["default"] = {
     "-basics.hbs": "{{#em-form-for model action=\"submit\" as |f|}}\n  {{#em-email-field f prefix=\"fa-check\"}}\n    <span class=\"helper-text\">put your primary email</span>\n  {{/em-email-field}}\n  {{#em-password-field f prefix=\"fa-times\"}}\n    <span class=\"helper-text\">password fields also work</span>\n  {{/em-password-field}}\n  {{#em-text-field f name=\"username\" prefix=\"fa-user\"}}\n    <span class=\"helper-text\">text fields work as expected</span>\n  {{/em-text-field}}\n  {{#em-textarea-field f name=\"feelings\" prefix=\"fa-heart\"}}\n    <span class=\"helper-text\">Very similar to regular text fields</span>\n  {{/em-textarea-field}}\n  {{#em-number-field f name=\"money\" prefix=\"fa-money\"}}\n    <span class=\"helper-text\">Number fields have a little scroller to the side</span>\n  {{/em-number-field}}\n  <button class=\"btn btn-success\" type=\"submit\">\n    <span>Click Me</span>\n  </button>\n{{/em-form-for}}",
-    "-datetime.hbs": "{{#em-form-for model action=\"submit\" as |f|}}\n  {{#em-date-field f suffix=\"fa-calendar\"}}\n    <span class=\"helper-text\">select a date (note, prefix isn't available on date fields)</span>\n  {{/em-date-field}}\n  {{#em-time-field f suffix=\"glyphicon-time\"}}\n    <span class=\"helper-text\">select a time (note, prefix isn't available on date fields)</span>\n  {{/em-time-field}}\n  {{#em-datetime-field f suffix=\"fa-twitter\"}}\n    <span class=\"helper-text\">select a datetime</span>\n  {{/em-datetime-field}}\n  {{#em-datetime-field f name=\"moment\" suffix=\"fa-twitter\"}}\n    <span class=\"helper-text\">you can use moment objects as well</span>\n  {{/em-datetime-field}}\n  <button class=\"btn btn-success\" type=\"submit\">\n    <span>Click Me</span>\n  </button>\n{{/em-form-for}}",
+    "-datetime.hbs": "{{#em-form-for model action=\"submit\" as |f|}}\n  {{#em-date-field f suffix=\"fa-calendar\"}}\n    <span class=\"helper-text\">select a date (note, prefix isn't available on date fields)</span>\n  {{/em-date-field}}\n  {{#em-time-field f suffix=\"glyphicon-time\"}}\n    <span class=\"helper-text\">select a time (note, prefix isn't available on date fields)</span>\n  {{/em-time-field}}\n  {{#em-datetime-field f suffix=\"fa-twitter\"}}\n    <span class=\"helper-text\">select a datetime</span>\n  {{/em-datetime-field}}\n  {{#em-datetime-field f name=\"moment\" suffix=\"fa-twitter\"}}\n    <span class=\"helper-text\">you can use moment objects as well</span>\n  {{/em-datetime-field}}\n  {{#em-timezone-field f}}\n    <span class=\"helper-text\">timezone selection operates like a select; prefix and suffix tabs aren't supported (sorry)</span>\n  {{/em-timezone-field}}\n  <button class=\"btn btn-success\" type=\"submit\">\n    <span>Click Me</span>\n  </button>\n{{/em-form-for}}",
     "-files.hbs": "{{#em-form-for model action=\"submit\" as |f|}}\n  {{em-file-field f prefix=\"fa-file\"}}\n  {{em-file-preview f}}\n  {{#em-files-field f suffix=\"fa-twitter\"}}\n    <span class=\"helper-text\">upload multiple files here</span>\n  {{/em-files-field}}\n  {{em-files-preview f}}\n  <button class=\"btn btn-success\" type=\"submit\">\n    <span>Click Me</span>\n  </button>\n{{/em-form-for}}",
     "-select.hbs": "{{#em-form-for model action=\"submit\" as |f|}}\n  {{#em-select-field f name=\"framework\" options=frameworks prefix=\"fa-cubes\"}}\n    <span class=\"helper-text\">select a framework (if you care to customize, the yield'd block will be the usual helper text)</span>\n  {{/em-select-field}}\n  {{#em-select-field f name=\"candy\" options=candies prefix=\"fa-cubes\" as |candy|}}\n    <img src=\"{{candy.pic}}\" class=\"icon-flag\"> <strong>{{candy.id}}</strong>\n    <small>{{candy.presentation}}</small>\n  {{/em-select-field}}\n  <div class=\"helper-text\">\n    If you do customize your options, the helper text goes away\n  </div>\n  {{#em-checkbox-field f name=\"rememberMe\"}}\n    Remember Me?\n  {{/em-checkbox-field}}\n  <button class=\"btn btn-success\" type=\"submit\">\n    <span>Click Me</span>\n  </button>\n{{/em-form-for}}"
   };
@@ -1713,6 +1745,209 @@ define("dummy/templates/components/code-snippet", ["exports"], function (exports
     };
   })());
 });
+define("dummy/templates/components/em-timezone-input", ["exports"], function (exports) {
+  exports["default"] = Ember.HTMLBars.template((function () {
+    var child0 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 5,
+              "column": 4
+            },
+            "end": {
+              "line": 9,
+              "column": 4
+            }
+          },
+          "moduleName": "dummy/templates/components/em-timezone-input.hbs"
+        },
+        isEmpty: false,
+        arity: 1,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("      ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("span");
+          dom.setAttribute(el1, "class", "zone");
+          var el2 = dom.createTextNode("\n        ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createElement("span");
+          dom.setAttribute(el2, "class", "zone-content");
+          var el3 = dom.createTextNode("o");
+          dom.appendChild(el2, el3);
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n      ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var element1 = dom.childAt(fragment, [1]);
+          var morphs = new Array(1);
+          morphs[0] = dom.createAttrMorph(element1, 'style');
+          return morphs;
+        },
+        statements: [["attribute", "style", ["get", "zone.zoneStyle", ["loc", [null, [6, 33], [6, 47]]]]]],
+        locals: ["zone"],
+        templates: []
+      };
+    })();
+    var child1 = (function () {
+      return {
+        meta: {
+          "fragmentReason": false,
+          "revision": "Ember@2.2.0",
+          "loc": {
+            "source": null,
+            "start": {
+              "line": 14,
+              "column": 4
+            },
+            "end": {
+              "line": 18,
+              "column": 4
+            }
+          },
+          "moduleName": "dummy/templates/components/em-timezone-input.hbs"
+        },
+        isEmpty: false,
+        arity: 1,
+        cachedFragment: null,
+        hasRendered: false,
+        buildFragment: function buildFragment(dom) {
+          var el0 = dom.createDocumentFragment();
+          var el1 = dom.createTextNode("      ");
+          dom.appendChild(el0, el1);
+          var el1 = dom.createElement("option");
+          var el2 = dom.createTextNode("\n        ");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createComment("");
+          dom.appendChild(el1, el2);
+          var el2 = dom.createTextNode("\n      ");
+          dom.appendChild(el1, el2);
+          dom.appendChild(el0, el1);
+          var el1 = dom.createTextNode("\n");
+          dom.appendChild(el0, el1);
+          return el0;
+        },
+        buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+          var element0 = dom.childAt(fragment, [1]);
+          var morphs = new Array(3);
+          morphs[0] = dom.createAttrMorph(element0, 'value');
+          morphs[1] = dom.createAttrMorph(element0, 'selected');
+          morphs[2] = dom.createMorphAt(element0, 1, 1);
+          return morphs;
+        },
+        statements: [["attribute", "value", ["get", "zone.value", ["loc", [null, [15, 22], [15, 32]]]]], ["attribute", "selected", ["subexpr", "eq", [["get", "zone", ["loc", [null, [15, 49], [15, 53]]]], ["get", "selectedZone", ["loc", [null, [15, 54], [15, 66]]]]], [], ["loc", [null, [15, 44], [15, 68]]]]], ["content", "zone.presentation", ["loc", [null, [16, 8], [16, 29]]]]],
+        locals: ["zone"],
+        templates: []
+      };
+    })();
+    return {
+      meta: {
+        "fragmentReason": {
+          "name": "missing-wrapper",
+          "problems": ["multiple-nodes"]
+        },
+        "revision": "Ember@2.2.0",
+        "loc": {
+          "source": null,
+          "start": {
+            "line": 1,
+            "column": 0
+          },
+          "end": {
+            "line": 21,
+            "column": 0
+          }
+        },
+        "moduleName": "dummy/templates/components/em-timezone-input.hbs"
+      },
+      isEmpty: false,
+      arity: 0,
+      cachedFragment: null,
+      hasRendered: false,
+      buildFragment: function buildFragment(dom) {
+        var el0 = dom.createDocumentFragment();
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1, "class", "map-wrap");
+        var el2 = dom.createTextNode("\n  ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("div");
+        dom.setAttribute(el2, "class", "map-inset");
+        var el3 = dom.createTextNode("\n    ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3, "class", "map-axis-x");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n    ");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createElement("div");
+        dom.setAttribute(el3, "class", "map-axis-y");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("\n");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createComment("");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("  ");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1, "class", "map-label");
+        var el2 = dom.createTextNode("\n  ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("select");
+        var el3 = dom.createTextNode("\n");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createComment("");
+        dom.appendChild(el2, el3);
+        var el3 = dom.createTextNode("  ");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode("\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        return el0;
+      },
+      buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
+        var element2 = dom.childAt(fragment, [0]);
+        var element3 = dom.childAt(element2, [1]);
+        var element4 = dom.childAt(element3, [1]);
+        var element5 = dom.childAt(element3, [3]);
+        var element6 = dom.childAt(fragment, [2, 1]);
+        var morphs = new Array(9);
+        morphs[0] = dom.createAttrMorph(element2, 'style');
+        morphs[1] = dom.createAttrMorph(element3, 'style');
+        morphs[2] = dom.createElementMorph(element3);
+        morphs[3] = dom.createAttrMorph(element4, 'style');
+        morphs[4] = dom.createAttrMorph(element5, 'style');
+        morphs[5] = dom.createMorphAt(element3, 5, 5);
+        morphs[6] = dom.createAttrMorph(element6, 'class');
+        morphs[7] = dom.createElementMorph(element6);
+        morphs[8] = dom.createMorphAt(element6, 1, 1);
+        return morphs;
+      },
+      statements: [["attribute", "style", ["get", "wrapStyles", ["loc", [null, [1, 30], [1, 40]]]]], ["attribute", "style", ["get", "insetStyles", ["loc", [null, [2, 52], [2, 63]]]]], ["element", "action", ["click"], [], ["loc", [null, [2, 25], [2, 43]]]], ["attribute", "style", ["get", "axisXStyle", ["loc", [null, [3, 36], [3, 46]]]]], ["attribute", "style", ["get", "axisYStyle", ["loc", [null, [4, 36], [4, 46]]]]], ["block", "each", [["get", "zones", ["loc", [null, [5, 12], [5, 17]]]]], [], 0, null, ["loc", [null, [5, 4], [9, 13]]]], ["attribute", "class", ["get", "selectClass", ["loc", [null, [13, 18], [13, 29]]]]], ["element", "action", ["change"], ["on", "change"], ["loc", [null, [13, 32], [13, 63]]]], ["block", "each", [["get", "zones", ["loc", [null, [14, 12], [14, 17]]]]], [], 1, null, ["loc", [null, [14, 4], [18, 13]]]]],
+      locals: [],
+      templates: [child0, child1]
+    };
+  })());
+});
 define("dummy/templates/components/ember-webcam-input", ["exports"], function (exports) {
   exports["default"] = Ember.HTMLBars.template((function () {
     return {
@@ -1775,7 +2010,7 @@ define("dummy/templates/datetime", ["exports"], function (exports) {
             "column": 0
           },
           "end": {
-            "line": 13,
+            "line": 18,
             "column": 0
           }
         },
@@ -1799,7 +2034,21 @@ define("dummy/templates/datetime", ["exports"], function (exports) {
         var el2 = dom.createTextNode(" yourself if you wish to use the bootstrap flavor of the datetime selection\n");
         dom.appendChild(el1, el2);
         dom.appendChild(el0, el1);
-        var el1 = dom.createTextNode("\n\n");
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
+        var el1 = dom.createElement("div");
+        dom.setAttribute(el1, "class", "alert alert-warning");
+        var el2 = dom.createTextNode("\n  You need to install \n  ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createElement("a");
+        dom.setAttribute(el2, "href", "https://github.com/foxnewsnetwork/ember-timezone-input");
+        var el3 = dom.createTextNode("\n    ember-timezone-input\n  ");
+        dom.appendChild(el2, el3);
+        dom.appendChild(el1, el2);
+        var el2 = dom.createTextNode(" yourself if you wish to use to timezone input tool (don't forget to import styles!)\n");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
         var el1 = dom.createComment("");
         dom.appendChild(el0, el1);
@@ -1819,11 +2068,11 @@ define("dummy/templates/datetime", ["exports"], function (exports) {
       },
       buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
         var morphs = new Array(2);
-        morphs[0] = dom.createMorphAt(fragment, 2, 2, contextualElement);
-        morphs[1] = dom.createMorphAt(dom.childAt(fragment, [4]), 1, 1);
+        morphs[0] = dom.createMorphAt(fragment, 4, 4, contextualElement);
+        morphs[1] = dom.createMorphAt(dom.childAt(fragment, [6]), 1, 1);
         return morphs;
       },
-      statements: [["inline", "partial", ["snippets/datetime"], [], ["loc", [null, [8, 0], [8, 31]]]], ["inline", "code-snippet", [], ["name", "-datetime.hbs"], ["loc", [null, [11, 2], [11, 39]]]]],
+      statements: [["inline", "partial", ["snippets/datetime"], [], ["loc", [null, [13, 0], [13, 31]]]], ["inline", "code-snippet", [], ["name", "-datetime.hbs"], ["loc", [null, [16, 2], [16, 39]]]]],
       locals: [],
       templates: []
     };
@@ -1975,7 +2224,7 @@ define("dummy/templates/index", ["exports"], function (exports) {
           var el1 = dom.createTextNode("\n    ");
           dom.appendChild(el0, el1);
           var el1 = dom.createElement("div");
-          var el2 = dom.createTextNode("date, time, datetime fields");
+          var el2 = dom.createTextNode("date, time, datetime, and timezone fields");
           dom.appendChild(el1, el2);
           dom.appendChild(el0, el1);
           var el1 = dom.createTextNode("\n");
@@ -2869,6 +3118,49 @@ define("dummy/templates/snippets/-datetime", ["exports"], function (exports) {
           templates: []
         };
       })();
+      var child4 = (function () {
+        return {
+          meta: {
+            "fragmentReason": false,
+            "revision": "Ember@2.2.0",
+            "loc": {
+              "source": null,
+              "start": {
+                "line": 14,
+                "column": 2
+              },
+              "end": {
+                "line": 16,
+                "column": 2
+              }
+            },
+            "moduleName": "dummy/templates/snippets/-datetime.hbs"
+          },
+          isEmpty: false,
+          arity: 0,
+          cachedFragment: null,
+          hasRendered: false,
+          buildFragment: function buildFragment(dom) {
+            var el0 = dom.createDocumentFragment();
+            var el1 = dom.createTextNode("    ");
+            dom.appendChild(el0, el1);
+            var el1 = dom.createElement("span");
+            dom.setAttribute(el1, "class", "helper-text");
+            var el2 = dom.createTextNode("timezone selection operates like a select; prefix and suffix tabs aren't supported (sorry)");
+            dom.appendChild(el1, el2);
+            dom.appendChild(el0, el1);
+            var el1 = dom.createTextNode("\n");
+            dom.appendChild(el0, el1);
+            return el0;
+          },
+          buildRenderNodes: function buildRenderNodes() {
+            return [];
+          },
+          statements: [],
+          locals: [],
+          templates: []
+        };
+      })();
       return {
         meta: {
           "fragmentReason": {
@@ -2883,7 +3175,7 @@ define("dummy/templates/snippets/-datetime", ["exports"], function (exports) {
               "column": 0
             },
             "end": {
-              "line": 17,
+              "line": 20,
               "column": 0
             }
           },
@@ -2895,6 +3187,8 @@ define("dummy/templates/snippets/-datetime", ["exports"], function (exports) {
         hasRendered: false,
         buildFragment: function buildFragment(dom) {
           var el0 = dom.createDocumentFragment();
+          var el1 = dom.createComment("");
+          dom.appendChild(el0, el1);
           var el1 = dom.createComment("");
           dom.appendChild(el0, el1);
           var el1 = dom.createComment("");
@@ -2922,17 +3216,18 @@ define("dummy/templates/snippets/-datetime", ["exports"], function (exports) {
           return el0;
         },
         buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-          var morphs = new Array(4);
+          var morphs = new Array(5);
           morphs[0] = dom.createMorphAt(fragment, 0, 0, contextualElement);
           morphs[1] = dom.createMorphAt(fragment, 1, 1, contextualElement);
           morphs[2] = dom.createMorphAt(fragment, 2, 2, contextualElement);
           morphs[3] = dom.createMorphAt(fragment, 3, 3, contextualElement);
+          morphs[4] = dom.createMorphAt(fragment, 4, 4, contextualElement);
           dom.insertBoundary(fragment, 0);
           return morphs;
         },
-        statements: [["block", "em-date-field", [["get", "f", ["loc", [null, [2, 19], [2, 20]]]]], ["suffix", "fa-calendar"], 0, null, ["loc", [null, [2, 2], [4, 20]]]], ["block", "em-time-field", [["get", "f", ["loc", [null, [5, 19], [5, 20]]]]], ["suffix", "glyphicon-time"], 1, null, ["loc", [null, [5, 2], [7, 20]]]], ["block", "em-datetime-field", [["get", "f", ["loc", [null, [8, 23], [8, 24]]]]], ["suffix", "fa-twitter"], 2, null, ["loc", [null, [8, 2], [10, 24]]]], ["block", "em-datetime-field", [["get", "f", ["loc", [null, [11, 23], [11, 24]]]]], ["name", "moment", "suffix", "fa-twitter"], 3, null, ["loc", [null, [11, 2], [13, 24]]]]],
+        statements: [["block", "em-date-field", [["get", "f", ["loc", [null, [2, 19], [2, 20]]]]], ["suffix", "fa-calendar"], 0, null, ["loc", [null, [2, 2], [4, 20]]]], ["block", "em-time-field", [["get", "f", ["loc", [null, [5, 19], [5, 20]]]]], ["suffix", "glyphicon-time"], 1, null, ["loc", [null, [5, 2], [7, 20]]]], ["block", "em-datetime-field", [["get", "f", ["loc", [null, [8, 23], [8, 24]]]]], ["suffix", "fa-twitter"], 2, null, ["loc", [null, [8, 2], [10, 24]]]], ["block", "em-datetime-field", [["get", "f", ["loc", [null, [11, 23], [11, 24]]]]], ["name", "moment", "suffix", "fa-twitter"], 3, null, ["loc", [null, [11, 2], [13, 24]]]], ["block", "em-timezone-field", [["get", "f", ["loc", [null, [14, 23], [14, 24]]]]], [], 4, null, ["loc", [null, [14, 2], [16, 24]]]]],
         locals: ["f"],
-        templates: [child0, child1, child2, child3]
+        templates: [child0, child1, child2, child3, child4]
       };
     })();
     return {
@@ -2949,7 +3244,7 @@ define("dummy/templates/snippets/-datetime", ["exports"], function (exports) {
             "column": 0
           },
           "end": {
-            "line": 17,
+            "line": 20,
             "column": 16
           }
         },
@@ -2972,7 +3267,7 @@ define("dummy/templates/snippets/-datetime", ["exports"], function (exports) {
         dom.insertBoundary(fragment, null);
         return morphs;
       },
-      statements: [["block", "em-form-for", [["get", "model", ["loc", [null, [1, 15], [1, 20]]]]], ["action", "submit"], 0, null, ["loc", [null, [1, 0], [17, 16]]]]],
+      statements: [["block", "em-form-for", [["get", "model", ["loc", [null, [1, 15], [1, 20]]]]], ["action", "submit"], 0, null, ["loc", [null, [1, 0], [20, 16]]]]],
       locals: [],
       templates: [child0]
     };
@@ -3437,7 +3732,7 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("dummy/app")["default"].create({"name":"ember-form-tool","version":"v0.2.8"});
+  require("dummy/app")["default"].create({"name":"ember-form-tool","version":"v0.2.9"});
 }
 
 /* jshint ignore:end */

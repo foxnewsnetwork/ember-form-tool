@@ -10172,3 +10172,28 @@ fieldset[disabled] .btn-danger.active {
   content: "\f295";
 }
 
+span.zone {
+  width: 6px;
+  height: 6px;
+  margin: -3px 0 0 -3px;
+  background: #fff;
+  position: absolute;
+  border-radius: 3px;
+  border: 1px solid #4e7cad;
+}
+span.zone-content {
+  display: none;
+}
+.map-axis-x {
+  border-left: 1px solid #4e7cad;
+  top: 0; 
+  bottom: 0; 
+  position: absolute;
+}
+.map-axis-y {
+  border-top: 1px solid #4e7cad;
+  left: 0;
+  right: 0;
+  position: absolute;
+}
+
