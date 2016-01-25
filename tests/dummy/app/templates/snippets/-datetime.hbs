@@ -11,6 +11,9 @@
   {{#em-datetime-field f name="moment" suffix="fa-twitter"}}
     <span class="helper-text">you can use moment objects as well</span>
   {{/em-datetime-field}}
+  {{#em-timezone-field f}}
+    <span class="helper-text">timezone selection operates like a select; prefix and suffix tabs aren't supported (sorry)</span>
+  {{/em-timezone-field}}
   <button class="btn btn-success" type="submit">
     <span>Click Me</span>
   </button>

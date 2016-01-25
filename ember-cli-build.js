@@ -41,6 +41,6 @@ module.exports = function(defaults) {
   app.import(app.bowerDirectory + "/webcamjs/webcam.swf", {
     destDir: "assets"
   });
-
+  app.import("vendor/ember-timezone-input.css");
   return app.toTree();
 };

@@ -1,0 +1,12 @@
+<label for="{{controlId}}" class="control-label">
+  <span class="label-text">{{label}}</span>
+</label>
+
+{{em-timezone-input value=value selectClass=selectClass}}
+
+{{#each errorMessages as |msg|}}
+  <div class="help-block error-text">{{msg}}</div>
+{{/each}}
+{{#unless hasBlockParams}}
+  {{yield}}
+{{/unless}}
