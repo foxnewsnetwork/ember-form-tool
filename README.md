@@ -23,6 +23,12 @@ Use like the following:
 {{/em-form-for}}
 ```
 
+### Required Dependencies
+```sh
+ember install ember-cpm
+ember install ember-moment
+ember install ember-truth-helpers
+```
 ### Available Features
 
 `em-form-for`: takes a model and handles a lot of the overseer work

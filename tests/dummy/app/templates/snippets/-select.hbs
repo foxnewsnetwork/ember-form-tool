@@ -2,13 +2,16 @@
   {{#em-select-field f name="framework" options=frameworks prefix="fa-cubes"}}
     <span class="helper-text">select a framework (if you care to customize, the yield'd block will be the usual helper text)</span>
   {{/em-select-field}}
-  {{#em-select-field f name="candy" options=candies prefix="fa-cubes" as |candy|}}
+  {{#em-select-field f name="candy" options=candies prefix="fa-cubes" searchField="id" as |candy|}}
     <img src="{{candy.pic}}" class="icon-flag"> <strong>{{candy.id}}</strong>
     <small>{{candy.presentation}}</small>
   {{/em-select-field}}
   <div class="helper-text">
     If you do customize your options, the helper text goes away
   </div>
+  {{#em-select-field f name="apple" search=(action search) searchField="name" prefix="fa-info-circle" as |apple|}}
+    <img src="{{apple.src}}" class="icon-flag"> <strong>{{apple.name}}</strong>
+  {{/em-select-field}}
   {{#em-checkbox-field f name="rememberMe"}}
     Remember Me?
   {{/em-checkbox-field}}

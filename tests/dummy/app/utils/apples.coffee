@@ -1,0 +1,44 @@
+honeycrisp =
+  name: "honeycrisp"
+  src: "https://upload.wikimedia.org/wikipedia/commons/4/48/Bardsey_Island_Image.jpg"
+red =
+  name: "red"
+  src: "https://upload.wikimedia.org/wikipedia/en/f/fc/Braeburn2008.jpg"
+braebum =
+  name: "braebum"
+  src: "https://upload.wikimedia.org/wikipedia/commons/2/2b/Cortland_apples.jpg"
+cripps =
+  name: "cripps"
+  src: "https://upload.wikimedia.org/wikipedia/commons/c/cd/Envy_Apple.jpg"
+golden =
+  name: "golden"
+  src: "https://upload.wikimedia.org/wikipedia/commons/9/97/008king.jpg"
+jonagold =
+  name: "jonagold"
+  src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Early_Discovery_apples_from_Chegworth_Valley.jpg/800px-Early_Discovery_apples_from_Chegworth_Valley.jpg"
+gala =
+  name: "gala"
+  src: "https://upload.wikimedia.org/wikipedia/commons/4/48/Bardsey_Island_Image.jpg"
+arkansas =
+  name: "arkansas"
+  src: "https://upload.wikimedia.org/wikipedia/en/f/fc/Braeburn2008.jpg"
+belle =
+  name: "belle"
+  src: "https://upload.wikimedia.org/wikipedia/commons/2/2b/Cortland_apples.jpg"
+sweetango =
+  name: "sweetango"
+  src: "https://upload.wikimedia.org/wikipedia/commons/c/cd/Envy_Apple.jpg"
+idared =
+  name: "idared"
+  src: "https://upload.wikimedia.org/wikipedia/commons/9/97/008king.jpg"
+gravenstein =
+  name: "gravenstein"
+  src: "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bf/Early_Discovery_apples_from_Chegworth_Valley.jpg/800px-Early_Discovery_apples_from_Chegworth_Valley.jpg"
+northern =
+  name: "northern"
+  src: "https://bevacqua.github.io/horsey/example/fruits/orange.png"
+elstar =
+  name: "elstar"
+  src: "http://www.eatbydate.com/wp-content/uploads/avocado_icon.png"
+Apples = [honeycrisp, red, braebum, cripps, golden, jonagold, gala, arkansas, belle, sweetango, idared, gravenstein, northern, elstar]
+`export default Apples`

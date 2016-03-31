@@ -13,6 +13,7 @@ taffy =
   id: "taffy"
   pic: "http://www.ember-power-select.com/flags/es.svg"
   presentation: "Sticks to your tooth!"
+
 {A, set, Object, Controller, get} = Ember
 
 genErr = (model) ->
