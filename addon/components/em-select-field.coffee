@@ -5,6 +5,7 @@
 EmSelectFieldComponent = Ember.Component.extend FormFieldCore,
   layout: layout
   classNames: ['input-field', 'form-input', 'input-section', 'form-group']
+  selectClass: "form-control"
 
 EmSelectFieldComponent.reopenClass
   positionalParams: ["formHeart"]
